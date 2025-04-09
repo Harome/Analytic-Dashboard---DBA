@@ -1,0 +1,150 @@
+/* index.css */
+*,
+*::before,
+*::after {
+  box-sizing: border-box; /* Changed to box-sizing: border-box; to avoid padding issues */
+}
+
+/* App Layout */
+.app-layout {
+    display: flex;
+    height: 100vh;
+    background-color: #f0f2f5;
+  }
+  
+  /* Main Content */
+  .main-content {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+    border-radius: 30px;
+    transition: margin-left 0.3s;
+  }
+  
+  .main-content.collapsed {
+    margin-left: 80px; /* match collapsed sidebar */
+  }
+  
+  .main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .filter-dropdown {
+    padding: 6px 10px;
+    border-radius: 30px;
+    border: 1px solid #ccc;
+  }
+  
+  /* Slider Section */
+  .slider-section h2 {
+    margin-top: 20px;
+  }
+  
+  .card-slider {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding: 10px 0;
+  }
+  
+  .card {
+    flex: 0 0 250px;
+    background-color: white;
+    border-radius: 30px;
+    padding: 20px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    min-height: 200px;
+    min-width: 50px;
+  }
+  
+  /* Summary Section */
+  .summary-section {
+    margin-top: 40px;
+  }
+  
+  .summary-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    min-height: 150px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  /* ... existing styles ... */
+  
+  .slider-section h2 {
+    margin-top: 20px;
+  }
+  
+  .slider-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .card-slider {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding: 10px 0;
+    scroll-behavior:initial ;
+    scrollbar-width: none;
+    -ms-overflow-style:inherit;
+  }
+  
+  .card-slider::-webkit-scrollbar {
+    display:inline-block;
+  }
+  
+  .card {
+    flex: 0 0 250px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    min-height:180px;
+    min-width: 150px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Arrow buttons */
+  .arrow-button {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: background 0.9s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .arrow-button:hover {
+    background-color: #e70202;
+  }
+  
+  .arrow-button.left {
+    position: absolute;
+    left: -20px;
+  }
+  
+  .arrow-button.right {
+    position: absolute;
+    right: -20px;
+  }
+  
+  .app-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .main-content {
+    flex: 1;
+    transition: margin-left 1.7s ease;
+    padding: 20px;
+    overflow-y: auto;
+  }

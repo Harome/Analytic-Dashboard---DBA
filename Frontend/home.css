@@ -1,0 +1,133 @@
+/* App Layout */
+.app-layout {
+  display: flex;
+  height: 100vh;
+  background-color: #f0f2f5;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 25px;
+  overflow-y: auto;
+  border-radius: 30px;
+  transition: margin-left 0.3s ease;
+}
+
+.main-content.collapsed {
+  margin-left: 80px; /* match collapsed sidebar */
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filter-dropdown {
+  padding: 6px 10px;
+  border-radius: 30px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* Slider Section */
+.slider-section h2 {
+  margin-top: 20px;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.slider-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.card-slider {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 10px 0;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.card-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  flex: 0 0 250px;
+  background-color: white;
+  border-radius: 20px;
+  padding: 20px;
+  min-height: 180px;
+  min-width: 150px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* Arrow buttons */
+.arrow-button {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.arrow-button:hover {
+  background-color: #e70202;
+  color: white;
+}
+
+.arrow-button.left {
+  position: absolute;
+  left: -20px;
+}
+
+.arrow-button.right {
+  position: absolute;
+  right: -20px;
+}
+
+/* Summary Section */
+.summary-section {
+  margin-top: 40px;
+}
+
+.summary-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 20px;
+  min-height: 150px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* App Container */
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  transition: margin-left 0.3s ease;
+}

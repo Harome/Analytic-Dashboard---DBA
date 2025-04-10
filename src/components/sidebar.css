@@ -1,0 +1,65 @@
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #0c51af !important;
+  color: white;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 20px;
+  box-sizing: border-box;
+  transition: width 0.3s ease;
+}
+
+.sidebar-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.sidebar-header h2 {
+  font-size: 24px;
+  color: white;
+}
+
+/* Sidebar List */
+.sidebar-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar-list li {
+  margin: 20px 0;
+}
+
+/* Hover effect for links */
+.sidebar-list li a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 40px !important;
+  transition: background-color 0.3s ease, font-size 0.3s ease, transform 0.3s ease, color 0.3s ease, font-weight 0.3s ease;
+}
+
+/* Hover effect for text in the sidebar */
+.sidebar-list li a:hover {
+  background-color: #34495e;
+  font-size: 20px; /* Make text pop (enlarge) on hover */
+  transform: scale(1.1); /* Slightly enlarge the text for the pop effect */
+  color: black !important; /* Change text color to black */
+  font-weight: bold; /* Make text bold */
+  border-radius: 40px !important;
+}
+
+/* Icons */
+.sidebar-list li a svg {
+  margin-right: 10px;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-list li a:hover svg {
+  opacity: 1; /* Make icons appear on hover */
+}

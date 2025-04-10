@@ -1,0 +1,195 @@
+/* School Data Layout with Moving Gradient */
+.school-data-container {
+  display: flex;
+  margin: 0%;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  height: 100vh;
+  overflow-y: auto;
+  background: linear-gradient(135deg, rgb(78, 130, 235), rgba(17, 82, 143, 0.884), rgb(255, 242, 61)); /* DepEd Colors: Blue, Yellow, Green */
+  background-size: 200% 200%; /* Ensure that the gradient is large enough to move */
+  animation: gradientAnimation 6s ease infinite; /* Apply animation */
+  backdrop-filter: blur(100px); /* Glassy effect */
+  border-top-right-radius: 40px;  /* Top-right rounded corner */
+  border-bottom-right-radius: 40px; /* Bottom-right rounded corner */
+  border-left: 1px solid transparent;  /* Ensure left side remains squared */
+}
+
+/* Keyframes for moving gradient */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Apply Poppins font globally */
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Search Bar Styling */
+.search-input {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif; /* Apply Poppins font */
+  border-radius: 30px;
+  border: 2px solid #0066b3; /* DepEd Blue border */
+  background-color: rgba(255, 255, 255, 0.8); /* Light transparent background */
+  color: #333;
+  width: 250px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  margin-left: 20px; /* Space between dropdown and search */
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #004080; /* DepEd Darker Blue */
+}
+
+/* Filter Dropdown Styling */
+.filter-dropdown {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif; 
+  border-radius: 30px;
+  border: 2px solid #0066b3 !important;
+  background-color: rgba(255, 255, 255, 0.8); 
+  width: 250px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  margin-left: 20px; /* Space between the search bar and filter */
+}
+
+.filter-dropdown:focus {
+  outline: none;
+  border-color: #004080; /* DepEd Darker Blue */
+}
+
+
+/* Header Section Adjustments */
+.school-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between; /* Distribute space between elements */
+  align-items: center; /* Align items vertically in the center */
+  margin-bottom: 40px;
+  background: rgba(255, 255, 255, 0.411); /* DepEd Blue Gradient */
+  padding: 15px 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(78, 75, 255, 0.1);
+}
+
+.school-header h1 {
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  flex: 1; /* Ensures h1 takes available space */
+}
+
+
+/* Cards container (2x2 grid layout) */
+.cards-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 20px;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Default Card Style */
+.school-card {
+  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
+  border-radius: 15px;
+  padding: 20px;
+  min-height: 250px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  border: 2px solid transparent;
+  background: linear-gradient(135deg, #ffffff9f, #e6e6e6);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  backdrop-filter: blur(10px); /* Glassy effect */
+}
+
+/* Label styling for non-expanded cards */
+.school-card label {
+  margin-top: auto;
+  font-size: 14px;
+  font-weight: bold;
+  color: #1b8e3e; /* DepEd Green for label */
+  text-align: center;
+}
+
+/* Expanded Card Style */
+.school-card.expanded {
+  flex: 1 1 80%;
+  width: 70vw;
+  height: 90vh;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  background: #ffffff;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  transition: all 0.3s ease-in-out;
+  transform-origin: center center;
+  backdrop-filter: blur(10px); 
+}
+
+/* Title at the top */
+.school-card h3 {
+  margin-top: 0;
+  color: #b30000; 
+}
+
+/* Sidebar Settings */
+.school-sidebar {
+  position: fixed;
+  top: 20%;
+  right: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 15; /* Ensure it's above other content */
+}
+
+/* Sidebar Button Styles */
+.school-sidebar button {
+  padding: 10px 20px;
+  background-color: #dc1f2f; /* DepEd Primary Blue */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.school-sidebar button:hover {
+  background-color: #006f94; /* DepEd Secondary Blue */
+}
+
+/* Label Styling for Buttons */
+.school-sidebar button:active {
+  background-color: #d94a42; /* DepEd Red for active state */
+}

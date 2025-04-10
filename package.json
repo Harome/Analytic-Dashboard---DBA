@@ -1,0 +1,16 @@
+{
+  "name": "analytic-dashboard---dba",
+  "version": "1.0.0",
+  "description": "The repository wil be divided into 4 parts:\r - Backend folder\r - Frontend folder\r - Data folder\r - Sources (Such as photos, elements, raw file, etc)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "react-scripts start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react-scripts": "^3.0.1"
+  }
+}

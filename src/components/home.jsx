@@ -22,12 +22,40 @@ const Home = () => {
         </button>
 
         <div className="card-slider" ref={sliderRef}>
-          {[...Array(6)].map((_, index) => (
-            <div key={index} className="card">
-              <h3>Card {index + 1}</h3>
-              <p>This is a container in the slider.</p>
-            </div>
-          ))}
+          <div className="card">
+              <h3>Graph 1</h3>
+              <iframe
+                src="http://localhost:8050/graph1"
+                title="Graph 1"
+                style={{ width: '50%', height: '400px', border: 'none' }}
+              />
+          </div>
+          <div className="card">
+            <h3>Graph 2</h3>
+            <iframe
+              src="http://localhost:8050/graph2"
+              title="Graph 2"
+              style={{ width: '50%', height: '400px', border: 'none' }}
+            />
+          </div>
+
+          <div className="card">
+            <h3>Graph 3</h3>
+            <iframe
+              src="http://localhost:8050/graph3"
+              title="Graph 3"
+              style={{ width: '50%', height: '400px', border: 'none' }}
+            />
+          </div>
+
+          <div className="card">
+            <h3>Graph 4</h3>
+            <iframe
+              src="http://localhost:8050/graph4"
+              title="Graph 4"
+              style={{ width: '50%', height: '400px', border: 'none' }}
+            />
+          </div>
         </div>
 
         <button className="arrow-button right" onClick={scrollRight}>

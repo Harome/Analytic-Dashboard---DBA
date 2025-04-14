@@ -1,84 +1,105 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; // Import useNavigate and useParams
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import './schooldata.css';
 
 const SchoolData = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Retrieve 'id' from the URL (for the expanded view)
-  const [zoom, setZoom] = useState(1);
-  const [expandedCard, setExpandedCard] = useState(null); // Track which card is expanded
-  const [searchQuery, setSearchQuery] = useState(""); // State to handle search input
+  const { id } = useParams();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filter, setFilter] = useState("Region");
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
-  // Zoom functionality
-  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.1, 2));
-  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
-
-  // Handle card click to expand
-  const handleCardClick = (id) => {
-    setExpandedCard(id); // Set expanded card ID
-  };
-
-  // Handle Exit - navigate back to the School Data main page
-  const handleExit = () => {
-    setExpandedCard(null); // Close the expanded card
-    navigate('/school-data'); // Navigate to the main page (always to /school-data)
-  };
-
-  // Handle search input change
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value); // Update search query state
+    setSearchQuery(e.target.value);
   };
+
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value);
+  };
+
+  const handleZoomIn = () => {
+    setZoomLevel((prev) => Math.min(prev + 0.1, 2)); // Zoom in
+  };
+  
+  const handleZoomOut = () => {
+    setZoomLevel((prev) => Math.max(prev - 0.1, 0.5)); // Zoom out
+  };
+  
+  useEffect(() => {
+    document.documentElement.style.setProperty('--zoom', zoomLevel); // Dynamically update zoom level
+  }, [zoomLevel]);
+  
+
+  const cardsData = [
+    { label: "School Distribution by Sector per region", filterType: "Region" },
+    { label: "School Distribution by Sub-classification per Region", filterType: "Region" },
+    { label: "School Distribution by Modified COC per Region", filterType: "Region" },
+    { label: "School Distribution by District per Region", filterType: "Region" }
+  ];
+
+  const filteredCards = cardsData.filter(card =>
+    card.label.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    (filter === "Region" || card.filterType === filter)
+  );
 
   return (
     <div className="school-data-container">
       <header className="school-header">
         <h1>School Data</h1>
-
-        {/* Search Bar */}
         <input
           type="text"
           className="search-input"
           value={searchQuery}
-          onChange={handleSearchChange} // Handle search input change
+          onChange={handleSearchChange}
           placeholder="Search..."
         />
-        
-        {/* Filter Dropdown */}
-        <select className="filter-dropdown">
-          <option>Compare by Region</option>
-          <option>Compare by Year</option>
-          <option>Compare by Enrollment</option>
+        <select className="filter-dropdown" onChange={handleFilterChange}>
+          <option value="Region">Compare by Region</option>
+          <option value="Year">Compare by Year</option>
+          <option value="Enrollment">Compare by Enrollment</option>
         </select>
       </header>
 
-      {/* Cards container */}
-      <div className="cards-wrapper" style={{ transform: `scale(${zoom})` }}>
-        {["container1", "container2", "container3", "container4"].map((id, index) => (
+      <div className="cards-wrapper">
+        {filteredCards.map((card, index) => (
           <div
-            key={id}
-            className={`school-card ${expandedCard === id ? 'expanded' : ''}`}
-            onClick={() => handleCardClick(id)} // Pass unique ID to expand
+            key={index}
+            className="school-card"
+            onClick={() => {
+              setSelectedCard(card);
+              setZoomLevel(1);
+            }}
           >
-            {/* Labeling each container with different text */}
-            <label>
-              {index === 0 && "School Distribution by Sector per region"}
-              {index === 1 && "School Distribution by Sub-classification per Region"}
-              {index === 2 && "School Distribution by Modified COC per Region"}
-              {index === 3 && "School Distribution by District per Region"}
-            </label>
+            <label>{card.label}</label>
           </div>
         ))}
       </div>
 
-      {/* Sidebar Settings, shown when a card is expanded */}
-      {expandedCard && (
-        <aside className="school-sidebar">
-          <button onClick={handleExit}>Exit</button> {/* Click Exit to go back to /school-data */}
-          <button onClick={handleZoomIn}>Zoom In</button>
-          <button onClick={handleZoomOut}>Zoom Out</button>
-          <button onClick={() => alert('Exported successfully!')}>Export</button>
-          <button onClick={() => alert('File added!')}>Add File</button>
-        </aside>
+      {/* Modal */}
+      {selectedCard && (
+        <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-scroll-container">
+              <div
+                className="modal-content"
+                style={{
+                  transform: `scale(${zoomLevel})`,
+                  width: `${100 / zoomLevel}%`,
+                  height: `${100 / zoomLevel}%`,
+                }}
+              >
+                <h2>{selectedCard.label}</h2>
+
+              </div>
+            </div>
+
+            <div className="zoom-controls">
+              <button onClick={handleZoomOut}>➖ Zoom Out</button>
+              <button onClick={handleZoomIn}>➕ Zoom In</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

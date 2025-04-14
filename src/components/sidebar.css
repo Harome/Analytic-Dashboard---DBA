@@ -1,7 +1,7 @@
 /* Sidebar */
 .sidebar {
   width: 250px;
-  background-color: #0c51af !important;
+  background-color: #2262bd !important;
   color: white;
   height: 100vh;
   position: fixed;
@@ -62,4 +62,13 @@
 
 .sidebar-list li a:hover svg {
   opacity: 1; /* Make icons appear on hover */
+}
+/* sidebar.css */
+
+.sidebar-header img.deped-logo {
+  width: 100px; /* Adjust the width */
+  height: auto;
+  margin-top: 10px; /* Add margin if you want space between the title and image */
+  border-radius: 8px; /* Optional: Adds rounded corners to the image */
+  
 }

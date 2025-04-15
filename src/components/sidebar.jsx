@@ -1,7 +1,7 @@
 // Sidebar.jsx
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { FaHome, FaUniversity, FaChartBar, FaChartPie } from 'react-icons/fa';
+import { NavLink } from 'react-router-dom';
+import { FaHome, FaUniversity, FaChartBar } from 'react-icons/fa';
 import './sidebar.css';
 
 const Sidebar = () => {
@@ -13,24 +13,19 @@ const Sidebar = () => {
       </div>
       <ul className="sidebar-list">
         <li>
-          <Link to="/">
+          <NavLink to="/" end>
             <FaHome /> Home
-          </Link>
+          </NavLink>
         </li>
         <li>
-          <Link to="/student-data">
+          <NavLink to="/student-data">
             <FaChartBar /> Student Data
-          </Link>
+          </NavLink>
         </li>
         <li>
-          <Link to="/school-data">
+          <NavLink to="/school-data">
             <FaUniversity /> School Data
-          </Link>
-        </li>
-        <li>
-          <Link to="/analytics">
-            <FaChartPie /> Analytics
-          </Link>
+          </NavLink>
         </li>
       </ul>
     </div>

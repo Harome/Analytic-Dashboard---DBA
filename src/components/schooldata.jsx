@@ -21,15 +21,22 @@ const SchoolData = () => {
   const handleZoomIn = () => {
     setZoomLevel((prev) => Math.min(prev + 0.1, 2)); // Zoom in
   };
-  
+
   const handleZoomOut = () => {
     setZoomLevel((prev) => Math.max(prev - 0.1, 0.5)); // Zoom out
   };
-  
+
+  const handleImport = () => {
+    alert("Import function not implemented yet.");
+  };
+
+  const handleExport = () => {
+    alert("Export function not implemented yet.");
+  };
+
   useEffect(() => {
-    document.documentElement.style.setProperty('--zoom', zoomLevel); // Dynamically update zoom level
+    document.documentElement.style.setProperty('--zoom', zoomLevel);
   }, [zoomLevel]);
-  
 
   const cardsData = [
     { label: "School Distribution by Sector per region", filterType: "Region" },
@@ -78,29 +85,36 @@ const SchoolData = () => {
 
       {/* Modal */}
       {selectedCard && (
-        <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-scroll-container">
-              <div
-                className="modal-content"
-                style={{
-                  transform: `scale(${zoomLevel})`,
-                  width: `${100 / zoomLevel}%`,
-                  height: `${100 / zoomLevel}%`,
-                }}
-              >
-                <h2>{selectedCard.label}</h2>
+  <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
+    <div className="modal-card expanded-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content"
+        style={{
+          transform: `scale(${zoomLevel})`,
+          width: `${100 / zoomLevel}%`,
+          height: `${100 / zoomLevel}%`,
+        }}
+      >
+        <h2>{selectedCard.label}</h2>
+        {/* Insert graph or data component here */}
+      </div>
+    </div>
 
-              </div>
-            </div>
+    {/* Right-side settings modal */}
+    <div className="side-settings-modal" onClick={(e) => e.stopPropagation()}>
+      <button className="modal-exit" onClick={() => setSelectedCard(null)}>Exit</button>
+      <div className="zoom-controls">
+        <button onClick={handleZoomOut}>Zoom Out</button>
+        <button onClick={handleZoomIn}> Zoom In</button>
+      </div>
+      <div className="import-export-buttons">
+        <button onClick={handleImport}>Import</button>
+        <button onClick={handleExport}>Export</button>
+      </div>
+    </div>
+  </div>
+)}
 
-            <div className="zoom-controls">
-              <button onClick={handleZoomOut}>➖ Zoom Out</button>
-              <button onClick={handleZoomIn}>➕ Zoom In</button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };

@@ -1,66 +1,63 @@
-import React, { useRef } from 'react';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import React, { useState } from 'react';
 import './home.css';
 
 const Home = () => {
-  const sliderRef = useRef(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState('Region');
 
-  const scrollLeft = () => {
-    sliderRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+  const graphs = [
+    { title: 'Graph 1', src: 'http://localhost:8050/graph1' },
+    { title: 'Graph 2', src: 'http://localhost:8050/graph2' },
+    { title: 'Graph 3', src: 'http://localhost:8050/graph3' },
+    { title: 'Graph 4', src: 'http://localhost:8050/graph4' },
+    { title: 'Graph 5', src: 'http://localhost:8050/graph5' },
+  ];
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
   };
 
-  const scrollRight = () => {
-    sliderRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value);
   };
 
   return (
-    <div className="home-content">
-      <h2>Overview</h2>
-      <div className="slider-wrapper">
-        <button className="arrow-button left" onClick={scrollLeft}>
-          <FaChevronLeft />
-        </button>
+    <div className="home-container">
+      <header className="home-header">
+        <h1>Overview</h1>
+        <input
+          type="text"
+          className="search-input"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          placeholder="Search..."
+        />
+        <select className="filter-dropdown" onChange={handleFilterChange}>
+          <option value="Region">Compare by Region</option>
+          <option value="Year">Compare by Year</option>
+          <option value="Enrollment">Compare by Enrollment</option>
+        </select>
+      </header>
 
-        <div className="card-slider" ref={sliderRef}>
-          <div className="card">
-              <h3>Graph 1</h3>
-              <iframe
-                src="http://localhost:8050/graph1"
-                title="Graph 1"
-                style={{ width: '50%', height: '400px', border: 'none' }}
-              />
-          </div>
-          <div className="card">
-            <h3>Graph 2</h3>
+      <div className="collage-grid">
+        {graphs.map((graph, index) => (
+          <div
+            key={index}
+            className={`collage-card ${['large', 'wide', 'small', 'small', 'wide'][index % 5]}`}
+          >
+            <h3>{graph.title}</h3>
             <iframe
-              src="http://localhost:8050/graph2"
-              title="Graph 2"
-              style={{ width: '50%', height: '400px', border: 'none' }}
+              src={graph.src}
+              title={graph.title}
+              className="iframe-graph"
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+              }}
             />
           </div>
-
-          <div className="card">
-            <h3>Graph 3</h3>
-            <iframe
-              src="http://localhost:8050/graph3"
-              title="Graph 3"
-              style={{ width: '50%', height: '400px', border: 'none' }}
-            />
-          </div>
-
-          <div className="card">
-            <h3>Graph 4</h3>
-            <iframe
-              src="http://localhost:8050/graph4"
-              title="Graph 4"
-              style={{ width: '50%', height: '400px', border: 'none' }}
-            />
-          </div>
-        </div>
-
-        <button className="arrow-button right" onClick={scrollRight}>
-          <FaChevronRight />
-        </button>
+        ))}
       </div>
     </div>
   );

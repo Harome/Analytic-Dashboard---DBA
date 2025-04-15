@@ -1,0 +1,209 @@
+.school-data-container {
+  display: flex;
+  margin: 0%;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  height: 100vh;
+  overflow-y: auto;
+  background: linear-gradient(135deg, rgb(78, 130, 235), rgba(17, 82, 143, 0.884), rgb(255, 242, 61)); /* DepEd Colors: Blue, Yellow, Green */
+  background-size: 200% 200%; /* Ensure that the gradient is large enough to move */
+  animation: gradientAnimation 6s ease infinite; /* Apply animation */
+  backdrop-filter: blur(100px); /* Glassy effect */
+  border-left: 1px solid transparent;  /* Ensure left side remains squared */
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Keyframes for moving gradient */
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Search Bar Styling */
+.search-input {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif; 
+  border-radius: 30px;
+  border: 2px solid #0066b3; 
+  background-color: rgba(255, 255, 255, 0.8); 
+  color: #333;
+  width: 250px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  margin-left: 20px; 
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #004080; 
+}
+
+/* Filter Dropdown Styling */
+.filter-dropdown {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif; 
+  border-radius: 30px;
+  border: 2px solid #0066b3 !important;
+  background-color: rgba(255, 255, 255, 0.8); 
+  width: 250px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  margin-left: 20px; 
+}
+
+.filter-dropdown:focus {
+  outline: none;
+  border-color: #004080; 
+}
+
+/* Header Section Adjustments */
+.school-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 40px;
+  background: rgba(255, 255, 255, 0.411); 
+  padding: 15px 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(78, 75, 255, 0.1);
+}
+
+.school-header h1 {
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  flex: 1; 
+}
+
+/* Cards container (2x2 grid layout) */
+.cards-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 20px;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Default Card Style */
+.school-card {
+  background-color: rgba(255, 255, 255, 0.7); 
+  border-radius: 15px;
+  padding: 20px;
+  min-height: 250px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  border: 2px solid transparent;
+  background: linear-gradient(135deg, #ffffff9f, #e6e6e6);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  backdrop-filter: blur(10px); 
+}
+
+/* Label styling for non-expanded cards */
+.school-card label {
+  margin-top: auto;
+  font-size: 14px;
+  font-weight: bold;
+  color: #1b8e3e; 
+  text-align: center;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: auto;
+}
+
+.modal-card {
+  background-color: white;
+  border-radius: 20px;
+  padding: 20px;
+  max-width: 70vw;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  position: relative;
+  display: inline-block;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Main expanded modal */
+.modal-card.expanded-modal {
+  width: 75%;
+  height: 85%;
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.side-settings-modal {
+  position: fixed;
+  top: 20%;
+  right: 20px; 
+  width: 100px; 
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px 8px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  z-index: 15;
+}
+
+.side-settings-modal button {
+  width: 100%;
+  padding: 8px 0;
+  background-color: #dc1f2f;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px 0; 
+  white-space: nowrap;
+}
+
+.side-settings-modal button:hover {
+  background-color: #1d3557;
+}

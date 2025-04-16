@@ -5,7 +5,6 @@ import './App.css';
 import Home from './components/home';
 import StudentData from './components/studentdata';
 import SchoolData from './components/schooldata';
-import Analytics from './components/analytics';
 
 function App() {
   return (
@@ -19,7 +18,6 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/studentdata" element={<StudentData />} />
           <Route path="/school-data" element={<SchoolData />} />
-          <Route path="/analytics" element={<Analytics />} />
         </Routes>
       </main>
     </div>

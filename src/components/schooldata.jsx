@@ -39,10 +39,10 @@ const SchoolData = () => {
   }, [zoomLevel]);
 
   const cardsData = [
-    { label: "School Distribution by Sector per region", filterType: "Region" },
-    { label: "School Distribution by Sub-classification per Region", filterType: "Region" },
-    { label: "School Distribution by Modified COC per Region", filterType: "Region" },
-    { label: "School Distribution by District per Region", filterType: "Region" }
+    { label: "School Distribution by Sector per region", filterType: "Region", src: "http://localhost:8050/graph1" },
+    { label: "School Distribution by Sub-classification per Region", filterType: "Region", src: "http://localhost:8050/graph2" },
+    { label: "School Distribution by Modified COC per Region", filterType: "Region", src: "http://localhost:8050/graph3" },
+    { label: "School Distribution by District per Region", filterType: "Region", src: "http://localhost:8050/graph4" }
   ];
 
   const filteredCards = cardsData.filter(card =>
@@ -69,19 +69,31 @@ const SchoolData = () => {
       </header>
 
       <div className="cards-wrapper">
-        {filteredCards.map((card, index) => (
-          <div
-            key={index}
-            className="school-card"
-            onClick={() => {
-              setSelectedCard(card);
-              setZoomLevel(1);
-            }}
-          >
-            <label>{card.label}</label>
-          </div>
-        ))}
-      </div>
+  {filteredCards.map((card, index) => (
+    <div
+      key={index}
+      className="school-card"
+      onClick={() => {
+        setSelectedCard(card);
+        setZoomLevel(1);
+      }}
+    >
+      <label>{card.label}</label>
+      <iframe
+        src={card.src}
+        title={card.label}
+        style={{
+          width: '100%',
+          height: '200px',
+          border: '1px solid #ccc',
+          borderRadius: '8px',
+          marginTop: '10px'
+        }}
+      />
+    </div>
+  ))}
+</div>
+
 
       {/* Modal */}
       {selectedCard && (
@@ -91,20 +103,27 @@ const SchoolData = () => {
         style={{
           transform: `scale(${zoomLevel})`,
           width: `${100 / zoomLevel}%`,
-          height: `${100 / zoomLevel}%`,
+          height: `${100 / zoomLevel}%`
         }}
       >
         <h2>{selectedCard.label}</h2>
-        {/* Insert graph or data component here */}
+        <iframe
+          src={selectedCard.src}
+          title={selectedCard.label}
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none'
+          }}
+        />
       </div>
     </div>
 
-    {/* Right-side settings modal */}
     <div className="side-settings-modal" onClick={(e) => e.stopPropagation()}>
       <button className="modal-exit" onClick={() => setSelectedCard(null)}>Exit</button>
       <div className="zoom-controls">
         <button onClick={handleZoomOut}>Zoom Out</button>
-        <button onClick={handleZoomIn}> Zoom In</button>
+        <button onClick={handleZoomIn}>Zoom In</button>
       </div>
       <div className="import-export-buttons">
         <button onClick={handleImport}>Import</button>

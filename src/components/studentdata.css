@@ -107,7 +107,7 @@
 }
 
 /* Default Card Style */
-.school-card {
+.student-card {
   background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
   border-radius: 15px;
   padding: 20px;
@@ -126,7 +126,7 @@
 }
 
 /* Label styling for non-expanded cards */
-.school-card label {
+.student-card label {
   margin-top: auto;
   font-size: 14px;
   font-weight: bold;

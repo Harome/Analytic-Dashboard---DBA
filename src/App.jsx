@@ -16,7 +16,7 @@ function App() {
       <main className="content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/studentdata" element={<StudentData />} />
+          <Route path="/student-data" element={<StudentData />} />
           <Route path="/school-data" element={<SchoolData />} />
         </Routes>
       </main>

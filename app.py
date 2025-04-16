@@ -53,6 +53,7 @@ graph4_page = html.Div([
 
 @app.callback(Output('page-content', 'children'),
               Input('url', 'pathname'))
+
 def display_page(pathname):
     if pathname == '/graph1':
         return graph1_page

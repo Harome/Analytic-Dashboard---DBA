@@ -7,7 +7,7 @@ import plotly.express as px
 import numpy as np
 import plotly.graph_objects as go
 
-path = r"D:\zDonludoz\Git\Analytic-Dashboard---DBA\Data\Raw_data\ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx"
+path = r"/Users/annmargaretteconcepcion/dba 2/4/Analytic-Dashboard---DBA/Data/Raw_data/ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx"
 df = pd.read_excel(path)
 df.head()
 

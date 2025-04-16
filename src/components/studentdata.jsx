@@ -39,10 +39,10 @@ const StudentData = () => {
   }, [zoomLevel]);
 
   const cardsData = [
-    { label: "Regional Population Trends", filterType: "Region" },
-    { label: "Enrollment Insights", filterType: "Region" },
-    { label: "Student Population Patterns", filterType: "Region" },
-    { label: "Education Quality Analysis", filterType: "Region" }
+    { label: "Regional Population Trends", filterType: "Region" , src: "http://localhost:8050/graph1"},
+    { label: "Enrollment Insights", filterType: "Region", src: "http://localhost:8050/graph2"  },
+    { label: "Student Population Patterns", filterType: "Region" , src: "http://localhost:8050/graph3" },
+    { label: "Education Quality Analysis", filterType: "Region" , src: "http://localhost:8050/graph4" }
   ];
 
   const filteredCards = cardsData.filter(card =>
@@ -51,8 +51,8 @@ const StudentData = () => {
   );
 
   return (
-    <div className="school-data-container">
-      <header className="school-header">
+    <div className="student-data-container">
+      <header className="student-header">
         <h1>Student Data</h1>
         <input
           type="text"
@@ -72,13 +72,26 @@ const StudentData = () => {
         {filteredCards.map((card, index) => (
           <div
             key={index}
-            className="school-card"
+            className="student-card"
             onClick={() => {
               setSelectedCard(card);
               setZoomLevel(1);
             }}
           >
             <label>{card.label}</label>
+            /* new inser */
+            <iframe
+              src={card.src}
+              title={card.label}
+              style={{
+                width: '100%',
+                height: '200px',
+                border: '1px solid #ccc',
+                borderRadius: '8px',
+                marginTop: '10px'
+              }}
+            />
+
           </div>
         ))}
       </div>
@@ -96,6 +109,27 @@ const StudentData = () => {
       >
         <h2>{selectedCard.label}</h2>
         {/* Insert graph or data component here */}
+        <iframe
+                src={selectedCard.src}
+                title={selectedCard.label}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  borderRadius: '8px'
+                }}
+              />
+        {/* Displaying the graph */}
+        <iframe
+                src={selectedCard.src}
+                title={selectedCard.label}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  borderRadius: '8px'
+                }}
+        />
       </div>
     </div>
 

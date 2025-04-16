@@ -39,10 +39,10 @@ const StudentData = () => {
   }, [zoomLevel]);
 
   const cardsData = [
-    { label: "Regional Population Trends", filterType: "Region" },
-    { label: "Enrollment Insights", filterType: "Region" },
-    { label: "Student Population Patterns", filterType: "Region" },
-    { label: "Education Quality Analysis", filterType: "Region" }
+    { label: "Regional Population Trends", filterType: "Region", src: "http://localhost:8050/graph2" },
+    { label: "Enrollment Insights", filterType: "Region", src: "http://localhost:8050/graph3" },
+    { label: "Student Population Patterns", filterType: "Region", src: "http://localhost:8050/graph4" },
+    { label: "Education Quality Analysis", filterType: "Region", src: "http://localhost:8050/graph2" }
   ];
 
   const filteredCards = cardsData.filter(card =>
@@ -79,9 +79,21 @@ const StudentData = () => {
             }}
           >
             <label>{card.label}</label>
+            <iframe
+              src={card.src}
+              title={card.label}
+              style={{
+                width: '100%',
+                height: '200px',
+                border: '1px solid #ccc',
+                borderRadius: '8px',
+                marginTop: '10px'
+              }}
+            />
           </div>
         ))}
       </div>
+
 
       {/* Modal */}
       {selectedCard && (
@@ -91,20 +103,27 @@ const StudentData = () => {
         style={{
           transform: `scale(${zoomLevel})`,
           width: `${100 / zoomLevel}%`,
-          height: `${100 / zoomLevel}%`,
+          height: `${100 / zoomLevel}%`
         }}
       >
         <h2>{selectedCard.label}</h2>
-        {/* Insert graph or data component here */}
+        <iframe
+          src={selectedCard.src}
+          title={selectedCard.label}
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none'
+          }}
+        />
       </div>
     </div>
 
-    {/* Right-side settings modal */}
     <div className="side-settings-modal" onClick={(e) => e.stopPropagation()}>
       <button className="modal-exit" onClick={() => setSelectedCard(null)}>Exit</button>
       <div className="zoom-controls">
         <button onClick={handleZoomOut}>Zoom Out</button>
-        <button onClick={handleZoomIn}> Zoom In</button>
+        <button onClick={handleZoomIn}>Zoom In</button>
       </div>
       <div className="import-export-buttons">
         <button onClick={handleImport}>Import</button>
@@ -113,6 +132,7 @@ const StudentData = () => {
     </div>
   </div>
 )}
+
 
 
     </div>

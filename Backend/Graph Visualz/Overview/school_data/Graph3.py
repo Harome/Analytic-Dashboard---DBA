@@ -1,70 +1,74 @@
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from Initialization.enrollment_data_loader import load_school_data
+# enrollment_visualization.py
 
-# Load the school-level enrollment data
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from Initialization.enrollment_data_loader import load_school_data  # Make sure the .py file is in the same directory or set Python path
+
+# Load the data from Excel file
 data = load_school_data("/Users/annmargaretteconcepcion/dba 2/4/Analytic-Dashboard---DBA/Data/Raw_data/ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx")
 
-# Extract the school data
-df_school = data["df_school"]
+# Extract the sector totals
+sector_totals = data["sector_distribution"]["Total"]
 
-# Normalize the 'Sector' column by replacing 'SUCsLUCs' with 'SUCs/LUCs'
-df_school['Sector'] = df_school['Sector'].str.strip().replace('SUCsLUCs', 'SUCs/LUCs')
+# Calculate total number of schools
+total_schools = sector_totals.sum()
 
-# Verify the unique values in 'Sector'
-print(df_school['Sector'].unique())
+# Calculate percentage per sector
+public_total = sector_totals.get("Public", 0)
+sucslucs_total = sector_totals.get("SUCsLUCs", 0)
+pso_total = sector_totals.get("PSO", 0)
+private_total = sector_totals.get("Private", 0)
+sucslucs_pso_total = sucslucs_total + pso_total
 
-# Define sector labels and their colors
-sector_labels = ['Public', 'Private', 'SUCs/LUCs', 'PSO']
-colors = ['#FF5733', '#33C3FF', '#2ECC71', '#FFB533']
-border_colors = ['#FF0000', '#0000FF','#0e6936', '#b5b50d']
+percent_public = f"{(public_total / total_schools * 100):.2f}%"
+percent_sucslucs = f"{(sucslucs_total / total_schools * 100):.2f}%"
+percent_private = f"{(private_total / total_schools * 100):.2f}%"
+percent_pso = f"{(pso_total / total_schools * 100):.2f}%"
 
-# Calculate school counts per sector
-school_counts = [
-    df_school[df_school['Sector'] == 'Public'].shape[0],
-    df_school[df_school['Sector'] == 'Private'].shape[0],
-    df_school[df_school['Sector'] == 'SUCs/LUCs'].shape[0],
-    df_school[df_school['Sector'] == 'PSO'].shape[0]
-]
+# Drawing function
+def draw_pencil(x_offset, color, height, label, percentage, percentage_offset, left_value):
+    pencil_body = patches.Rectangle((x_offset - 50, -100), 100, height, linewidth=1, edgecolor='black', facecolor=color)
+    ax.add_patch(pencil_body)
 
-# Create the subplot grid
-fig = make_subplots(
-    rows=2, cols=2,
-    specs=[[{'type': 'polar'}, {'type': 'polar'}],
-           [{'type': 'polar'}, {'type': 'polar'}]],
-    subplot_titles=[f"<b>{label}</b>" for label in sector_labels],
-    vertical_spacing=0.1, horizontal_spacing=0.1
-)
+    wood_part = patches.Polygon([(x_offset - 50, height - 100), (x_offset + 50, height - 100), (x_offset, height - 30)],
+                                 closed=True, facecolor='#DEB887', edgecolor='black')
+    ax.add_patch(wood_part)
 
-# Define radial ranges for each sector
-ranges = {'Public': [0, 50000], 'Private': [0, 20000],
-          'SUCs/LUCs': [0, 250], 'PSO': [0, 50]}
+    tip_y = height - 30
+    graphite_tip = patches.Circle((x_offset, tip_y), 5, facecolor='black', edgecolor='black')
+    ax.add_patch(graphite_tip)
 
-# Define a row-column map for positioning subplots
-row_col_map = [(1, 1), (1, 2), (2, 1), (2, 2)]
+    eraser = patches.Rectangle((x_offset - 50, -100), 100, 20, linewidth=1, edgecolor='black', facecolor='pink')
+    ax.add_patch(eraser)
 
-# Add data traces to the plot
-for i, (label, count, color, border_color) in enumerate(zip(sector_labels, school_counts, colors, border_colors)):
-    row, col = row_col_map[i]
-    fig.add_trace(go.Barpolar(
-        r=[count], theta=[label],
-        marker=dict(color=color, line=dict(color=border_color, width=4)),
-        name=label, opacity=0.5, text=[f"{label} = {count:,}"],
-        hoverinfo="text"), row=row, col=col)
+    visible_gap = 10
+    line_start_y = tip_y + 5 + visible_gap
+    ax.plot([x_offset, x_offset], [line_start_y, line_start_y + 45], color='black', linestyle='-', linewidth=1.5)
 
-    # Adjust radial range for each subplot based on the sector
-    fig.layout[f'polar{(row - 1) * 2 + col}'].radialaxis.range = ranges[label]
-    fig.layout[f'polar{(row - 1) * 2 + col}'].radialaxis.showticklabels = False
-    fig.layout[f'polar{(row - 1) * 2 + col}'].angularaxis.showticklabels = False
-    fig.layout[f'polar{(row - 1) * 2 + col}'].angularaxis.tickfont = dict(size=12)
+    label_y = -50 + height / 2
+    ax.text(x_offset, label_y, label, ha='center', va='center', fontsize=10, color='black', rotation=90, fontweight="bold")
 
-# Update layout for the entire figure
-fig.update_layout(
-    height=600, width=700, title='<b>School Distribution per Sector</b>',
-    title_font_size=20, title_font=dict(family='Poppins, sans-serif', size=20, color='black'),
-    title_x=0.5, font=dict(family='Poppins, sans-serif', size=13, color='black'),
-    showlegend=False, paper_bgcolor='white', margin=dict(t=80, b=60, l=50, r=50)
-)
+    percentage_y = label_y + percentage_offset
+    ax.text(x_offset + 25, percentage_y, percentage, ha='left', va='center', fontsize=10, color=color, fontweight='bold')
 
-# Show the plot
-fig.show()
+    ax.text(x_offset - 25, line_start_y + 15, str(left_value), ha='right', va='center', fontsize=10, color=color, fontweight='bold')
+
+
+# Start plotting
+fig, ax = plt.subplots(figsize=(12, 6))
+
+# Draw pencils using data
+draw_pencil(-300, '#1b8e3e', 350, 'Public', percent_public, 230, f'Public sector\nhas {int(public_total):,}\nschools')
+draw_pencil(-60, '#FDD85D', 250, 'SUCs/LUCs', percent_sucslucs, 180, f'SUCs/LUCs sector\nhas {int(sucslucs_total):,}\nschools')
+draw_pencil(180, '#2262bd', 300, 'Private', percent_private, 205, f'Private sector\nhas {int(private_total):,}\nschools')
+draw_pencil(420, '#ba4141', 200, 'PSO', percent_pso, 150, f'PSO sector\nhas {int(pso_total):,}\nschools')
+
+# Final formatting
+plt.title("School Distribution per Sector", fontsize=14, fontweight='bold')
+ax.set_xlim(-400, 550)
+ax.set_ylim(-150, 470)
+ax.set_aspect('equal')
+ax.axis('off')
+
+plt.show()

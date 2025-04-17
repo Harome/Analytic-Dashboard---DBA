@@ -1,87 +1,142 @@
-import pandas as pd
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from matplotlib.patches import FancyArrowPatch
 from Initialization.enrollment_data_loader import load_school_data
 
 # Load the school-level enrollment data
 data = load_school_data("/Users/annmargaretteconcepcion/dba 2/4/Analytic-Dashboard---DBA/Data/Raw_data/ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx")
 
-# Extract necessary variables
+# Extract the school data
 df_school = data["df_school"]
 region_order = data["region_order"]
-regions = df_school["Region"].unique()
 
-# Extract categories from data (includes school types, subclassifications, etc.)
-categories = data["categories"]
+# Count the number of schools per region (adjust if needed based on data structure)
+region_counts = df_school['Region'].value_counts().reindex(region_order, fill_value=0)
+num_schools = region_counts.sum()
 
-# Retrieve school types, subclassifications, and modified COC from categories
-school_type = categories.get("school_types", [])
-school_subclassification = categories.get("subclassifications", [])
-modified_coc = categories.get("modified_coc", [])
+# Set up the figure and axes for the visualization
+fig, ax = plt.subplots()
+fig.set_size_inches(9, 6)
+ax.set_xlim(1.5, 10)
+ax.set_ylim(2.5, 8.5)
+ax.set_aspect('equal')
+ax.axis('off')
 
-# Sample values
-total_schools = df_school.shape[0]
-sorted_regions = [r for r in region_order if r in regions]
+# Add a rectangle to represent a screen
+screen = patches.Rectangle((2.5, 5.5), 5, 3, linewidth=2, edgecolor='black', facecolor='#d3d3d3')
+ax.add_patch(screen)
 
-# Convert to vertical text for hover tooltips
-regions_text = "<br>".join(sorted_regions)
-subclassifications_text = "<br>".join(sorted(school_subclassification))
-types_text = "<br>".join(sorted(school_type))
-modified_coc_text = "<br>".join(sorted(modified_coc))
+# Inner rectangle representing a different screen area
+inner_screen = patches.Rectangle((2.7, 5.7), 4.6, 2.6, linewidth=1, edgecolor='black', facecolor='#faf8f7')
+ax.add_patch(inner_screen)
 
-# Create the figure
-fig = go.Figure()
+# Blue background for the screen
+blue_bg = patches.Rectangle((2.7, 5.7), 4.6, 2.6, linewidth=1, edgecolor='none', facecolor='#2262bd', alpha=0.8)
+ax.add_patch(blue_bg)
 
-# Indicator for total number of schools
-fig.add_trace(go.Indicator(
-    mode="number",
-    value=total_schools,
-    title={
-        "text": "<br><b><br><br><b>🏫<br><b>Total Number of Schools<br><b><span style='font-size:16px'>(under the Philippine Education System)</span></b>",
-        "font": {"size": 24, "family": "Poppins, sans-serif"}
-    },
-    number={
-        "valueformat": ",",
-        "font": {"size": 60, "color": "red", "family": "Poppins, sans-serif"}
-    },
-    domain={"x": [0.05, 0.95], "y": [0.42, 0.9]}
-))
+# Add text lines for labels
+text_lines = [("Total Number of Schools", 17, 0.0, '#fcf7ed'),
+              ("(under the Philippine Education System)", 9, -0.4, '#2a1617'),
+              (f"{num_schools:,}", 35, -1.0, '#FDD85D')]
 
-# Define labels and hovers
-labels = ["Regions |", "Subclassifications |", "Types |", "Modified COC"]
-hover_texts = [regions_text, subclassifications_text, types_text, modified_coc_text]
-x_positions = [0.10, 0.40, 0.60, 0.88]  # relative positions inside the box
+x_center = 5.0
+y_base = 7.7
 
-# Add annotations instead of scatter
-for x, label, hover in zip(x_positions, labels, hover_texts):
-    fig.add_annotation(
-        x=x, y=0.28, xref="paper", yref="paper",
-        text=f"<b>{label}</b>",
-        font=dict(family="Poppins, sans-serif", size=14, color="#333"),
-        showarrow=False,
-        hovertext=hover,
-        hoverlabel=dict(font_size=12),
-        align="center"
-    )
+# Render the text lines in the figure
+for text, size, offset, color in text_lines:
+    y_pos = y_base + offset
+    ax.text(x_center, y_pos, text,
+            ha='center', va='center',
+            fontsize=size, color=color, fontweight='bold')
 
-# Layout and box styling
-fig.update_layout(
-    height=430,
-    width=500,
-    margin=dict(t=40, b=40, l=30, r=30),
-    paper_bgcolor="rgba(255, 255, 255, 1)",
-    plot_bgcolor="rgba(0, 0, 0, 0)",
-    template="plotly_white",
-    font=dict(family="Poppins, sans-serif"),
-    xaxis=dict(visible=False),
-    yaxis=dict(visible=False),
-    shapes=[dict(
-        type="rect",
-        xref="paper", yref="paper",
-        x0=0.03, y0=0.25, x1=0.97, y1=0.96,
-        fillcolor="rgba(240, 248, 255, 1)",
-        line=dict(color="rgba(30, 144, 255, 0.8)", width=2),
-        layer="below"
-    )]
-)
+    if text == f"{num_schools:,}":
+        underline_width = 2.3
+        underline_height = 0.33
+        ax.plot([x_center - underline_width / 2, x_center + underline_width / 2],
+                [y_pos - underline_height, y_pos - underline_height],
+                color=color, linewidth=1.3)
 
-fig.show()
+# Add school buildings in the visualization (represented as rectangles)
+start_x = 3.2
+spacing = 0.4
+y_building = 5.8
+building_width = 0.2
+building_height = 0.3
+
+color1 = '#8ab17d'
+color2 = '#ba4141'
+
+# Create buildings based on the number of regions
+for i in range(num_schools):
+    x = start_x + i * spacing
+
+    if i % 2 == 0:
+        building_color = color1
+    else:
+        building_color = color2
+
+    building = patches.Rectangle((x - building_width / 2, y_building), building_width, building_height,
+                                 edgecolor='black', facecolor=building_color)
+    ax.add_patch(building)
+
+    window_width = 0.05
+    window_height = 0.1
+    for j in range(2):
+        ax.add_patch(patches.Rectangle((x - building_width / 4 + j * window_width, y_building + 0.1),
+                                      window_width, window_height, edgecolor='black', facecolor='white'))
+
+    ax.plot([x - building_width / 2, x, x + building_width / 2],
+            [y_building + building_height, y_building + building_height + 0.1, y_building + building_height],
+            color='black', linewidth=2)
+
+# Add a stand and base
+stand = patches.Rectangle((4.7, 4.9), 1.1, 0.6, linewidth=1, edgecolor='black', facecolor='#808080')
+ax.add_patch(stand)
+base_stand = patches.Rectangle((4.4, 4.6), 1.7, 0.3, linewidth=1, edgecolor='black', facecolor='#606060')
+ax.add_patch(base_stand)
+
+# Add CPU, CD slot, power button, vents
+cpu = patches.Rectangle((7.7, 4.8), 1.5, 3.7, linewidth=2, edgecolor='black', facecolor='#888888')
+ax.add_patch(cpu)
+cd_slot = patches.Rectangle((8.0, 7.9), 1.0, 0.1, linewidth=1, edgecolor='black', facecolor='#2e2e2e')
+ax.add_patch(cd_slot)
+power_button = patches.Circle((8.45, 5.3), 0.15, edgecolor='black', facecolor='green')
+ax.add_patch(power_button)
+
+for i in range(4):
+    vent = patches.Rectangle((8.0, 6.9 - i * 0.3), 1.0, 0.08, edgecolor='black', facecolor='#444444')
+    ax.add_patch(vent)
+
+# Add keyboard base and keys
+keyboard_base = patches.Rectangle((2.83, 2.83), 4.3, 1.2, linewidth=2, edgecolor='black', facecolor='#2f2f2f')
+ax.add_patch(keyboard_base)
+
+key_h = 0.2
+gap = 0.03
+rows = [(3, [0.3]*9 + [0.35] + [0.45] + [0.2]),
+        (3, [0.5] + [0.3]*5 + [1] + [0.4] + [0.4]),
+        (3, [0.8] + [0.3]*7 + [0.9]),
+        (3, [0.2, 0.4] + [0.5] + [1.4, 0.3] + [0.48] + [0.3, 0.25]),]
+
+y = 3.9 - key_h
+for row_index, (x_start, widths) in enumerate(rows):
+    x = x_start
+    for i, w in enumerate(widths):
+        shadow_offset = 0.03
+        shadow = patches.Rectangle((x + shadow_offset, y - shadow_offset), w, key_h, linewidth=0.5, edgecolor='none', facecolor='#555555')
+        ax.add_patch(shadow)
+
+        key = patches.Rectangle((x, y), w, key_h, linewidth=0.5, edgecolor='black', facecolor='#bbbbbb')
+        ax.add_patch(key)
+
+        x += w + gap
+    y -= key_h + gap
+
+# Add mouse and scroll wheel
+mouse = patches.Ellipse((7.8, 3.4), 0.6, 1.0, edgecolor='black', facecolor='#cccccc', linewidth=1.5)
+ax.add_patch(mouse)
+scroll_wheel = patches.Rectangle((7.78, 3.65), 0.04, 0.15, edgecolor='black', facecolor='black')
+ax.add_patch(scroll_wheel)
+
+# Show the plot
+plt.show()

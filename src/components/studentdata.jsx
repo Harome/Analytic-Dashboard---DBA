@@ -91,10 +91,10 @@ const StudentData = () => {
                 marginTop: '10px'
               }}
             />
-
           </div>
         ))}
       </div>
+
 
       {/* Modal */}
       {selectedCard && (
@@ -104,7 +104,7 @@ const StudentData = () => {
         style={{
           transform: `scale(${zoomLevel})`,
           width: `${100 / zoomLevel}%`,
-          height: `${100 / zoomLevel}%`,
+          height: `${100 / zoomLevel}%`
         }}
       >
         <h2>{selectedCard.label}</h2>
@@ -133,12 +133,11 @@ const StudentData = () => {
       </div>
     </div>
 
-    {/* Right-side settings modal */}
     <div className="side-settings-modal" onClick={(e) => e.stopPropagation()}>
       <button className="modal-exit" onClick={() => setSelectedCard(null)}>Exit</button>
       <div className="zoom-controls">
         <button onClick={handleZoomOut}>Zoom Out</button>
-        <button onClick={handleZoomIn}> Zoom In</button>
+        <button onClick={handleZoomIn}>Zoom In</button>
       </div>
       <div className="import-export-buttons">
         <button onClick={handleImport}>Import</button>
@@ -147,6 +146,7 @@ const StudentData = () => {
     </div>
   </div>
 )}
+
 
 
     </div>

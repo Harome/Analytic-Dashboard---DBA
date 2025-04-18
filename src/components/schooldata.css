@@ -1,6 +1,7 @@
 .school-data-container {
   display: flex;
   margin: 0%;
+  flex: 1;
   flex-direction: column;
   align-items: center;
   padding: 30px;
@@ -11,8 +12,6 @@
   animation: gradientAnimation 6s ease infinite; /* Apply animation */
   backdrop-filter: blur(100px); /* Glassy effect */
   border-left: 1px solid transparent;  /* Ensure left side remains squared */
-  max-width: 1200px;
-  margin: 0 auto;
   position: relative;
   z-index: 1;
 }

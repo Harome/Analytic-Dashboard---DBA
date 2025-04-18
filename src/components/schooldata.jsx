@@ -70,7 +70,7 @@ const SchoolData = () => {
               title={card.label}
               style={{
                 width: '100%',
-                height: '200px',
+                height: '550px',
                 border: '1px solid #ccc',
                 borderRadius: '8px',
                 marginTop: '10px'
@@ -79,7 +79,8 @@ const SchoolData = () => {
           </div>
         ))}
       </div>
-
+      
+      {/* Modal */}
       {selectedCard && (
         <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
           <div className="modal-card expanded-modal" onClick={(e) => e.stopPropagation()}>

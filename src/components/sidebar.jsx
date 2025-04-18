@@ -2,6 +2,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaHome, FaUniversity, FaChartBar } from 'react-icons/fa';
+import { MdCompare } from "react-icons/md";
 import './sidebar.css';
 
 const Sidebar = () => {
@@ -25,6 +26,11 @@ const Sidebar = () => {
         <li>
           <NavLink to="/school-data">
             <FaUniversity /> School Data
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/data-comp">
+            <MdCompare/> Data Comparison
           </NavLink>
         </li>
       </ul>

@@ -70,7 +70,7 @@ const StudentData = () => {
               title={card.label}
               style={{
                 width: '100%',
-                height: '200px',
+                height: '550px',
                 border: '1px solid #ccc',
                 borderRadius: '8px',
                 marginTop: '10px'

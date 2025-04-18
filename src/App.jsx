@@ -5,6 +5,8 @@ import './App.css';
 import Home from './components/home';
 import StudentData from './components/studentdata';
 import SchoolData from './components/schooldata';
+import DataComp from './components/datacomp';
+
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/student-data" element={<StudentData />} />
           <Route path="/school-data" element={<SchoolData />} />
+          <Route path="/data-comp" element={<DataComp />} />
         </Routes>
       </main>
     </div>

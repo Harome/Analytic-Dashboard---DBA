@@ -1,10 +1,10 @@
 .school-data-container {
   display: flex;
-  margin: 0%;
+  margin: 20px;
   flex-direction: column;
   align-items: center;
-  padding: 30px;
-  height: 100vh;
+  padding: 20px;
+  height: calc(100vh - 40px);
   overflow-y: auto;
   background: linear-gradient(135deg, rgb(78, 130, 235), rgba(17, 82, 143, 0.884), rgb(255, 242, 61)); /* DepEd Colors: Blue, Yellow, Green */
   background-size: 200% 200%; /* Ensure that the gradient is large enough to move */
@@ -72,15 +72,15 @@
   border-color: #004080; 
 }
 
-/* Header Section Adjustments */
+/* Header Section Adjustments Set width to "calc(100% - 20px)" with margin "10px" to properly align with the distribution boxes*/
 .school-header {
-  width: 100%;
+  width: calc(100% - 20px);
   display: flex;
   justify-content: space-between; 
   align-items: center; 
-  margin-bottom: 40px;
+  margin: 10px;
   background: rgba(255, 255, 255, 0.411); 
-  padding: 15px 10px;
+  padding: 15px 20px;
   border-radius: 10px;
   box-shadow: 0 4px 15px rgba(78, 75, 255, 0.1);
 }

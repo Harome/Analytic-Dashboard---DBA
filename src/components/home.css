@@ -1,7 +1,5 @@
-
 .home-container {
   display: flex;
-  margin: 0%;
   flex-direction: column;
   align-items: center;
   padding: 10px;
@@ -9,16 +7,32 @@
   overflow-y: auto;
   background: linear-gradient(135deg, rgb(78, 130, 235), rgba(17, 82, 143, 0.884), rgb(255, 242, 61));
   background-size: 200% 200%;
-  animation: gradientAnimation 6s ease infinite; 
-  backdrop-filter: blur(100px); 
-  border-left: 1px solid transparent;  
-  max-width: 1200px;
-  margin: 0 auto;
+  animation: gradientAnimation 6s ease infinite;
+  backdrop-filter: blur(30px); 
+  border-left: 1px solid transparent;
   position: relative;
   z-index: 1;
-  
-
+  box-sizing: border-box;
+  flex: 1; /* ⬅️ key change */
 }
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .home-container {
+    padding: 20px 10px;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-container {
+    padding: 15px 5px;
+    background-size: 300% 300%;
+    backdrop-filter: blur(20px);
+  }
+}
+
 
 /* Keyframes for moving gradient */
 @keyframes gradientAnimation {

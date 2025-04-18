@@ -79,7 +79,6 @@ const StudentData = () => {
             }}
           >
             <label>{card.label}</label>
-            /* new inser */
             <iframe
               src={card.src}
               title={card.label}

@@ -1,71 +1,86 @@
-import pandas as pd
-import plotly.graph_objects as go
 from Initialization.enrollment_data_loader import load_school_data
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import matplotlib.colors as mcolors
+import numpy as np
 
-# Load data from the enrollment_data_loader
+# Load school data
 data = load_school_data("/Users/annmargaretteconcepcion/dba 2/4/Analytic-Dashboard---DBA/Data/Raw_data/ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx")
-
-# Extract necessary variables from the loaded data
 df_school = data["df_school"]
-region_order = data["region_order"]
-grade_columns_male = data["grade_columns_male"]
-grade_columns_female = data["grade_columns_female"]
 
-# Define grade_levels dynamically
-grade_levels = {
-    "Elementary": grade_columns_male[1:7] + ["Elem_NG_Male"] + [col.replace("Male", "Female") for col in grade_columns_male[1:7]] + ["Elem_NG_Female"],
-    "Junior High": grade_columns_male[8:13] + [col.replace("Male", "Female") for col in grade_columns_male[8:13]],
-    "Senior High": grade_columns_male[13:] + [col.replace("Male", "Female") for col in grade_columns_male[13:]]
-}
+# Clean & prepare: group by region and sum total enrollment
+df_school['Total Enrollment'] = df_school.filter(like='Male').sum(axis=1) + df_school.filter(like='Female').sum(axis=1)
+region_totals = df_school.groupby('Region')['Total Enrollment'].sum().sort_values(ascending=False)
 
-# Check if 'Region' column exists and process the data
-if 'Region' in df_school.columns:
-    # Sort by region based on the custom region order
-    df_school['Region'] = pd.Categorical(df_school['Region'], categories=region_order, ordered=True)
-    df = df_school.sort_values('Region')
+# Prepare values
+regions = region_totals.index.tolist()
+region_values = region_totals.values.tolist()
+region_labels = [(r, f"{v:,}") for r, v in zip(regions, region_values)]
 
-    # Group by region and calculate totals for each grade level
-    region_grade_totals = df.groupby('Region', observed=False).sum()[sum(grade_levels.values(), [])]
-    
-    # Aggregate totals by grade level
-    region_grade_totals = region_grade_totals.T.groupby(
-        lambda x: next((k for k, v in grade_levels.items() if x in v), None)
-    ).sum().T
+# Color palette
+watercolor_colors = ['#264653', '#287271', '#2A9D8F', '#BAB170', '#E9C46A', '#EFB306',
+    '#F4A261', '#EE8959', '#E76F51', '#E63946', '#EC9A9A', '#F1FAEE',
+    '#CDEAE5', '#A8DADC', '#77ABBD', '#457B9D', '#31587A', '#1D3557']
 
-    # Sum the totals for each region
-    region_totals = region_grade_totals.sum(axis=1)
+# Resize circles based on population percentages
+total_population = sum(region_values)
+percentages = [v / total_population for v in region_values]
+min_radius = 0.15
+max_radius = 0.42
+scaled_radii = [min_radius + (np.sqrt(p) * (max_radius - min_radius) / np.sqrt(max(percentages)))
+    for p in percentages]
 
-    # Define pastel color palette for regions
-    pastel_colors = ['#33C3FF', '#FF5733']
-    theme_colors = [pastel_colors[i % 2] for i in range(len(region_totals))]
+# Layout
+rows, cols = 3, 6
+fig, ax = plt.subplots(figsize=(12, 5))
+ax.set_xlim(-1.5, cols + 0.5)
+ax.set_ylim(-0.5, rows + 1)
+ax.set_aspect('equal')
+ax.axis('off')
 
-    # Create the bar chart
-    fig = go.Figure(data=[
-        go.Bar(
-            x=region_totals.index,
-            y=region_totals.values,
-            marker_color=theme_colors,
-            hovertemplate='%{x}<br>Total Students: %{y:,}<extra></extra>'
-        )
-    ])
+# Paint tray background
+ax.add_patch(patches.FancyBboxPatch(
+    (0, 0), cols, rows, boxstyle="round,pad=0.05", linewidth=2,
+    edgecolor="gray", facecolor="#f0f0f0"))
 
-    # Update layout and appearance of the figure
-    fig.update_layout(
-    title="Distribution of Students Across Philippine Regions",
-    title_x=0.5,
-    plot_bgcolor='rgba(255,255,255,0.7)',
-    paper_bgcolor='rgba(255,255,255,0.7)',
-    font=dict(color='#1b8e3e', size=13, family="Poppins, sans-serif"),
-    xaxis=dict(
-        title="Regions",
-        tickangle=45,
-        tickfont=dict(size=11, color='#333', family='Poppins, sans-serif'),
-    ),
-    yaxis=dict(
-        title="Total Students",
-        tickformat=',~s'
-    )
-)
+# Draw each "paint"
+for i, ((region, value), color) in enumerate(zip(region_labels, watercolor_colors)):
+    col = i % cols
+    row = rows - 1 - (i // cols)
+    cx, cy = col + 0.5, row + 0.5
 
-    # Show the plot
-    fig.show()
+    # White tray
+    tray = patches.FancyBboxPatch(
+        (col + 0.1, row + 0.1), 0.8, 0.8, boxstyle="round,pad=0.02",
+        linewidth=1, edgecolor="dimgray", facecolor="white")
+    ax.add_patch(tray)
+
+    # Paint circle
+    paint = patches.Circle(
+        (cx, cy), scaled_radii[i], facecolor=color, edgecolor='gray',
+        linewidth=0.6, alpha=0.95)
+    ax.add_patch(paint)
+
+    # Choose label color based on brightness
+    rgb = mcolors.to_rgb(color)
+    brightness = sum(rgb) / 3
+    text_color = 'black' if brightness > 0.22 else 'white'
+
+    ax.text(cx, cy + 0.12, region, ha='center', va='center', fontsize=7.2, color=text_color)
+    ax.text(cx, cy - 0.15, value, ha='center', va='center', fontsize=8, color=text_color, fontweight='bold')
+
+# Paintbrush decorations (optional, fun aesthetic)
+ax.plot([-0.08, -0.3], [0.2, 3.2], color='#457B9D', linewidth=10, solid_capstyle='round', zorder=10)
+ax.add_patch(patches.Polygon([[-0.3, 3.2], [-0.45, 3.4], [-0.15, 3.4]], closed=True, facecolor='black', edgecolor='black', zorder=10))
+
+ax.plot([-0.2, -0.4], [0.5, 2.5], color='#2A9D8F', linewidth=8, solid_capstyle='round', zorder=10)
+ax.add_patch(patches.Circle((-0.4, 2.5), radius=0.1, facecolor='black', edgecolor='black', zorder=11))
+
+ax.plot([-0.15, -0.35], [0.3, 3.8], color='#E76F51', linewidth=6, solid_capstyle='round', zorder=10)
+ax.add_patch(patches.Polygon([[-0.35, 3.8], [-0.55, 4.0], [-0.25, 4.0]], closed=True, facecolor='black', edgecolor='black', zorder=11))
+
+# Title
+ax.text(0.56, 0.89, "Distribution of Students Across Philippine Regions",
+        ha='center', va='center', fontsize=12, fontweight='bold', transform=ax.transAxes)
+
+plt.show()

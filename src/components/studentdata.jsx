@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import './studentdata.css';
 
 const StudentData = () => {
-  const navigate = useNavigate();
-  const { id } = useParams();
   const [searchQuery, setSearchQuery] = useState("");
-  const [filter, setFilter] = useState("Region");
   const [selectedCard, setSelectedCard] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
 
@@ -14,16 +10,12 @@ const StudentData = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
-
   const handleZoomIn = () => {
-    setZoomLevel((prev) => Math.min(prev + 0.1, 2)); // Zoom in
+    setZoomLevel((prev) => Math.min(prev + 0.1, 2));
   };
 
   const handleZoomOut = () => {
-    setZoomLevel((prev) => Math.max(prev - 0.1, 0.5)); // Zoom out
+    setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));
   };
 
   const handleImport = () => {
@@ -39,16 +31,11 @@ const StudentData = () => {
   }, [zoomLevel]);
 
   const cardsData = [
-    { label: "Regional Population Trends", filterType: "Region" , src: "http://localhost:8050/graph1"},
-    { label: "Enrollment Insights", filterType: "Region", src: "http://localhost:8050/graph2"  },
-    { label: "Student Population Patterns", filterType: "Region" , src: "http://localhost:8050/graph3" },
-    { label: "Education Quality Analysis", filterType: "Region" , src: "http://localhost:8050/graph4" }
+    { label: "Regional Population Trends", src: "http://localhost:8050/graph1" },
+    { label: "Enrollment Insights", src: "http://localhost:8050/graph2" },
+    { label: "Student Population Patterns", src: "http://localhost:8050/graph3" },
+    { label: "Education Quality Analysis", src: "http://localhost:8050/graph4" }
   ];
-
-  const filteredCards = cardsData.filter(card =>
-    card.label.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    (filter === "Region" || card.filterType === filter)
-  );
 
   return (
     <div className="student-data-container">
@@ -63,8 +50,13 @@ const StudentData = () => {
         />
       </header>
 
+      <div className="import-export-top">
+        <button onClick={handleImport}>Import</button>
+        <button onClick={handleExport}>Export</button>
+      </div>
+      
       <div className="cards-wrapper">
-        {filteredCards.map((card, index) => (
+        {cardsData.map((card, index) => (
           <div
             key={index}
             className="student-card"
@@ -79,7 +71,7 @@ const StudentData = () => {
               title={card.label}
               style={{
                 width: '100%',
-                height: '200px',
+                height: '550px',
                 border: '1px solid #ccc',
                 borderRadius: '8px',
                 marginTop: '10px'
@@ -89,21 +81,20 @@ const StudentData = () => {
         ))}
       </div>
 
-
       {/* Modal */}
       {selectedCard && (
-  <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
-    <div className="modal-card expanded-modal" onClick={(e) => e.stopPropagation()}>
-      <div className="modal-content"
-        style={{
-          transform: `scale(${zoomLevel})`,
-          width: `${100 / zoomLevel}%`,
-          height: `${100 / zoomLevel}%`
-        }}
-      >
-        <h2>{selectedCard.label}</h2>
-        {/* Insert graph or data component here */}
-        <iframe
+        <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
+          <div className="modal-card expanded-modal" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="modal-content"
+              style={{
+                transform: `scale(${zoomLevel})`,
+                width: `${100 / zoomLevel}%`,
+                height: `${100 / zoomLevel}%`
+              }}
+            >
+              <h2>{selectedCard.label}</h2>
+              <iframe
                 src={selectedCard.src}
                 title={selectedCard.label}
                 style={{
@@ -113,36 +104,22 @@ const StudentData = () => {
                   borderRadius: '8px'
                 }}
               />
-        {/* Displaying the graph */}
-        <iframe
-                src={selectedCard.src}
-                title={selectedCard.label}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  border: 'none',
-                  borderRadius: '8px'
-                }}
-        />
-      </div>
-    </div>
+            </div>
+          </div>
 
-    <div className="side-settings-modal" onClick={(e) => e.stopPropagation()}>
-      <button className="modal-exit" onClick={() => setSelectedCard(null)}>Exit</button>
-      <div className="zoom-controls">
-        <button onClick={handleZoomOut}>Zoom Out</button>
-        <button onClick={handleZoomIn}>Zoom In</button>
-      </div>
-      <div className="import-export-buttons">
-        <button onClick={handleImport}>Import</button>
-        <button onClick={handleExport}>Export</button>
-      </div>
-    </div>
-  </div>
-)}
-
-
-
+          <div className="side-settings-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-exit" onClick={() => setSelectedCard(null)}>Exit</button>
+            <div className="zoom-controls">
+              <button onClick={handleZoomOut}>Zoom Out</button>
+              <button onClick={handleZoomIn}>Zoom In</button>
+            </div>
+            <div className="import-export-buttons">
+              <button onClick={handleImport}>Import</button>
+              <button onClick={handleExport}>Export</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

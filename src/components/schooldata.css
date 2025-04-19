@@ -2,21 +2,19 @@
 .school-data-container {
   display: flex;
   margin: 0%;
+  flex: 1;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
+  padding: 30px;
   height: 100vh;
   overflow-y: auto;
-  background: linear-gradient(135deg, rgb(78, 130, 235), rgba(17, 82, 143, 0.884), rgb(255, 242, 61));
-  background-size: 200% 200%;
+  background: linear-gradient(135deg, rgb(78, 130, 235), rgba(17, 82, 143, 0.884), rgb(255, 242, 61)); 
+  background-size: 200% 200%; 
   animation: gradientAnimation 6s ease infinite; 
   backdrop-filter: blur(100px); 
-  border-left: 1px solid transparent;  
-  max-width: 1200px;
-  margin: 0 auto;
+  border-left: 1px solid transparent; 
   position: relative;
   z-index: 1;
-  
 }
 
 /* Keyframes for moving gradient */
@@ -89,7 +87,7 @@
 /* Default Card Style */
 .school-card {
   background-color: rgba(255, 255, 255, 0.7); 
-  border-radius: 15px;
+  border-radius: 10px;
   padding: 20px;
   min-height: 250px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -193,8 +191,8 @@
 
 .import-export-top {
   position: fixed; 
-  top: 97px;
-  right: 20px;
+  top: 110px;
+  right: 40px;
   display: flex;
   gap: 10px;
   justify-content: flex-end;

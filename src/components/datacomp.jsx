@@ -1,5 +1,5 @@
 import React from 'react';
-import './schooldata.css';
+import './datacomp.css';
 
 const DataComp = () => {
   return (

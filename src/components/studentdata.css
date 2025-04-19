@@ -54,25 +54,6 @@
   border-color: #004080; /* DepEd Darker Blue */
 }
 
-/* Filter Dropdown Styling */
-.filter-dropdown {
-  padding: 10px 20px;
-  font-size: 16px;
-  font-family: 'Poppins', sans-serif; 
-  border-radius: 30px;
-  border: 2px solid #0066b3 !important;
-  background-color: rgba(255, 255, 255, 0.8); 
-  width: 250px;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
-  margin-left: 20px; /* Space between the search bar and filter */
-}
-
-.filter-dropdown:focus {
-  outline: none;
-  border-color: #004080; /* DepEd Darker Blue */
-}
-
-
 /* Header Section Adjustments */
 .student-header {
   width: 100%;
@@ -108,7 +89,7 @@
 /* Default Card Style */
 .student-card {
   background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
-  border-radius: 15px;
+  border-radius: 10px;
   padding: 20px;
   min-height: 250px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -208,4 +189,31 @@
 
 .side-settings-modal button:hover {
   background-color: #1d3557;
+}
+
+.import-export-top {
+  position: fixed; 
+  top: 110px;
+  right: 40px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin: 0; 
+  z-index: 100; 
+}
+
+
+.import-export-top button {
+  padding: 6px 30px;
+  font-size: 14px;
+  background-color: #1b8e3e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.import-export-top button:hover {
+  background-color: #dc1f2f;
 }

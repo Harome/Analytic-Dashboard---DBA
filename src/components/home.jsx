@@ -3,7 +3,6 @@ import './home.css';
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState('Region');
 
   const graphs = [
     { title: 'Graph 1', src: 'http://localhost:8050/graph1' },
@@ -17,9 +16,6 @@ const Home = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
 
   return (
     <div className="home-container">
@@ -32,11 +28,6 @@ const Home = () => {
           onChange={handleSearchChange}
           placeholder="Search..."
         />
-        <select className="filter-dropdown" onChange={handleFilterChange}>
-          <option value="Region">Compare by Region</option>
-          <option value="Year">Compare by Year</option>
-          <option value="Enrollment">Compare by Enrollment</option>
-        </select>
       </header>
 
       <div className="collage-grid">

@@ -22,9 +22,10 @@ import matplotlib.transforms as transforms
 import io
 import base64
 from matplotlib.patches import Polygon,  Circle
+import os
 
 # Dataset Initialization
-path = r"C:\Analytic-Dashboard---DBA\Data\Raw_data\ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx"
+path = r"/Users/annmargaretteconcepcion/dba 2/4/Analytic-Dashboard---DBA/Data/Raw_data/ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx"
 df_school = pd.read_excel(path)
 
 # DataFrames
@@ -686,8 +687,20 @@ df_heatmap = pd.DataFrame({
     'School Count': list(school_data.values())
 })
 
-with open('/content/sample_data/ph.json') as f:
-    geojson = json.load(f)
+file_path = '/Users/annmargaretteconcepcion/dba 2/4/Analytic-Dashboard---DBA/Data/Raw_data/ph.json'
+
+geojson = None  # Initialize geojson to avoid NameError
+
+if os.path.exists(file_path):
+    with open(file_path) as f:
+        geojson = json.load(f)  # Load the geojson data
+else:
+    print(f"Error: File not found at {file_path}. Please ensure the file exists.")
+    # Optionally, you can raise an exception or provide a fallback mechanism here.
+
+# Ensure geojson is not used if it is None
+if geojson is None:
+    print("GeoJSON data is not available. Please check the file path and content.")
 
 fig7 = px.choropleth_mapbox(
     df_heatmap,
@@ -731,7 +744,7 @@ fig7.update_layout(
         font=dict(size=16, family='Arial Black', color='black')
     ),
     coloraxis_colorbar=dict(
-        titlefont=dict(family='Arial Black', size=14, color='black'),
+        title_font=dict(family='Arial Black', size=14, color='black'),
         tickfont=dict(family='Arial', size=12, color='black'),
         outlinecolor='black', outlinewidth=1,
         tickprefix=' ',
@@ -1244,7 +1257,7 @@ app.layout = html.Div([
     # Graph 7
     html.Div([
     dcc.Graph(figure=fig7, id="student-heat-map")
-    ])
+    ]),  # Added missing comma
 
     # STUDENT ANALYTICS
     # Graph 8
@@ -1283,3 +1296,28 @@ app.layout = html.Div([
 
 if __name__ == '__main__':
     app.run(debug=False)
+
+
+def plot_total_number_of_schools_by_sector():
+    # Example implementation for plotting total number of schools by sector
+    sector_distribution = df_school.groupby("Sector").size()
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sector_distribution.plot(kind='bar', ax=ax, color=['#33C3FF', '#FF5733', '#2ECC71', '#FFC300'])
+    ax.set_title("Total Number of Schools by Sector")
+    ax.set_xlabel("Sector")
+    ax.set_ylabel("Number of Schools")
+    plt.tight_layout()
+    return fig
+
+
+def plot_total_number_of_schools_by_region():
+    # Example implementation for plotting total number of schools by region
+    region_distribution = df_school.groupby("Region").size()
+    fig, ax = plt.subplots(figsize=(10, 6))
+    region_distribution.plot(kind='bar', ax=ax, color='#1f77b4')
+    ax.set_title("Total Number of Schools by Region")
+    ax.set_xlabel("Region")
+    ax.set_ylabel("Number of Schools")
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    return fig

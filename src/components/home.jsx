@@ -23,7 +23,7 @@ const Home = () => {
         <h1>Overview</h1>
         <input
           type="text"
-          className="search-input"
+          className="search-input-home"
           value={searchQuery}
           onChange={handleSearchChange}
           placeholder="Search..."

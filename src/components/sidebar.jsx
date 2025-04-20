@@ -10,7 +10,7 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="sidebar-header">
         <img src="/deped.png" alt="DepEd" className="deped-logo" />
-        <h2>DepEd Enrollment Data</h2>
+        <h2>DepEd Dashboard</h2>
       </div>
       <ul className="sidebar-list">
         <li>

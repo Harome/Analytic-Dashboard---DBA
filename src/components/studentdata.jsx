@@ -43,7 +43,7 @@ const StudentData = () => {
         <h1>Student Data</h1>
         <input
           type="text"
-          className="search-input"
+          className="search-input-student-data"
           value={searchQuery}
           onChange={handleSearchChange}
           placeholder="Search..."
@@ -112,10 +112,6 @@ const StudentData = () => {
             <div className="zoom-controls">
               <button onClick={handleZoomOut}>Zoom Out</button>
               <button onClick={handleZoomIn}>Zoom In</button>
-            </div>
-            <div className="import-export-buttons">
-              <button onClick={handleImport}>Import</button>
-              <button onClick={handleExport}>Export</button>
             </div>
           </div>
         </div>

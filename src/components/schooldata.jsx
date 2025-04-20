@@ -35,14 +35,14 @@ const SchoolData = () => {
         <h1>School Data</h1>
         <input
           type="text"
-          className="search-input"
+          className="search-int"
           value={searchQuery}
           onChange={handleSearchChange}
           placeholder="Search..."
         />
       </header>
 
-      <div className="import-export-top">
+      <div className="import-export-sc">
         <button onClick={handleImport}>Import</button>
         <button onClick={handleExport}>Export</button>
       </div>

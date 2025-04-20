@@ -16,23 +16,25 @@ const DataComp = () => {
         <h1>Data Comparison</h1>
       </header>
 
-      <div className="filter-bar">
+      <div className="search-bar-container">
         <input
           type="text"
-          className="search-input"
+          className="search-input-datacomp"
           value={searchQuery}
           onChange={handleSearchChange}
           placeholder="Search..."
         />
+      </div>
 
-        <select className="dropdown" value={category} onChange={handleCategoryChange}>
+      <div className="dropdowns-row">
+        <select className="dropdown left-dropdown" value={category} onChange={handleCategoryChange}>
           <option value="">Select Category</option>
           <option value="elementary">Elementary</option>
           <option value="highschool">High School</option>
           <option value="college">College</option>
         </select>
 
-        <select className="dropdown" value={region} onChange={handleRegionChange}>
+        <select className="dropdown right-dropdown" value={region} onChange={handleRegionChange}>
           <option value="">Select Region</option>
           <option value="ncr">NCR</option>
           <option value="region-iv">Region IV-A</option>

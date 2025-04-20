@@ -1,5 +1,5 @@
-
 .student-data-container {
+  background-color: rgba(146, 189, 247, 0.521);
   display: flex;
   margin: 0%;
   flex: 1;
@@ -8,11 +8,6 @@
   padding: 30px;
   height: 100vh;
   overflow-y: auto;
-  background: linear-gradient(135deg, rgb(78, 130, 235), rgba(17, 82, 143, 0.884), rgb(255, 242, 61)); 
-  background-size: 200% 200%; 
-  animation: gradientAnimation 6s ease infinite; 
-  backdrop-filter: blur(100px); 
-  border-left: 1px solid transparent; 
   position: relative;
   z-index: 1;
 }
@@ -36,17 +31,17 @@
 }
 
 /* Search Bar Styling */
-.search-input {
-  padding: 10px 20px;
-  font-size: 16px;
-  font-family: 'Poppins', sans-serif; /* Apply Poppins font */
-  border-radius: 30px;
-  border: 2px solid #0066b3; /* DepEd Blue border */
-  background-color: rgba(255, 255, 255, 0.8); /* Light transparent background */
+.search-input-student-data{
+  padding: 5px 20px;
+  font-size: 20px;
+  font-family: 'Poppins', sans-serif; 
+  border-radius: 10px;
+  border: 2px solid #0066b3; 
+  background-color: rgba(255, 255, 255, 0.8); 
   color: #333;
-  width: 250px;
+  width: 300px;
   transition: border-color 0.3s ease, background-color 0.3s ease;
-  margin-left: 20px; /* Space between dropdown and search */
+  margin: 0;
 }
 
 .search-input:focus {
@@ -61,16 +56,13 @@
   justify-content: space-between; /* Distribute space between elements */
   align-items: center; /* Align items vertically in the center */
   margin-bottom: 40px;
-  background: rgba(255, 255, 255, 0.411); /* DepEd Blue Gradient */
   padding: 15px 10px;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(78, 75, 255, 0.1);
 }
 
 .student-header h1 {
   font-size: 28px;
   font-weight: bold;
-  color: white;
+  color: rgb(27, 93, 192);
   margin: 0;
   flex: 1; /* Ensures h1 takes available space */
 }
@@ -88,7 +80,8 @@
 
 /* Default Card Style */
 .student-card {
-  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
+  top: 35px;
+  background-color: rgba(255, 255, 255, 0.7); 
   border-radius: 10px;
   padding: 20px;
   min-height: 250px;
@@ -98,11 +91,10 @@
   overflow: hidden;
   transition: all 0.3s ease-in-out;
   border: 2px solid transparent;
-  background: linear-gradient(135deg, #ffffff9f, #e6e6e6);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  backdrop-filter: blur(10px); /* Glassy effect */
+  backdrop-filter: blur(10px); 
 }
 
 /* Label styling for non-expanded cards */
@@ -110,7 +102,7 @@
   margin-top: auto;
   font-size: 14px;
   font-weight: bold;
-  color: #1b8e3e; /* DepEd Green for label */
+  color: rgb(27, 93, 192); 
   text-align: center;
 }
 
@@ -192,7 +184,7 @@
 }
 
 .import-export-top {
-  position: fixed; 
+  position: absolute;
   top: 110px;
   right: 40px;
   display: flex;
@@ -202,11 +194,10 @@
   z-index: 100; 
 }
 
-
 .import-export-top button {
   padding: 6px 30px;
   font-size: 14px;
-  background-color: #1b8e3e;
+  background-color: #277db6;
   color: white;
   border: none;
   border-radius: 6px;

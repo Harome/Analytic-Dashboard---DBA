@@ -42,7 +42,7 @@
   margin-bottom: 10px;
 }
 
-.search-input {
+.search-input-datacomp {
   padding: 10px 15px;
   width: 300px;
   font-size: 16px;
@@ -52,7 +52,7 @@
   transition: border-color 0.3s ease;
 }
 
-.search-input:focus {
+.search-input-datacomp:focus {
   border-color: #007bff;
 }
 

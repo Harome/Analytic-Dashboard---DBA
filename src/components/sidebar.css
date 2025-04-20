@@ -1,7 +1,7 @@
 /* Sidebar */
 .sidebar {
   width: 250px;
-  background-color: #2262bd !important;
+  background: linear-gradient(180deg, #fa5858, #385bbb, #ff5656);
   color: white;
   height: 100vh;
   position: fixed;
@@ -10,16 +10,48 @@
   padding: 20px;
   box-sizing: border-box;
   transition: width 0.3s ease;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6px);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 1000;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 20px;
 }
 
 .sidebar-header {
   text-align: center;
   margin-bottom: 30px;
+  animation: fadeSlideIn 1s ease;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .sidebar-header h2 {
-  font-size: 24px;
-  color: white;
+  font-size: 22px;
+  color: #ffffff;
+  margin-top: 10px;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.sidebar-header img.deped-logo {
+  width: 150px;
+  height: auto;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-header img.deped-logo:hover {
+  transform: scale(1.05);
 }
 
 /* Sidebar List */
@@ -29,55 +61,49 @@
 }
 
 .sidebar-list li {
-  margin: 20px 0;
+  margin: 18px 0;
 }
 
-/* Hover effect for links */
+/* Sidebar Links */
 .sidebar-list li a {
   color: white;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 17px;
   display: flex;
   align-items: center;
-  padding: 10px;
-  border-radius: 40px !important;
-  transition: background-color 0.3s ease, font-size 0.3s ease, transform 0.3s ease, color 0.3s ease, font-weight 0.3s ease;
+  padding: 10px 16px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
-/* Hover effect for text in the sidebar */
-.sidebar-list li a:hover {
-  background-color: #34495e;
-  font-size: 20px; 
-  transform: scale(1.1); 
-  color: black !important; 
-  font-weight: bold; 
-  border-radius: 40px !important;
-}
-
-.sidebar-list li a.active {
-  background-color: white;
-  color: #2262bd !important;
-  font-weight: bold;
-  font-size: 20px;
-  transform: scale(1.1);
-  border-radius: 40px !important;
-}
-
-/* Icons */
 .sidebar-list li a svg {
-  margin-right: 10px;
-  transition: opacity 0.3s ease;
+  margin-right: 12px;
+  font-size: 18px;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.sidebar-list li a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
+  color: #1e3c72;
+  font-weight: 500;
 }
 
 .sidebar-list li a:hover svg {
-  opacity: 1; /* Make icons appear on hover */
+  transform: scale(1.2);
+  color: #1e3c72;
 }
-/* sidebar.css */
 
-.sidebar-header img.deped-logo {
-  width: 100px; /* Adjust the width */
-  height: auto;
-  margin-top: 10px; /* Add margin if you want space between the title and image */
-  border-radius: 8px; /* Optional: Adds rounded corners to the image */
-  
+.sidebar-list li a.active {
+  background-color: #ffffff;
+  color: #1e3c72;
+  font-weight: bold;
+  font-size: 18px;
+  transform: translateX(5px);
+}
+
+.sidebar-list li a.active svg {
+  color: #1e3c72;
+  transform: scale(1.2);
 }

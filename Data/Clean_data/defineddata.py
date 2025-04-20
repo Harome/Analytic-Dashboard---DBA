@@ -1205,6 +1205,7 @@ image_src_2 = create_enrollment_bubble_chart()
 
 app.layout = html.Div([
 
+    # STUDENT OVERVIEW
     # Graph 1
     html.Div([
     html.Img(src=image_src_1, style={'width': '100%', 'maxWidth': '800px'})
@@ -1223,6 +1224,7 @@ app.layout = html.Div([
         id="Graph_3"
     ),
 
+    #SCHOOL OVERVIEW
     # Graph 4
     html.Div([
         html.Img(src="data:image/png;base64," + data_4)
@@ -1238,11 +1240,13 @@ app.layout = html.Div([
     html.Img(src="data:image/png;base64," + data_6)
     ], id='Graph 6'),
 
+    #HEAT MAP
     # Graph 7
     html.Div([
     dcc.Graph(figure=fig7, id="student-heat-map")
     ])
 
+    # STUDENT ANALYTICS
     # Graph 8
     html.Div(
     children=[
@@ -1263,6 +1267,7 @@ app.layout = html.Div([
     dcc.Graph(figure=fig10, id="Student-division-donut-chart")
     ]),
 
+    # SCHOOL ANALYTICS
     # Graph 11
     html.Div([
     dcc.Graph(figure=fig11, id="school-sankey-chart")

@@ -25,8 +25,7 @@ from matplotlib.patches import Polygon,  Circle
 
 # Dataset Initialization
 path = r"C:\Analytic-Dashboard---DBA\Data\Raw_data\ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx"
-df = pd.read_excel(path)
-df.head()
+df_school = pd.read_excel(path)
 
 # DataFrames
 region_order = ['Region I', 'Region II', 'Region III', 'Region IV-A', 'MIMAROPA', 'Region V',
@@ -765,7 +764,8 @@ fig8.add_trace(go.Bar(
     y=male_counts,
     name='Male',
     marker_color='#33C3FF',
-    hovertemplate='<b style="color:#33C3FF";>%{x}</b><br><b>Gender:</b> Male<br><b>Students:</b> %{y:,}<extra></extra>'
+    hovertemplate='<b style="color:black; font-family: Arial Black;">%{x}</b><br><b style="color:black;">Gender:</b> Male<br><b style="color:black;">Students:</b> %{y:,}<extra></extra>'
+
 ))
 
 
@@ -774,7 +774,7 @@ fig8.add_trace(go.Bar(
     y=female_counts,
     name='Female',
     marker_color= '#FF5733',
-     hovertemplate='<b style="color: #FF5733";>%{x}</b><br><b>Gender:</b> Female<br><b>Students:</b> %{y:,}<extra></extra>'
+    hovertemplate='<b  style="color:black; font-family: Arial Black;">%{x}</b><br><b style="color:black;">Gender:</b> Female<br><b style="color:black;">Students:</b> %{y:,}<extra></extra>'
 ))
 
 fig8.update_layout(
@@ -870,7 +870,7 @@ for sector in ["Public", "Private", "SUCs/LUCs & PSO"]:
         marker=dict(size=12, color=line_color, line=dict(color='white', width=3)),
         fill='tozeroy',
         fillcolor=fill_color,
-        hovertemplate= f'<b style="color:black; font-family:Arial Black">{sector}</b>' + '<br><b style="font-family:Arial Black">Strand:</b> %{x}<br><b style="font-family:Arial Black">Students:</b> %{y:,}<extra></extra>'
+        hovertemplate= f'<b style="color:black; font-family: Arial Black; f">{sector}</b>' + '<br><b>Strand:</b> %{x}<br><b>Students:</b> %{y:,}<extra></extra>'
     ))
 
 fig9.update_layout(
@@ -951,7 +951,7 @@ fig10.add_trace(go.Pie(
     textposition="inside",
     textfont=dict(family="Arial Black", size=12, color="black", weight="bold"),
     marker=dict(colors=['#33C3FF', "#FF5733", '#2ECC71'], line=dict(color='black', width=0.8)),
-    hovertemplate='<b style="color:Black";>%{label}</b><br><b style="color:Black";>Students:</b> %{value:,}<extra></extra>',
+    hovertemplate='<b style="color: black; font-family: Arial Black;">%{label}</b><br><b style="color: black;">Students:</b> %{value:,}<extra></extra>',
     showlegend=False,
     domain=dict(x=[0, 1], y=[0.2, 0.9]),
     insidetextorientation="horizontal",
@@ -965,7 +965,7 @@ fig10.add_trace(go.Pie(
     textposition="outside",
     textfont=dict(family="Arial Black", size=12, color="black", weight="bold"),
     marker=dict(colors=['#33C3FF', "#FF5733", '#2ECC71'], line=dict(color='black', width=0.8)),
-    hovertemplate="<b style='color:Black';>%{label}</b><br><b style='color:Black';>Total:</b> %{value:,}<extra></extra>",
+    hovertemplate="<b style='color: black; font-family: Arial Black;'>%{label}</b><br><b style='color: black;'>Total:</b> %{value:,}<extra></extra>",
     showlegend=False,
     domain=dict(x=[0, 1], y=[0.1, 1]),
     insidetextorientation="horizontal"
@@ -1040,9 +1040,9 @@ for _, row in flows.iterrows():
     source_label = row['Sector']
     target_label = row['School_Subclassification']
     hover = (
-        f"<b>From:</b> {source_label}<br>"
-        f"<b>To:</b> {target_label}<br>"
-        f"<b>Students:</b> {value:,}"
+        f"<b style='color: black; font-family: Arial Black;'>From:</b> {source_label}<br>"
+        f"<b style='color: black; font-family: Arial Black;'>To:</b> {target_label}<br>"
+        f"<b style='color: black; font-family: Arial Black;'>Students:</b> {value:,}"
     )
     custom_hovertext.append(hover)
 
@@ -1130,9 +1130,9 @@ line_traces = [
         line=dict(width=5, color=sector_colors_12[sector]),
         marker=dict(size=12, color=sector_colors_12[sector], line=dict(color='white', width=3)),
         hovertemplate=(
-            "<b>School Type:</b> %{x}<br>" +
-            f"<b>Sector:</b> {sector.replace('SUCsLUCs', 'SUCs/LUCs')}<br>" +
-            "<b>Count:</b> %{y:,}<extra></extra>"
+            "<b style='color: black; font-family: Arial Black;'>School Type:</b> %{x}<br>" +
+            f"<b style='color: black; font-family: Arial Black;'>Sector:</b> {sector.replace('SUCsLUCs', 'SUCs/LUCs')}<br>" +
+            "<b style='color: black; font-family: Arial Black;'>Count:</b> %{y:,}<extra></extra>"
         )
     ) for sector in pivot_df.columns
 ]

@@ -1,6 +1,6 @@
 
 .school-data-container {
-  background-color: rgba(146, 189, 247, 0.521);
+  background-color: #f4f4f8;
   display: flex;
   margin: 0%;
   flex: 1;
@@ -63,7 +63,7 @@
 }
 
 .school-header h1 {
-  font-size: 28px;
+  font-size: 40px;
   font-weight: bold;
   color: rgb(27, 93, 192);
   margin: 0;

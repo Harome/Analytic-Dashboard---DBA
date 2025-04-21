@@ -25,10 +25,21 @@ const Home = () => {
     setSearchQuery(e.target.value);
   };
 
-  const formattedDateTime = currentDateTime.toLocaleString('en-PH', {
-    dateStyle: 'medium',
-    timeStyle: 'medium',
+  const formattedDate = currentDateTime.toLocaleDateString('en-PH', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
+  
+  const formattedTime = currentDateTime.toLocaleTimeString('en-PH', {
+    timeZone: 'Asia/Manila',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: true,
+  });
+  
 
   return (
     <div className="home-container">
@@ -99,7 +110,10 @@ const Home = () => {
         <div className="right-section">
           <div className="datetime-box">
             <h4 className="datetime-label">Current Date & Time</h4>
-            <div className="datetime-value">{formattedDateTime}</div>
+            <div className="datetime-value">
+              <div className="time-text">{formattedTime}</div>
+              <div className="date-text">{formattedDate}</div>
+            </div>
           </div>
           <div className="heatmap-box">
             <h4 className="heatmap-label">Heatmap</h4>
@@ -110,7 +124,7 @@ const Home = () => {
                 className="iframe-graph"
                 style={{
                   width: '100%',
-                  height: '300px',
+                  height: '800px',
                   border: 'none',
                 }}
               />

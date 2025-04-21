@@ -278,10 +278,26 @@
 }
 
 .datetime-value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* Center horizontally */
+  justify-content: center;  /* Center vertically */
+  text-align: center;       /* Ensure text itself is centered */
+  color: #023e8a;
+  height: 60%;             /* Optional: ensures vertical centering if parent has height */
+}
+
+.date-text {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.time-text {
   font-size: 20px;
   font-weight: bold;
-  color: #023e8a;
 }
+
 
 .dashboard-container {
   display: flex;
@@ -324,7 +340,7 @@
 }
 
 .right-section {
-  width: 280px;
+  width: 420px;
   min-width: 250px;
   display: flex;
   flex-direction: column;

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './home.css';
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
   const graphs = [
     { title: 'Graph 1', src: 'http://localhost:8050/graph1' },
@@ -12,9 +13,22 @@ const Home = () => {
     { title: 'Graph 5', src: 'http://localhost:8050/graph5' },
   ];
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
+
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
+
+  const formattedDateTime = currentDateTime.toLocaleString('en-PH', {
+    dateStyle: 'medium',
+    timeStyle: 'medium',
+  });
 
   return (
     <div className="home-container">
@@ -85,7 +99,7 @@ const Home = () => {
         <div className="right-section">
           <div className="datetime-box">
             <h4 className="datetime-label">Current Date & Time</h4>
-            <div className="datetime-value" id="datetime-display">--:-- --</div>
+            <div className="datetime-value">{formattedDateTime}</div>
           </div>
           <div className="heatmap-box">
             <h4 className="heatmap-label">Heatmap</h4>

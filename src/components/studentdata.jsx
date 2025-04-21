@@ -31,10 +31,9 @@ const StudentData = () => {
   }, [zoomLevel]);
 
   const cardsData = [
-    { label: "Regional Population Trends", src: "http://localhost:8050/graph1" },
-    { label: "Enrollment Insights", src: "http://localhost:8050/graph2" },
-    { label: "Student Population Patterns", src: "http://localhost:8050/graph3" },
-    { label: "Education Quality Analysis", src: "http://localhost:8050/graph4" }
+    { label: "Regional Population Trends", src: "http://localhost:8050/graph7" },
+    { label: "Enrollment Insights", src: "http://localhost:8050/graph8" },
+    { label: "Student Population Patterns", src: "http://localhost:8050/graph9" },
   ];
 
   return (

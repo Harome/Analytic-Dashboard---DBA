@@ -4,10 +4,9 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from Data.Clean_data.defineddata import (
-    fig3, fig4,
     create_gender_plot, create_enrollment_bubble_chart,
-    encoded_3, data_4, data_5, data_6,
-    fig7, fig8, fig9, fig10, fig11, fig12
+    encoded_3, data_4, data_5, fig6,
+    fig7, fig8, fig9, fig10, fig11
 )
 
 app = dash.Dash(__name__)
@@ -21,84 +20,89 @@ index_page = html.Div([
     html.P("Choose a graph route.")
 ])
 
+    # Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)  
+
 graph1_page = html.Div([
-        html.Img(src=image_src_1, style={'width': '100%', 'maxWidth': '800px'})
-    ], id="Graph_1"),
+    html.Img(src=image_src_1, style={'width': '100%', 'maxWidth': '800px'})
+    ], id="Graph_1")
+
+
+    # Graph 2: Main Dashboard - Student Data No. 2 (Total Students Enrolled Per Region)
 
 graph2_page = html.Div([
-        html.Img(src=image_src_2, style={'width': '465px', 'height': '500px'})
-    ], id="Graph_2"),
+    html.Img(src=image_src_2, style={'width': '465px', 'height': '500px'})  # Fixed size
+    ], id="Graph_2")
 
 
-graph3_page = html.Div([
-        html.H3("Graph 3: Student Population Distribution by Year Level (All Regions)"),
-        dcc.Graph(figure=fig3)
-    ])
+    # Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
+
+graph3_page = html.Img(
+        src='data:image/png;base64,{}'.format(encoded_3),
+        style={'width': '600px', 'height': 'auto'},
+        id="Graph_3"
+    )
+
+
+    # Graph 4: Main Dashboard - School Data No. 1 (Distribution of Schools Per Region)
 
 graph4_page = html.Div([
-        html.H3("Graph 4: Student Population per Grade Division by Region"),
-        dcc.Graph(figure=fig4)
-    ])
+    html.Img(src="data:image/png;base64," + data_4)
+    ], id="Graph_4")
+
+
+    # Graph 5: Main Dashboard - School Data No. 2 (School Distribution per Sector)
 
 graph5_page = html.Div([
-        html.H3("Graph 5: Gender-Based Enrollment"),
-        html.Img(src=image_src_1, style={'width': '100%', 'maxWidth': '800px'})
-    ])
+    html.Img(src="data:image/png;base64," + data_5)
+    ], id='Graph_5')
+
+
+    # Graph 6: Main Dashboard - Philippine Heatmap (Philippine Regions<br>Student Population Heatmap)
 
 graph6_page = html.Div([
-        html.H3("Graph 6: Enrollment Bubble Chart"),
-        html.Img(src=image_src_2, style={'width': '465px', 'height': '500px'})
+    dcc.Graph(figure=fig6, id="student-heat-map")
     ])
 
-graph7_page = html.Div([
-        html.H3("Graph 7: Encoded PNG Chart"),
-        html.Img(src='data:image/png;base64,{}'.format(encoded_3), style={'width': '600px', 'height': 'auto'})
-    ])
+
+    # Graph 7: Student Data Analytics - Column-Bar Chart (Student Population per Grade Level by Gender)
+
+graph7_page = html.Div(
+    children=[
+        dcc.Graph(
+            id='student-population-bar-chart',
+            figure=fig7
+            )
+        ]
+    )
+
+
+    # Graph 8: Student Data Analytics - Area Chart (Student Distribution per SHS Strand by Sector)
 
 graph8_page = html.Div([
-        html.H3("Graph 8: Schools by Category"),
-        html.Img(src="data:image/png;base64," + data_4)
-    ])
+    dcc.Graph(figure=fig8, id="Student-strand-area-chart")
+    ]),
+
+
+    # Graph 9: Student Data Analytics - Donut Chart (Student Distribution by Grade Division and School Sector)
 
 graph9_page = html.Div([
-        html.H3("Graph 9: More School Data"),
-        html.Img(src="data:image/png;base64," + data_5)
-    ])
+    dcc.Graph(figure=fig9, id="Student-division-donut-chart")
+    ]),
+
+
+    # Graph 10: School Data Analytics - Sankey Chart (School Population per Sector, Sub-Classification, and Modified COC)
 
 graph10_page = html.Div([
-        html.H3("Graph 10: Schools Detailed"),
-        html.Img(src="data:image/png;base64," + data_6)
-    ])
+    dcc.Graph(figure=fig10, id="school-sankey-chart")
+    ]),
+
+
+    # Graph 11: School Data Analytics - Line-Bar Chart (School Count by School Type and Sector)
 
 graph11_page = html.Div([
-        html.H3("Graph 11: Heat Map"),
-        dcc.Graph(figure=fig7)
+    dcc.Graph(figure=fig11, id="school-bar-line-chartt")
     ])
 
-graph12_page = html.Div([
-        html.H3("Graph 12: Student Population Bar Chart"),
-        dcc.Graph(id='student-population-bar-chart', figure=fig8)
-    ])
-
-graph13_page = html.Div([
-        html.H3("Graph 13: Student Strand Area Chart"),
-        dcc.Graph(figure=fig9)
-    ])
-
-graph14_page = html.Div([
-        html.H3("Graph 14: Student Division Donut Chart"),
-        dcc.Graph(figure=fig10)
-    ])
-
-graph15_page = html.Div([
-        html.H3("Graph 15: School Sankey Chart"),
-        dcc.Graph(figure=fig11)
-    ])
-
-graph16_page = html.Div([
-        html.H3("Graph 16: School Bar and Line Chart"),
-        dcc.Graph(figure=fig12)
-    ])
 
 app.layout = html.Div([
         dcc.Location(id='url', refresh=False),
@@ -107,6 +111,7 @@ app.layout = html.Div([
 
 @app.callback(Output('page-content', 'children'),
               Input('url', 'pathname'))
+
 def display_page(pathname):
     if pathname == '/graph1':
         return graph1_page
@@ -130,16 +135,7 @@ def display_page(pathname):
         return graph10_page
     elif pathname == '/graph11':
         return graph11_page
-    elif pathname == '/graph12':
-        return graph12_page
-    elif pathname == '/graph13':
-        return graph13_page
-    elif pathname == '/graph14':
-        return graph14_page
-    elif pathname == '/graph15':
-        return graph15_page
-    elif pathname == '/graph16':
-        return graph16_page
+
     else:
         return index_page
 

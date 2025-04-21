@@ -25,7 +25,7 @@ from matplotlib.patches import Polygon,  Circle
 import os
 
 # Dataset Initialization
-path = r"C:\Analytic-Dashboard---DBA\Data\Raw_data\ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx"
+path = r"Data/Raw_data/ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx"
 df_school = pd.read_excel(path)
 
 # DataFrames
@@ -123,7 +123,7 @@ modified_coc = df_school['Modified_COC'].dropna().unique()
 
 
 
-# Graph 1: Main Dashboard - Student Data No. 1
+# Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)
 def create_gender_plot():
     fig1, ax = plt.subplots(figsize=(8, 6))
     ax.set_aspect('equal')
@@ -167,7 +167,7 @@ def create_gender_plot():
 
 
 
-# Graph 2: Main Dashboard - Student Data No. 2
+# Graph 2: Main Dashboard - Student Data No. 2 (Total Students Enrolled Per Region)
 def create_enrollment_bubble_chart():
     regions = [
         ("Region I", "1,244,604"), ("Region II", "899,159"), ("Region III", "2,966,748"),
@@ -258,7 +258,7 @@ def create_enrollment_bubble_chart():
 
 
 
-# Graph 3 Data: Student Population by Year Level (All Regions)
+# Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
 fig3, ax = plt.subplots()
 
 y_shift = -0.3
@@ -387,96 +387,7 @@ encoded_3 = base64.b64encode(buf3.read()).decode('utf-8')
 
 plt.close(fig3)
 
-
-# Graph 4 Data: Student Population per Grade Division by Region
-
-# Create the matplotlib figure
-fig4, ax = plt.subplots()
-fig4.set_size_inches(9, 5.2)
-ax.set_xlim(2, 8)
-ax.set_ylim(5.45, 8.6)
-ax.set_aspect('equal')
-ax.axis('off')
-
-blackboard = patches.Rectangle((2.5, 5.5), 5, 3, linewidth=2, edgecolor='black', facecolor='#3e3e3e')
-ax.add_patch(blackboard)
-
-inner_blackboard = patches.Rectangle((2.7, 5.7), 4.6, 2.6, linewidth=1, edgecolor='black', facecolor='#144f4d')
-ax.add_patch(inner_blackboard)
-
-text_lines = [("Total Number of Schools", 25, 0.0, 'white'),
-              ("(under the Philippine Education System)", 13, -0.4, '#cccccc'),
-              ("60,167", 50, -1.0, '#FDD85D')]
-
-x_center = 5.0
-y_base = 7.7
-
-for text, size, offset, color in text_lines:
-    y_pos = y_base + offset
-    ax.text(x_center, y_pos, text,
-            ha='center', va='center',
-            fontsize=size, color=color, fontweight='bold',
-            family='monospace')
-
-    if text == "60,167":
-        underline_width = 2.3
-        underline_height = 0.33
-        ax.plot([x_center - underline_width / 2, x_center + underline_width / 2],
-                [y_pos - underline_height, y_pos - underline_height],
-                color=color, linewidth=1.3)
-
-num_schools = 10
-start_x = 3.2
-spacing = 0.4
-y_building = 5.8
-building_width = 0.2
-building_height = 0.3
-
-color1 = '#8ab17d'
-color2 = '#ba4141'
-
-for i in range(num_schools):
-    x = start_x + i * spacing
-    building_color = color1 if i % 2 == 0 else color2
-
-    building = patches.Rectangle((x - building_width / 2, y_building), building_width, building_height,
-                                 edgecolor='black', facecolor=building_color)
-    ax.add_patch(building)
-
-    window_width = 0.05
-    window_height = 0.1
-    for j in range(2):
-        ax.add_patch(patches.Rectangle((x - building_width / 4 + j * window_width, y_building + 0.1),
-                                       window_width, window_height, edgecolor='black', facecolor='white'))
-
-    ax.plot([x - building_width / 2, x, x + building_width / 2],
-            [y_building + building_height, y_building + building_height + 0.1, y_building + building_height],
-            color='black', linewidth=2)
-
-eraser_body = patches.Rectangle((7, 5.5), 0.5, 0.2, edgecolor='black', facecolor='#c19a6b', linewidth=1)
-ax.add_patch(eraser_body)
-eraser_base = patches.Rectangle((7, 5.5), 0.5, 0.03, edgecolor='black', facecolor='#8b5a2b', linewidth=1)
-ax.add_patch(eraser_base)
-
-chalk_width = 0.1
-chalk_height = 0.05
-chalk_y = 5.7
-chalk_start_x = 7.05
-chalk_spacing = 0.12
-
-for i in range(3):
-    chalk_x = chalk_start_x + i * chalk_spacing
-    ax.add_patch(patches.Rectangle((chalk_x, chalk_y), chalk_width, chalk_height,
-                                   edgecolor='gray', facecolor='white', linewidth=1))
-buf4 = io.BytesIO()
-fig4.savefig(buf4, format="png", bbox_inches='tight')
-data_4 = base64.b64encode(buf4.getbuffer()).decode("ascii")
-
-plt.close(fig4)
-
-
-
-# Graph 5: Main Dashboard - School Data No. 2
+# Graph 4: Main Dashboard - School Data No. 1 (Distribution of Schools Per Region)
 
 # Data and plotting logic (unchanged)
 regions = [("Region I", 3393), ("Region II", 2916), ("Region III", 5194), ("Region IV-A", 6007),
@@ -503,7 +414,7 @@ x_center = 25
 y_start = 100
 fixed_fontsize = 12
 
-fig5, ax = plt.subplots(figsize=(10, 6), dpi=80)
+fig4, ax = plt.subplots(figsize=(10, 6), dpi=80)
 ax.set_aspect('equal')
 ax.axis('off')
 
@@ -562,17 +473,17 @@ ax.set_ylim(last_row_y - 1, y_start + 6)
 plt.subplots_adjust(left=0.05, right=0.95, top=0.92, bottom=0.08)
 
 # Convert to image
-buf5 = io.BytesIO()
-fig5.savefig(buf5, format="png", bbox_inches='tight')
-data_5 = base64.b64encode(buf5.getbuffer()).decode("ascii")
+buf4 = io.BytesIO()
+fig4.savefig(buf4, format="png", bbox_inches='tight')
+data_4 = base64.b64encode(buf4.getbuffer()).decode("ascii")
 
-plt.close(fig5)
+plt.close(fig4)
 
 
-# Graph 6: Main Dashboard - School Data No. 3
+# Graph 5: Main Dashboard - School Data No. 2 (School Distribution per Sector)
 
 # Create the figure
-fig6, ax = plt.subplots(figsize=(12, 6))
+fig5, ax = plt.subplots(figsize=(12, 6))
 
 def draw_pencil(x_offset, color, height, label, percentage, percentage_offset, left_value, shadow_color):
     pencil_bottom = -100
@@ -649,13 +560,13 @@ ax.set_aspect('equal')
 ax.axis('off')
 
 # Convert to base64 PNG
-buf6 = io.BytesIO()
-fig6.savefig(buf6, format="png", bbox_inches='tight')
-data_6 = base64.b64encode(buf6.getbuffer()).decode("ascii")
+buf5 = io.BytesIO()
+fig5.savefig(buf5, format="png", bbox_inches='tight')
+data_5 = base64.b64encode(buf5.getbuffer()).decode("ascii")
 
-plt.close(fig6)
+plt.close(fig5)
 
-# Group 7
+# Graph 6: Main Dashboard - Philippine Heatmap (Philippine Regions<br>Student Population Heatmap)
 
 region_code_name = {
     "PH00": "NCR", "PH01": "Region I", "PH02": "Region II", "PH03": "Region III",
@@ -687,22 +598,22 @@ df_heatmap = pd.DataFrame({
     'School Count': list(school_data.values())
 })
 
-file_path = '/Users/annmargaretteconcepcion/dba 2/4/Analytic-Dashboard---DBA/Data/Raw_data/ph.json'
+heat_file_path = 'Data/Raw_data/ph.json'
 
 geojson = None  # Initialize geojson to avoid NameError
 
-if os.path.exists(file_path):
-    with open(file_path) as f:
+if os.path.exists(heat_file_path):
+    with open(heat_file_path) as f:
         geojson = json.load(f)  # Load the geojson data
 else:
-    print(f"Error: File not found at {file_path}. Please ensure the file exists.")
+    print(f"Error: File not found at {heat_file_path}. Please ensure the file exists.")
     # Optionally, you can raise an exception or provide a fallback mechanism here.
 
 # Ensure geojson is not used if it is None
 if geojson is None:
     print("GeoJSON data is not available. Please check the file path and content.")
 
-fig7 = px.choropleth_mapbox(
+fig6 = px.choropleth_mapbox(
     df_heatmap,
     geojson=geojson,
     locations='RegionCode',
@@ -723,7 +634,7 @@ fig7 = px.choropleth_mapbox(
     title='Philippine Regions<br>Student Population Heatmap'
 )
 
-fig7.update_traces(
+fig6.update_traces(
     hovertemplate=(
         '<b style="color:black; font-family:Arial Black;"> %{hovertext}</b><br><br>' +
         '<b style="color:black; font-family:Arial Black;">Total Students:</b> %{customdata[0]:,}<br>' +
@@ -731,7 +642,7 @@ fig7.update_traces(
     )
 )
 
-fig7.update_layout(
+fig6.update_layout(
     width=500, height=700,
     margin=dict(l=30, r=30, t=70, b=30),
     shapes=[dict(
@@ -759,7 +670,7 @@ fig7.update_layout(
 )
 
 
-# Group 8
+# Graph 7: Student Data Analytics - Column-Bar Chart (Student Population per Grade Level by Gender)
 
 grade_labels = []
 male_counts = []
@@ -770,9 +681,9 @@ for grade, columns in grade_levels.items():
     female_counts.append(df_school[columns[1]].sum())
     grade_labels.append(grade)
 
-fig8 = go.Figure()
+fig7 = go.Figure()
 
-fig8.add_trace(go.Bar(
+fig7.add_trace(go.Bar(
     x=[label for label in grade_labels],
     y=male_counts,
     name='Male',
@@ -782,7 +693,7 @@ fig8.add_trace(go.Bar(
 ))
 
 
-fig8.add_trace(go.Bar(
+fig7.add_trace(go.Bar(
     x=[label for label in grade_labels],
     y=female_counts,
     name='Female',
@@ -790,7 +701,7 @@ fig8.add_trace(go.Bar(
     hovertemplate='<b  style="color:black; font-family: Arial Black;">%{x}</b><br><b style="color:black;">Gender:</b> Female<br><b style="color:black;">Students:</b> %{y:,}<extra></extra>'
 ))
 
-fig8.update_layout(
+fig7.update_layout(
     title=dict(
         text='\n\n\n\n\n\n\n\nStudent Population per Grade Level by Gender',
         x=0.5,
@@ -853,7 +764,7 @@ fig8.update_layout(
     )
 )
 
-# Graph 9
+# Graph 8: Student Data Analytics - Area Chart (Student Distribution per SHS Strand by Sector)
 
 sector_distribution = df_school.groupby("Sector").sum(numeric_only=True)
 sector_values = {
@@ -870,11 +781,11 @@ sector_colors = {
     "SUCs/LUCs & PSO": ('#2ECC71', "rgba(138, 177, 125, 0.4)")
 }
 
-fig9 = go.Figure()
+fig8 = go.Figure()
 
 for sector in ["Public", "Private", "SUCs/LUCs & PSO"]:
     line_color, fill_color = sector_colors.get(sector, ("gray", "rgba(128,128,128,0.2)"))
-    fig9.add_trace(go.Scatter(
+    fig8.add_trace(go.Scatter(
         x=strand_df.columns,
         y=strand_df.loc[sector],
         mode='lines+markers',
@@ -886,7 +797,7 @@ for sector in ["Public", "Private", "SUCs/LUCs & PSO"]:
         hovertemplate= f'<b style="color:black; font-family: Arial Black; f">{sector}</b>' + '<br><b>Strand:</b> %{x}<br><b>Students:</b> %{y:,}<extra></extra>'
     ))
 
-fig9.update_layout(
+fig8.update_layout(
     title=dict(
         text='Student Distribution per SHS Strand by Sector',
         x=0.5,
@@ -945,18 +856,18 @@ fig9.update_layout(
     )
 )
 
-# Graph 10
+# Graph 9: Student Data Analytics - Donut Chart (Student Distribution by Grade Division and School Sector)
 
 total_students = sum(inner_values)
 outer_percentages = np.array(outer_values)
 outer_mid_angles = np.cumsum(outer_percentages) - outer_percentages / 2
 outer_mid_angles *= 360
 
-fig10 = go.Figure()
+fig9 = go.Figure()
 colorss = ['#FF5733', '#33C3FF', '#2ECC71']
 
 
-fig10.add_trace(go.Pie(
+fig9.add_trace(go.Pie(
     labels=inner_labels,
     values=inner_values,
     hole=0.6,
@@ -970,7 +881,7 @@ fig10.add_trace(go.Pie(
     insidetextorientation="horizontal",
 ))
 
-fig10.add_trace(go.Pie(
+fig9.add_trace(go.Pie(
     labels=outer_labels,
     values=outer_values,
     hole=0.9,
@@ -984,7 +895,7 @@ fig10.add_trace(go.Pie(
     insidetextorientation="horizontal"
 ))
 
-fig10.add_annotation(
+fig9.add_annotation(
     text=f"Student Population<br>{total_students:,.0f}",
     y=0.55,
     font=dict(family="Arial Black", size=20, color="black", weight="bold"),
@@ -992,7 +903,7 @@ fig10.add_annotation(
     align="center"
 )
 
-fig10.update_layout(
+fig9.update_layout(
     title="Student Distribution by Grade Division and School Sector",
     title_font_size=20,
     title_font_weight="bold",
@@ -1009,7 +920,7 @@ fig10.update_layout(
     )
 )
 
-# Graph 11
+# Graph 10: School Data Analytics - Sankey Chart (School Population per Sector, Sub-Classification, and Modified COC)
 
 def format_label(label):
     wrapped = "<br>".join(textwrap.wrap(label.title(), width=20))
@@ -1021,7 +932,7 @@ labels_raw = pd.unique(flows[['Sector', 'School_Subclassification', 'Modified_CO
 labels = [format_label(label) for label in labels_raw]
 label_index = {label: i for i, label in enumerate(labels_raw)}
 
-sector_colors_11 = {
+sector_colors_10 = {
     "Public": "rgba(255, 87, 51, 0.7)",
     "Private": "rgba(51, 195, 255, 0.7)",
     "SUCs/LUCs": "rgba(46, 204, 113, 0.7)",
@@ -1041,7 +952,7 @@ for _, row in flows.iterrows():
     source = label_index[row['Sector']]
     target = label_index[row['School_Subclassification']]
     value = row['count']
-    color = sector_colors_11.get(row['Sector'], "rgba(128, 128, 128, 0.4)")
+    color = sector_colors_10.get(row['Sector'], "rgba(128, 128, 128, 0.4)")
 
     sources.append(source)
     targets.append(target)
@@ -1063,7 +974,7 @@ for _, row in flows.iterrows():
     source = label_index[row['School_Subclassification']]
     target = label_index[row['Modified_COC']]
     value = row['count']
-    color = sector_colors_11.get(row['Sector'], "rgba(128, 128, 128, 0.4)")
+    color = sector_colors_10.get(row['Sector'], "rgba(128, 128, 128, 0.4)")
 
     sources.append(source)
     targets.append(target)
@@ -1083,7 +994,7 @@ for _, row in flows.iterrows():
 
 node_hovertext = [f"<b>{label_raw}</b><br><b>Total Students:</b> {node_totals[i]:,}" for i, label_raw in enumerate(labels_raw)]
 
-fig11 = go.Figure(data=[go.Sankey(
+fig10 = go.Figure(data=[go.Sankey(
     node=dict(
         pad=20,
         thickness=20,
@@ -1103,7 +1014,7 @@ fig11 = go.Figure(data=[go.Sankey(
     )
 )])
 
-fig11.update_layout(
+fig10.update_layout(
     title=dict(
         text="<b>School Population per Sector, Sub-Classification, and Modified COC</b>",
         x=0.5,
@@ -1122,12 +1033,12 @@ fig11.update_layout(
     )
 )
 
-# Graph 12
+# Graph 11: School Data Analytics - Line-Bar Chart (School Count by School Type and Sector)
 
 df_grouped = df_school.groupby(['School_Type', 'Sector']).size().reset_index(name='count')
 pivot_df = df_grouped.pivot(index='School_Type', columns='Sector', values='count').fillna(0)
 
-sector_colors_12 = {
+sector_colors_11 = {
     'Public': '#FF5733',
     'SUCsLUCs': '#2ECC71',
     'Private': '#33C3FF',
@@ -1140,8 +1051,8 @@ line_traces = [
         y=pivot_df[sector],
         mode='lines+markers',
         name=sector.replace('SUCsLUCs', 'SUCs/LUCs'),
-        line=dict(width=5, color=sector_colors_12[sector]),
-        marker=dict(size=12, color=sector_colors_12[sector], line=dict(color='white', width=3)),
+        line=dict(width=5, color=sector_colors_11[sector]),
+        marker=dict(size=12, color=sector_colors_11[sector], line=dict(color='white', width=3)),
         hovertemplate=(
             "<b style='color: black; font-family: Arial Black;'>School Type:</b> %{x}<br>" +
             f"<b style='color: black; font-family: Arial Black;'>Sector:</b> {sector.replace('SUCsLUCs', 'SUCs/LUCs')}<br>" +
@@ -1162,9 +1073,9 @@ bar_trace = go.Bar(
     hovertemplate="<b>School Type:</b> %{x}<br><b>Total Schools:</b> %{y:,}<extra></extra>"
 )
 
-fig12 = go.Figure(data=line_traces + [bar_trace])
+fig11 = go.Figure(data=line_traces + [bar_trace])
 
-fig12.update_layout(
+fig11.update_layout(
     title="<b>School Count by School Type and Sector</b>",
     title_x=0.5,
     xaxis=dict(
@@ -1208,6 +1119,8 @@ fig12.update_layout(
         font_family="Arial"
     )
 )
+
+# Additional Functions
 
 def plot_total_number_of_schools_by_sector():
     # Example implementation for plotting total number of schools by sector

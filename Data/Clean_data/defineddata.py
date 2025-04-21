@@ -628,7 +628,7 @@ fig6 = px.choropleth_mapbox(
     ],
     mapbox_style='white-bg',
     center={'lat': 12.5, 'lon': 121.7},
-    zoom=4.5,
+    zoom=4.4,
     opacity=1.0,
     range_color=(0, 4000000),
     title='Philippine Regions<br>Student Population Heatmap'
@@ -643,8 +643,8 @@ fig6.update_traces(
 )
 
 fig6.update_layout(
-    width=500, height=700,
-    margin=dict(l=30, r=30, t=70, b=30),
+    width=350, height=700,
+    margin=dict(l=18, r=18, t=80, b=10),
     shapes=[dict(
         type='rect', xref='paper', yref='paper',
         x0=0, y0=0, x1=1, y1=1,
@@ -655,12 +655,20 @@ fig6.update_layout(
         font=dict(size=16, family='Arial Black', color='black')
     ),
     coloraxis_colorbar=dict(
-        title_font=dict(family='Arial Black', size=14, color='black'),
-        tickfont=dict(family='Arial', size=12, color='black'),
+        title = dict(side="bottom"),
+        title_font=dict(family='Arial Black', size=12, color='black'),
+        tickfont=dict(family='Arial', size=10, color='black'),
         outlinecolor='black', outlinewidth=1,
         tickprefix=' ',
-        ticks='outside', ticklen=5,
-        len=1
+        ticks='outside',  ticklen=5,
+        len=1,
+        thickness=15,
+        x=0.5,            # center it horizontally
+        xanchor='center',
+        y=-0.005,           # push it below the plot (adjust as needed)
+        yanchor='top',
+        orientation = 'h'
+
     ),
     hoverlabel=dict(
         bgcolor="white",
@@ -1025,7 +1033,7 @@ fig10.update_layout(
     font_color='black',
     font_size=10,
     height=450,
-    width=950,
+    width=900,
     hoverlabel=dict(
         bgcolor="white",
         font_size=13,

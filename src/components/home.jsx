@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { FaSchool, FaMapMarkerAlt } from 'react-icons/fa';
+import { IoMdPerson } from "react-icons/io";
 import './home.css';
 
 const Home = () => {
@@ -17,8 +19,7 @@ const Home = () => {
     const interval = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 1000);
-
-    return () => clearInterval(interval); // Cleanup on unmount
+    return () => clearInterval(interval);
   }, []);
 
   const handleSearchChange = (e) => {
@@ -31,7 +32,7 @@ const Home = () => {
     month: 'long',
     day: 'numeric',
   });
-  
+
   const formattedTime = currentDateTime.toLocaleTimeString('en-PH', {
     timeZone: 'Asia/Manila',
     hour: 'numeric',
@@ -39,7 +40,6 @@ const Home = () => {
     second: 'numeric',
     hour12: true,
   });
-  
 
   return (
     <div className="home-container">
@@ -54,35 +54,32 @@ const Home = () => {
         />
       </header>
 
-      {/* Dashboard Layout */}
       <div className="dashboard-container">
         <div className="left-section">
-          {/* Top container for stat boxes */}
           <div className="top-container">
             <div className="stat-box">
-              <i className="fas fa-school stat-icon"></i>
+              <FaSchool className="stat-icon" />
               <div>
                 <h4>Number of Schools</h4>
                 <p>60,157</p>
               </div>
             </div>
             <div className="stat-box">
-              <i className="fas fa-user-graduate stat-icon"></i>
+              <IoMdPerson className="stat-icon" />
               <div>
                 <h4>Number of Students</h4>
-                <p>27 Million</p>
+                <p>27,081,292</p>
               </div>
             </div>
             <div className="stat-box">
-              <i className="fas fa-map-marker-alt stat-icon"></i>
+              <FaMapMarkerAlt className="stat-icon" />
               <div>
-                <h4>Population</h4>
+                <h4>Biggest Number of School and Students</h4>
                 <p>Region IV-A</p>
               </div>
             </div>
           </div>
 
-          {/* Middle container for graphs */}
           <div className="middle-container">
             <div className="collage-grid">
               {graphs.map((graph, index) => (
@@ -116,7 +113,6 @@ const Home = () => {
             </div>
           </div>
           <div className="heatmap-box">
-            <h4 className="heatmap-label">Heatmap</h4>
             <div className="heatmap-placeholder">
               <iframe
                 src="http://localhost:8050/graph6"

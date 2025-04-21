@@ -84,7 +84,7 @@
   background-color: rgba(255, 255, 255, 0.7); 
   border-radius: 10px;
   padding: 20px;
-  min-height: 250px;
+  height: 800px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   position: relative;
@@ -208,3 +208,82 @@
 .import-export-top button:hover {
   background-color: #dc1f2f;
 }
+
+/* Overlay */
+.upload-modal-overlay-student {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal */
+.upload-modal-student {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.upload-modal-student h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.upload-modal-student p {
+  font-size: 1rem;
+  color: #666;
+  margin: 10px 0;
+}
+
+.upload-modal-student input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+/* Modal Buttons */
+.modal-buttons-student {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cancel-btn-student,
+.submit-btn-student {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-btn-student {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.submit-btn-student {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.cancel-btn-student:hover {
+  background-color: #ddd;
+}
+
+.submit-btn-student:hover {
+  background-color: #0056b3;
+}
+

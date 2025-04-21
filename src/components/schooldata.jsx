@@ -2,17 +2,34 @@ import React, { useState, useEffect } from 'react';
 import './schooldata.css';
 
 const SchoolData = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCard, setSelectedCard] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
-
-  const handleSearchChange = (e) => setSearchQuery(e.target.value);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [file, setFile] = useState(null);
+  
 
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.1, 2));
   const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));
 
-  const handleImport = () => alert("Import function not implemented yet.");
-  const handleExport = () => alert("Export function not implemented yet.");
+  const handleImport = () => setShowUploadModal(true);
+
+  const handleFileChange = (e) => setFile(e.target.files[0]);
+
+  const handleSubmit = () => {
+    if (file) {
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+      if (fileExtension === 'csv' || fileExtension === 'xls' || fileExtension === 'xlsx') {
+        // Handle actual file upload here
+        console.log('Submitting file:', file.name);
+        setShowUploadModal(false);
+        setFile(null);
+      } else {
+        alert("Please select a valid CSV or Excel file.");
+      }
+    } else {
+      alert("Please select a file before submitting.");
+    }
+  };
 
   useEffect(() => {
     document.documentElement.style.setProperty('--zoom', zoomLevel);
@@ -23,30 +40,18 @@ const SchoolData = () => {
     { label: "School Distribution by Sub-classification per Region", src: "http://localhost:8050/graph11" }
   ];
 
-  const filteredCards = cardsData.filter(card =>
-    card.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <div className="school-data-container">
       <header className="school-header">
         <h1>School Data</h1>
-        <input
-          type="text"
-          className="search-int"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          placeholder="Search..."
-        />
       </header>
       
       <div className="import-export-sc">
-        <button onClick={handleImport}>Import</button>
-        <button onClick={handleExport}>Export</button>
+        <button onClick={handleImport}>Add New DataSet</button>
       </div>
 
       <div className="cards-wrapper">
-        {filteredCards.map((card, index) => (
+        {cardsData.map((card, index) => (
           <div
             key={index}
             className="school-card"
@@ -61,7 +66,7 @@ const SchoolData = () => {
               title={card.label}
               style={{
                 width: '100%',
-                height: '550px',
+                height: '650px',
                 border: '1px solid #ccc',
                 borderRadius: '8px',
                 marginTop: '10px',
@@ -105,6 +110,25 @@ const SchoolData = () => {
           </div>
         </div>
       )}
+
+      {showUploadModal && (
+        <div className="upload-modal-overlay-school" onClick={() => setShowUploadModal(false)}>
+          <div className="upload-modal-school" onClick={(e) => e.stopPropagation()}>
+            <h2>Add New Dataset</h2>
+            <p>Upload a CSV or Excel file:</p>
+            <input 
+              type="file" 
+              onChange={handleFileChange} 
+              accept=".csv, .xls, .xlsx" 
+            />
+            <div className="modal-buttons-school">
+              <button onClick={() => setShowUploadModal(false)} className="cancel-btn-school">Cancel</button>
+              <button onClick={handleSubmit} className="submit-btn-school">Submit</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

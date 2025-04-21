@@ -41,7 +41,7 @@ const SchoolData = () => {
           placeholder="Search..."
         />
       </header>
-
+asdasd
       <div className="import-export-sc">
         <button onClick={handleImport}>Import</button>
         <button onClick={handleExport}>Export</button>

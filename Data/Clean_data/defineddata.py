@@ -60,8 +60,8 @@ grade_levels = {"Kindergarten": ["Kindergarten_Male", "Kindergarten_Female"], "G
                 "Grade 10": ["G10_Male", "G10_Female"],"JHS NG": ["JHS_NG_Male", "JHS_NG_Female"],
                 "Grade 11": [col for col in df_school.columns if "G11" in col],"Grade 12": [col for col in df_school.columns if "G12" in col]}
 
-elementary_male = ["G1_Male", "G2_Male", "G3_Male", "G4_Male", "G5_Male", "G6_Male", "Elem_NG_Male"]
-elementary_female = ["G1_Female", "G2_Female", "G3_Female", "G4_Female", "G5_Female", "G6_Female", "Elem_NG_Female"]
+elementary_male = ["Kindergarten_Male","G1_Male", "G2_Male", "G3_Male", "G4_Male", "G5_Male", "G6_Male", "Elem_NG_Male"]
+elementary_female = ["Kindergarten_Female","G1_Female", "G2_Female", "G3_Female", "G4_Female", "G5_Female", "G6_Female", "Elem_NG_Female"]
 
 junior_high_male = ["G7_Male", "G8_Male", "G9_Male", "G10_Male", "JHS_NG_Male"]
 junior_high_female = ["G7_Female", "G8_Female", "G9_Female", "G10_Female", "JHS_NG_Female"]
@@ -100,7 +100,7 @@ sector_distribution["Total"] = sector_distribution[["Elementary_Total", "Junior_
 
 sector_distribution_totals = sector_distribution["Total"]
 
-inner_labels = ["Elementary", "Junior High\n", "Senior High"]
+inner_labels = ["Elementary", "Junior High", "Senior High"]
 inner_values = [
     df_school[elementary_male + elementary_female].sum().sum(),
     df_school[junior_high_male + junior_high_female].sum().sum(),
@@ -573,6 +573,10 @@ plt.close(fig5)
 
 # Graph 6: Main Dashboard - Philippine Heatmap (Philippine Regions<br>Student Population Heatmap)
 
+heat_map_file = r'Data/Raw_data/ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx'
+heatmap_df = pd.read_excel(heat_map_file)
+
+
 region_code_name = {
     "PH00": "NCR", "PH01": "Region I", "PH02": "Region II", "PH03": "Region III",
     "PH05": "Region V", "PH06": "Region VI", "PH07": "Region VII", "PH08": "Region VIII",
@@ -580,11 +584,11 @@ region_code_name = {
     "PH13": "CARAGA", "PH14": "BARMM", "PH15": "CAR", "PH40": "Region IV-A", "PH41": "MIMAROPA"
 }
 
-school_data = df_school.groupby('Region').count()
+school_data = heatmap_df.groupby('Region').count()
 school_data = school_data["Division"].rename('Total Schools').drop(index='PSO').to_dict()
 
 student_data = (
-    df_school.drop(columns=['BEIS_School_ID'])
+    heatmap_df.drop(columns=['BEIS_School_ID'])
     .groupby('Region').sum(numeric_only=True)
     .sum(axis=1).rename('Total Students')
     .drop(index='PSO')
@@ -710,7 +714,7 @@ fig7.add_trace(go.Bar(
     x=[label for label in grade_labels],
     y=female_counts,
     name='Female',
-    marker_color= '#FF5733',
+    marker_color= '#FF746C',
     hovertemplate='<b  style="color:black; font-family: Arial Black;">%{x}</b><br><b style="color:black;">Gender:</b> Female<br><b style="color:black;">Students:</b> %{y:,}<extra></extra>'
 ))
 
@@ -790,7 +794,7 @@ strand_df = strand_df.drop(index=["SUCsLUCs", "PSO"])
 
 sector_colors = {
     "Private": ('#33C3FF', "rgba(168, 218, 220, 0.4)"),
-    "Public":  ("#FF5733", "rgba(255, 178, 162, 0.4)"),
+    "Public":  ("#FF746C", "rgba(255, 178, 162, 0.4)"),
     "SUCs/LUCs & PSO": ('#2ECC71', "rgba(138, 177, 125, 0.4)")
 }
 
@@ -877,21 +881,21 @@ outer_mid_angles = np.cumsum(outer_percentages) - outer_percentages / 2
 outer_mid_angles *= 360
 
 fig9 = go.Figure()
-colorss = ['#FF5733', '#33C3FF', '#2ECC71']
+colorss = ['#FF746C', '#33C3FF', '#2ECC71']
 
 
 fig9.add_trace(go.Pie(
     labels=inner_labels,
     values=inner_values,
-    hole=0.6,
+    hole=0.55,
     textinfo="percent+label",
     textposition="inside",
-    textfont=dict(family="Arial Black", size=12, color="black", weight="bold"),
-    marker=dict(colors=['#33C3FF', "#FF5733", '#2ECC71'], line=dict(color='black', width=0.8)),
+    textfont=dict(family="Arial Black", size=7, color="black", weight="bold"),
+    marker=dict(colors=['#33C3FF', "#FF746C", '#2ECC71'], line=dict(color='black', width=0.8)),
     hovertemplate='<b style="color: black; font-family: Arial Black;">%{label}</b><br><b style="color: black;">Students:</b> %{value:,}<extra></extra>',
     showlegend=False,
     domain=dict(x=[0, 1], y=[0.2, 0.9]),
-    insidetextorientation="horizontal",
+    insidetextorientation="auto",
 ))
 
 fig9.add_trace(go.Pie(
@@ -900,18 +904,18 @@ fig9.add_trace(go.Pie(
     hole=0.9,
     textinfo="percent+label",
     textposition="outside",
-    textfont=dict(family="Arial Black", size=12, color="black", weight="bold"),
-    marker=dict(colors=['#33C3FF', "#FF5733", '#2ECC71'], line=dict(color='black', width=0.8)),
+    textfont=dict(family="Arial Black", size=7, color="black", weight="bold"),
+    marker=dict(colors=['#33C3FF', "#FF746C", '#2ECC71'], line=dict(color='black', width=0.8)),
     hovertemplate="<b style='color: black; font-family: Arial Black;'>%{label}</b><br><b style='color: black;'>Total:</b> %{value:,}<extra></extra>",
     showlegend=False,
     domain=dict(x=[0, 1], y=[0.1, 1]),
-    insidetextorientation="horizontal"
+    insidetextorientation="auto"
 ))
 
 fig9.add_annotation(
     text=f"Student Population<br>{total_students:,.0f}",
     y=0.55,
-    font=dict(family="Arial Black", size=20, color="black", weight="bold"),
+    font=dict(family="Arial Black", size=9, color="black", weight="bold"),
     showarrow=False,
     align="center"
 )
@@ -922,8 +926,8 @@ fig9.update_layout(
     title_font_weight="bold",
     title_x=0.5,
     title_y=0.95,
-    height=800,
-    width=800,
+    height=500,
+    width=500,
     xaxis=dict(tickfont=dict(family="Arial Black")),
     yaxis=dict(tickfont=dict(family="Arial Black")),
     hoverlabel=dict(
@@ -1052,7 +1056,7 @@ df_grouped = df_school.groupby(['School_Type', 'Sector']).size().reset_index(nam
 pivot_df = df_grouped.pivot(index='School_Type', columns='Sector', values='count').fillna(0)
 
 sector_colors_11 = {
-    'Public': '#FF5733',
+    'Public': '#FF746C',
     'SUCsLUCs': '#2ECC71',
     'Private': '#33C3FF',
     'PSO': '#1D3557'

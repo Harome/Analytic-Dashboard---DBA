@@ -12,7 +12,7 @@ const DataComp = () => {
 
   return (
     <div className="datacomp-container">
-      <header className="school-header">
+      <header className="datacomp-header">
         <h1>Data Comparison</h1>
       </header>
 

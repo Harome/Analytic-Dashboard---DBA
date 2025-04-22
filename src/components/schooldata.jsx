@@ -7,8 +7,6 @@ const SchoolData = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);  
   const [file, setFile] = useState(null);  
 
-  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.1, 2));  
-  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));  
 
   const handleImport = () => setShowUploadModal(true);  
 

@@ -7,28 +7,62 @@ const SchoolData = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [file, setFile] = useState(null);
   
+
+  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.1, 2));
+  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));
+
   const handleImport = () => setShowUploadModal(true);
 
-  const handleFileChange = (e) => setFile(e.target.files[0]);
-
-  const handleSubmit = () => {
+  const handleFileChange = (e) => setFile(e.target.files[0]); 
+  
+  const handleSubmit = async () => {
     if (file) {
-      const fileExtension = file.name.split('.').pop().toLowerCase();
+      const fileExtension = file.name.split('.').pop().toLowerCase();  
+  
       if (fileExtension === 'csv' || fileExtension === 'xls' || fileExtension === 'xlsx') {
-        // Handle actual file upload here
         console.log('Submitting file:', file.name);
-        setShowUploadModal(false);
+        const formData = new FormData();
+        formData.append('file', file);
+  
+        try {
+          const response = await fetch('http://localhost:8050/upload_dataset', {
+            method: 'POST',
+            body: formData
+          });
+
+          console.log('Server Response:', response);
+  
+          const result = await response.json();
+  
+          if (result.status === 'success') {
+            alert(result.message);
+            window.location.reload(); 
+          } else {
+            alert("Upload failed: " + result.message);
+          }
+  
+        } 
+        
+        catch (error) {
+          console.error('Error uploading file:', error);
+          alert("An error occurred during upload.");
+        }
+  
+        setShowUploadModal(false);  
         setFile(null);
+  
       } else {
         alert("Please select a valid CSV or Excel file.");
       }
+  
     } else {
       alert("Please select a file before submitting.");
     }
   };
+  
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--zoom', zoomLevel);
+    document.documentElement.style.setProperty('--zoom', zoomLevel); 
   }, [zoomLevel]);
 
   const cardsData = [
@@ -43,7 +77,7 @@ const SchoolData = () => {
       </header>
       
       <div className="import-export-sc">
-        <button onClick={handleImport}>Add New DataSet</button>
+        <button onClick={handleImport}>Add New DataSet</button>  {/* Opens the modal when clicked */}
       </div>
 
       <div className="cards-wrapper">
@@ -52,8 +86,8 @@ const SchoolData = () => {
             key={index}
             className="school-card"
             onClick={() => {
-              setSelectedCard(card);
-              setZoomLevel(1);
+              setSelectedCard(card);  
+              setZoomLevel(1);  
             }}
           >
             <label>{card.label}</label>
@@ -72,14 +106,14 @@ const SchoolData = () => {
         ))}
       </div>
 
-      {/* Modal */}
+      {/* Modal for the selected card */}
       {selectedCard && (
         <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
           <div className="modal-cards expanded-modal" onClick={(e) => e.stopPropagation()}>
             <div
               className="modal-content"
               style={{
-                transform: `scale(${zoomLevel})`,
+                transform: `scale(${zoomLevel})`, 
                 width: `${100 / zoomLevel}%`,
                 height: `${100 / zoomLevel}%`
               }}
@@ -99,6 +133,7 @@ const SchoolData = () => {
         </div>
       )}
 
+      {/* Modal for file upload */}
       {showUploadModal && (
         <div className="upload-modal-overlay-school" onClick={() => setShowUploadModal(false)}>
           <div className="upload-modal-school" onClick={(e) => e.stopPropagation()}>
@@ -106,7 +141,7 @@ const SchoolData = () => {
             <p>Upload a CSV or Excel file:</p>
             <input 
               type="file" 
-              onChange={handleFileChange} 
+              onChange={handleFileChange}  // Calls handleFileChange when a file is selected
               accept=".csv, .xls, .xlsx" 
             />
             <div className="modal-buttons-school">

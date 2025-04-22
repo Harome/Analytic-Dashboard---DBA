@@ -23,12 +23,17 @@ import io
 import base64
 from matplotlib.patches import Polygon,  Circle
 import os
+import json
+import matplotlib
+matplotlib.use('Agg')
 
-# Dataset Initialization
-path = r"Data/Raw_data/ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx"
+with open('config.json', 'r') as f:
+    config = json.load(f)
+
+path = config['dataset_path']
+
 df_school = pd.read_excel(path)
 
-# DataFrames
 region_order = ['Region I', 'Region II', 'Region III', 'Region IV-A', 'MIMAROPA', 'Region V',
                 'Region VI', 'Region VII', 'Region VIII', 'Region IX', 'Region X', 'Region XI',
                 'Region XII', 'CARAGA', 'BARMM', 'CAR', 'NCR', 'PSO']

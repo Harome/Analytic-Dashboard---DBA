@@ -3,6 +3,10 @@ from dash import dcc, html, dash_table, Input, Output
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import json
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import os
 from Data.Clean_data.defineddata import (
     create_gender_plot, create_enrollment_bubble_chart,
     encoded_3, data_4, data_5, fig6,
@@ -11,6 +15,7 @@ from Data.Clean_data.defineddata import (
 
 app = dash.Dash(__name__)
 app.title = "Student Population Dashboard"
+server = app.server
 
 image_src_1 = create_gender_plot()
 image_src_2 = create_enrollment_bubble_chart()
@@ -19,6 +24,36 @@ index_page = html.Div([
     html.H1("Welcome to Student Dashboard"),
     html.P("Choose a graph route.")
 ])
+
+CORS(server)
+UPLOAD_FOLDER = 'Data/Raw_data/'
+server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+@server.route('/upload_dataset', methods=['POST'])
+def upload_dataset():
+    if 'file' not in request.files:
+        return jsonify({'status': 'error', 'message': 'No file part'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'status': 'error', 'message': 'No selected file'}), 400
+
+    # Save the file to your target folder
+    filename = file.filename
+    filepath = os.path.join(server.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+
+    # Update config.json
+    config_path = 'config.json'
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+
+    config['dataset_path'] = filepath
+
+    with open(config_path, 'w') as f:
+        json.dump(config, f, indent=4)
+
+    return jsonify({'status': 'success', 'message': f'File {filename} uploaded and config updated.'}), 200
 
     # Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)  
 

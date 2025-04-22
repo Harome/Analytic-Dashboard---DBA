@@ -4,18 +4,19 @@ import "./Login.css";
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const validationErrors = {};
-    if (!username.trim()) validationErrors.username = "Username is required";
-    if (!password) validationErrors.password = "Password is required";
+    
+    // Clear any previous errors
+    setErrors("");
 
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length === 0) {
-      onLogin();
+    // Check if the username and password are correct
+    if (username === "user" && password === "1234") {
+      onLogin(); // Call the onLogin function passed from the parent (index.jsx)
+    } else {
+      setErrors("Invalid username or password"); // Show an error message if credentials are wrong
     }
   };
 
@@ -35,7 +36,6 @@ const Login = ({ onLogin }) => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
-              {errors.username && <span className="error-text">{errors.username}</span>}
             </div>
 
             <div className="input-group">
@@ -45,8 +45,9 @@ const Login = ({ onLogin }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              {errors.password && <span className="error-text">{errors.password}</span>}
             </div>
+
+            {errors && <div className="error-text">{errors}</div>}
 
             <button type="submit" className="login-button">
               Go to App

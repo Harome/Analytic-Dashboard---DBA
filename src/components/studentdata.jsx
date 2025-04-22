@@ -32,9 +32,9 @@ const StudentData = () => {
   }, [zoomLevel]);
 
   const cardsData = [
-    { label: "Regional Population Trends", src: "http://localhost:8050/graph7" },
-    { label: "Enrollment Insights", src: "http://localhost:8050/graph8" },
-    { label: "Student Population Patterns", src: "http://localhost:8050/graph9" },
+    { label: "Student Population per Grade Level by Gender", src: "http://localhost:8050/graph7" },
+    { label: "Student Distrubution per SHS Strand by Sector", src: "http://localhost:8050/graph8" },
+    { label: "Student Distribution by Grade Division and School Sector", src: "http://localhost:8050/graph9" },
   ];
 
   return (

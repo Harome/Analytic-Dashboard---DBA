@@ -711,7 +711,7 @@ fig7.add_trace(go.Bar(
 
 fig7.update_layout(
     title=dict(
-        text='\n\n\n\n\n\n\n\nStudent Population per Grade Level by Gender',
+        text='',
         x=0.5,
         xanchor='center',
         font=dict(
@@ -807,7 +807,7 @@ for sector in ["Public", "Private", "SUCs/LUCs & PSO"]:
 
 fig8.update_layout(
     title=dict(
-        text='Student Distribution per SHS Strand by Sector',
+        text='',
         x=0.5,
         xanchor='center',
         font=dict(size=20, family='Arial Black', color='black')
@@ -912,7 +912,7 @@ fig9.add_annotation(
 )
 
 fig9.update_layout(
-    title="Student Distribution by Grade Division and School Sector",
+    title="",
     title_font_size=20,
     title_font_weight="bold",
     title_x=0.5,
@@ -1024,7 +1024,7 @@ fig10 = go.Figure(data=[go.Sankey(
 
 fig10.update_layout(
     title=dict(
-        text="<b>School Population per Sector, Sub-Classification, and Modified COC</b>",
+        text="",
         x=0.5,
         xanchor='center',
         font_color='black'
@@ -1084,7 +1084,7 @@ bar_trace = go.Bar(
 fig11 = go.Figure(data=line_traces + [bar_trace])
 
 fig11.update_layout(
-    title="<b>School Count by School Type and Sector</b>",
+    title="",
     title_x=0.5,
     xaxis=dict(
         title='<b>School Type</b>',

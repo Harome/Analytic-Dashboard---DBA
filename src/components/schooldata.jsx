@@ -32,8 +32,8 @@ const SchoolData = () => {
   }, [zoomLevel]);
 
   const cardsData = [
-    { label: "School Distribution by Sector per region", src: "http://localhost:8050/graph10" },
-    { label: "School Distribution by Sub-classification per Region", src: "http://localhost:8050/graph11" }
+    { label: "School Population per Sector, Sub-Classification, and Modified COC", src: "http://localhost:8050/graph10" },
+    { label: "School Count by School Type and Sector", src: "http://localhost:8050/graph11" }
   ];
 
   return (

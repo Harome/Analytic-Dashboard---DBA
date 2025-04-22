@@ -7,9 +7,6 @@ const StudentData = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [file, setFile] = useState(null);
 
-  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.1, 2));
-  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));
-
   const handleImport = () => setShowUploadModal(true);
 
   const handleFileChange = (e) => setFile(e.target.files[0]);
@@ -78,7 +75,7 @@ const StudentData = () => {
 
       {selectedCard && (
         <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
-          <div className="modal-card expanded-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-card-expanded-modal" onClick={(e) => e.stopPropagation()}>
             <div
               className="modal-content"
               style={{
@@ -98,14 +95,6 @@ const StudentData = () => {
                   borderRadius: '8px',
                 }}
               />
-            </div>
-          </div>
-
-          <div className="side-settings-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-exit" onClick={() => setSelectedCard(null)}>Exit</button>
-            <div className="zoom-controls">
-              <button onClick={handleZoomOut}>Zoom Out</button>
-              <button onClick={handleZoomIn}>Zoom In</button>
             </div>
           </div>
         </div>

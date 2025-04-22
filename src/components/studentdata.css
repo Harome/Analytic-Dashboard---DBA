@@ -137,51 +137,15 @@
 }
 
 /* Main expanded modal */
-.modal-card.expanded-modal {
-  width: 75%;
-  height: 85%;
+.modal-card-expanded-modal {
+  width:40%;
+  height: 80%;
   background: #fff;
   padding: 20px;
   border-radius: 16px;
-  overflow-y: auto;
   position: relative;
 }
 
-.side-settings-modal {
-  position: fixed;
-  top: 20%;
-  right: 20px; 
-  width: 100px; 
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 10px 8px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  z-index: 15;
-}
-
-.side-settings-modal button {
-  width: 100%;
-  padding: 8px 0;
-  background-color: #dc1f2f;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  text-align: center;
-  font-size: 14px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 5px 0; 
-  white-space: nowrap;
-}
-
-.side-settings-modal button:hover {
-  background-color: #1d3557;
-}
 
 .import-export-top {
   position: absolute;

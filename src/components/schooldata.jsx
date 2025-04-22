@@ -2,16 +2,15 @@ import React, { useState, useEffect } from 'react';
 import './schooldata.css';
 
 const SchoolData = () => {
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const [file, setFile] = useState(null);
-  
+  const [selectedCard, setSelectedCard] = useState(null);  
+  const [zoomLevel, setZoomLevel] = useState(1);  
+  const [showUploadModal, setShowUploadModal] = useState(false);  
+  const [file, setFile] = useState(null);  
 
-  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.1, 2));
-  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));
+  const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.1, 2));  
+  const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.1, 0.5));  
 
-  const handleImport = () => setShowUploadModal(true);
+  const handleImport = () => setShowUploadModal(true);  
 
   const handleFileChange = (e) => setFile(e.target.files[0]); 
   

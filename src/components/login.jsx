@@ -21,7 +21,6 @@ const Login = ({ onLogin }) => {
 
   return (
     <>
-      {/* DepEd logo positioned at the top left */}
       <img src="/deped.png" alt="DepEd Logo" className="logo-top-left" />
 
       <div className="login-page">

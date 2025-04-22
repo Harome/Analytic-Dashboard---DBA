@@ -15,6 +15,11 @@ const Home = () => {
     { title: 'Graph 5', src: 'http://localhost:8050/graph5' },
   ];
 
+  // Filtered graphs based on search query
+  const filteredGraphs = graphs.filter((graph) =>
+    graph.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentDateTime(new Date());
@@ -50,7 +55,7 @@ const Home = () => {
           className="search-input-home"
           value={searchQuery}
           onChange={handleSearchChange}
-          placeholder="Search..."
+          placeholder="Search graphs"
         />
       </header>
 
@@ -82,24 +87,28 @@ const Home = () => {
 
           <div className="middle-container">
             <div className="collage-grid">
-              {graphs.map((graph, index) => (
-                <div
-                  key={index}
-                  className={`collage-card ${['large', 'wide', 'small', 'small', 'wide'][index % 5]}`}
-                >
-                  <h3>{graph.title}</h3>
-                  <iframe
-                    src={graph.src}
-                    title={graph.title}
-                    className="iframe-graph"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      border: 'none',
-                    }}
-                  />
-                </div>
-              ))}
+              {filteredGraphs.length > 0 ? (
+                filteredGraphs.map((graph, index) => (
+                  <div
+                    key={index}
+                    className={`collage-card ${['large', 'wide', 'small', 'small', 'wide'][index % 5]}`}
+                  >
+                    <h3>{graph.title}</h3>
+                    <iframe
+                      src={graph.src}
+                      title={graph.title}
+                      className="iframe-graph"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        border: 'none',
+                      }}
+                    />
+                  </div>
+                ))
+              ) : (
+                <p>No graphs match your search.</p>
+              )}
             </div>
           </div>
         </div>

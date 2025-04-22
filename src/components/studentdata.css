@@ -30,25 +30,6 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* Search Bar Styling */
-.search-input-student-data{
-  padding: 5px 20px;
-  font-size: 20px;
-  font-family: 'Poppins', sans-serif; 
-  border-radius: 10px;
-  border: 2px solid #0066b3; 
-  background-color: rgba(255, 255, 255, 0.8); 
-  color: #333;
-  width: 300px;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
-  margin: 0;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #004080; /* DepEd Darker Blue */
-}
-
 /* Header Section Adjustments */
 .student-header {
   width: 100%;

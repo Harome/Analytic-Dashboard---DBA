@@ -20,25 +20,6 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* Search Bar Styling */
-.search-int {
-  padding: 5px 20px;
-  font-size: 20px;
-  font-family: 'Poppins', sans-serif; 
-  border-radius: 10px;
-  border: 2px solid #0066b3; 
-  background-color: rgba(255, 255, 255, 0.8); 
-  color: #333;
-  width: 300px;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
-  margin: 0;
-}
-
-.search-int:focus {
-  outline: none;
-  border-color: #004080; 
-}
-
 /* Header Section Adjustments */
 .school-header {
   width: 100%;
@@ -135,12 +116,6 @@
     grid-template-columns: 1fr; 
   }
 
-  .search-input,
-  .filter-dropdown {
-    width: 100%;
-    margin: 10px 0;
-  }
-
   .student-header {
     flex-direction: column;
     align-items: flex-start;
@@ -177,11 +152,6 @@
     font-size: 20px;
     text-align: center;
     width: 100%;
-  }
-
-  .search-input {
-    font-size: 14px;
-    padding: 8px;
   }
 
   .student-card label {

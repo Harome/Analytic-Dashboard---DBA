@@ -27,7 +27,7 @@ const Login = ({ onLogin }) => {
       <div className="login-page">
         <div className="login-left">
           <form className="login-box" onSubmit={handleSubmit}>
-            <h1>Welcome back!!</h1>
+            <h1>Welcome</h1>
 
             <div className="input-group">
               <label>Username</label>
@@ -50,12 +50,12 @@ const Login = ({ onLogin }) => {
             </div>
 
             <button type="submit" className="login-button">
-              Go to App
+              Log in
             </button>
           </form>
         </div>
         <div className="login-right">
-          <img src="/login-bg.jpg" alt="Background" className="login-image" />
+          <img src="/login.png" alt="Background" className="login-image" />
         </div>
       </div>
     </>

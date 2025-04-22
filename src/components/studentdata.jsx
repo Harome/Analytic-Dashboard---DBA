@@ -11,17 +11,46 @@ const StudentData = () => {
 
   const handleFileChange = (e) => setFile(e.target.files[0]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (file) {
-      const fileExtension = file.name.split('.').pop().toLowerCase();
+      const fileExtension = file.name.split('.').pop().toLowerCase();  
+  
       if (fileExtension === 'csv' || fileExtension === 'xls' || fileExtension === 'xlsx') {
-        // Handle actual file upload here
         console.log('Submitting file:', file.name);
-        setShowUploadModal(false);
+        const formData = new FormData();
+        formData.append('file', file);
+  
+        try {
+          const response = await fetch('http://localhost:8050/upload_dataset', {
+            method: 'POST',
+            body: formData
+          });
+
+          console.log('Server Response:', response);
+  
+          const result = await response.json();
+  
+          if (result.status === 'success') {
+            alert(result.message);
+            window.location.reload(); 
+          } else {
+            alert("Upload failed: " + result.message);
+          }
+  
+        } 
+        
+        catch (error) {
+          console.error('Error uploading file:', error);
+          alert("An error occurred during upload.");
+        }
+  
+        setShowUploadModal(false);  
         setFile(null);
+  
       } else {
         alert("Please select a valid CSV or Excel file.");
       }
+  
     } else {
       alert("Please select a file before submitting.");
     }

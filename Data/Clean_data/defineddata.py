@@ -1162,3 +1162,78 @@ def plot_total_number_of_schools_by_region():
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     return fig
+
+#data comparison
+def create_gender_comparison_figure(selected_region):
+    df = df_school.copy()
+    df.columns = df.columns.str.strip()
+    df['Region'] = df['Region'].str.strip()
+
+    if selected_region == 'All Regions':
+        gender_totals_by_region = df.groupby('Region')[grade_columns_male + grade_columns_female].sum()
+        gender_totals_by_region['Total_Male'] = gender_totals_by_region[grade_columns_male].sum(axis=1)
+        gender_totals_by_region['Total_Female'] = gender_totals_by_region[grade_columns_female].sum(axis=1)
+        gender_totals_by_region = gender_totals_by_region.reindex(region_order)
+        gender_totals_by_region = gender_totals_by_region.dropna(subset=['Total_Male', 'Total_Female'])
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=gender_totals_by_region.index,
+            y=gender_totals_by_region['Total_Male'],
+            mode='lines+markers',
+            name='Male',
+            line=dict(color='blue', width=3)
+        ))
+        fig.add_trace(go.Scatter(
+            x=gender_totals_by_region.index,
+            y=gender_totals_by_region['Total_Female'],
+            mode='lines+markers',
+            name='Female',
+            line=dict(color='#ff2c2c', width=2, dash='dash'),
+            fill='tozeroy',
+            fillcolor='rgba(255, 105, 180, 0.3)'
+        ))
+
+    else:
+        filtered_df = df[df['Region'] == selected_region]
+        total_male = filtered_df[grade_columns_male].sum().sum()
+        total_female = filtered_df[grade_columns_female].sum().sum()
+
+        fig = go.Figure()
+        fig.add_trace(go.Pie(
+            labels=['Male', 'Female'],
+            values=[total_male, total_female],
+            hole=0.3,
+            textinfo='label+percent',
+            marker=dict(colors=['#5c6dc9', '#ee6b6e'], line=dict(color='black', width=2)),
+            hoverinfo='label+percent+value',
+            pull=[0.05, 0.05]
+        ))
+
+    fig.update_layout(
+        title={
+            'text': f"<b>{selected_region}</b>",
+            'y': 0.92,
+            'x': 0.5,
+            'xanchor': 'center',
+            'yanchor': 'top',
+            'font': dict(family="Arial Black", size=16)
+        },
+        xaxis_title='Region' if selected_region == 'All Regions' else 'Gender',
+        yaxis_title='Number of Students',
+        template='plotly_white',
+        font=dict(family="Arial Black", size=12, color="black"),
+        height=450,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.04,
+            xanchor="center",
+            x=0.5
+        )
+    )
+
+    return fig
+
+def get_region_list():
+    return ['All Regions'] + sorted(df_school['Region'].dropna().unique().tolist())

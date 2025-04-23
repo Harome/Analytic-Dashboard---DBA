@@ -261,8 +261,6 @@ def create_enrollment_bubble_chart():
     return f"data:image/png;base64,{encoded_2}"
 
 
-
-
 # Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
 fig3, ax = plt.subplots()
 
@@ -1236,4 +1234,59 @@ def create_gender_comparison_figure(selected_region):
     return fig
 
 def get_region_list():
-    return ['All Regions'] + sorted(df_school['Region'].dropna().unique().tolist())
+    available_regions = df_school['Region'].dropna().str.strip().unique()
+    ordered_regions = [region for region in region_order if region in available_regions]
+    return ['All Regions'] + ordered_regions
+
+def create_grade_level_comparison_figure(selected_region):
+    df = df_school.copy()
+    df.columns = df.columns.str.strip()
+    df['Region'] = df['Region'].str.strip()
+
+    if selected_region == 'All Regions':
+        df_filtered = df
+    else:
+        df_filtered = df[df['Region'] == selected_region]
+
+    grade_totals = []
+    for grade, cols in grade_levels.items():
+        total = df_filtered[cols].sum().sum()
+        grade_totals.append({"Grade Level": grade, "Total Students": total})
+
+    df_grade_totals = pd.DataFrame(grade_totals)
+    df_grade_totals['ColorScale'] = df_grade_totals.index
+
+    fig = go.Figure()
+    for i, row in df_grade_totals.iterrows():
+        fig.add_trace(go.Bar(
+            x=[row["Grade Level"]],
+            y=[row["Total Students"]],
+            name=row["Grade Level"],
+            marker=dict(
+                color=row["ColorScale"],
+                colorscale="Bluered",
+                cmin=df_grade_totals["ColorScale"].min(),
+                cmax=df_grade_totals["ColorScale"].max(),
+                line=dict(color="black", width=2)),
+            width=0.9
+        ))
+
+    fig.update_layout(
+        title={'text': f"Student Enrollment by Grade Level<br><sup>{selected_region}</sup>", 'x': 0.5},
+        xaxis_title="Grade Level",
+        yaxis_title="Total Students",
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        font=dict(family="Arial Black", size=10),
+        width=800,
+        height=400,
+        showlegend=True,
+        legend=dict(orientation="h",
+            yanchor="bottom", y=1, xanchor="center", x=0.5),
+        xaxis=dict(tickangle=0, tickfont=dict(size=8)),
+        yaxis=dict(titlefont=dict(size=10), tickfont=dict(size=8)),
+        margin=dict(b=60, t=80, l=60, r=60),
+        bargap=0.2
+    )
+
+    return fig

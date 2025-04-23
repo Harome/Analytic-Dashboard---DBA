@@ -8,6 +8,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from Data.Clean_data.defineddata import (
+    create_grade_level_comparison_figure,
     get_region_list,
     create_gender_comparison_figure,
     create_gender_plot, create_enrollment_bubble_chart,
@@ -78,7 +79,7 @@ def api_gender_comparison():
         print(traceback.format_exc())  # Log the full traceback
         return jsonify({'error': str(e)}), 500
 
-# *** DASH CALLBACK - RIGHT HERE ***
+# DASH CALLBACK for Gender Comparison
 @app.callback(
     Output('comparison-gender-graph', 'figure'),  # Update the 'figure' property of the graph
     Input('comparison-region-dropdown', 'value')   # When the 'value' of the dropdown changes
@@ -86,9 +87,22 @@ def api_gender_comparison():
 def update_gender_comparison(region):
     return create_gender_comparison_figure(region)  # Get the new figure data
 
-# *** END DASH CALLBACK ***
+@server.route('/api/grade-comparison', methods=['GET'])
+def api_grade_comparison():
+    region = request.args.get('region', 'All Regions')
+    fig = create_grade_level_comparison_figure(region)
+    return jsonify(fig.to_plotly_json())
 
-# Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)  
+# DASH CALLBACK for Grade Level Comparison
+@app.callback(
+    Output('grade-bar-graph', 'figure'),  # Update the 'figure' property of the graph
+    Input('grade-region-dropdown', 'value')   # When the 'value' of the dropdown changes
+)
+def update_grade_level_comparison(selected_region):
+    return create_grade_level_comparison_figure(selected_region)
+
+
+# Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)
 graph1_page = html.Div([
     html.Img(src=image_src_1, style={'width': '100%', 'maxWidth': '800px'})
     ], id="Graph_1")
@@ -150,8 +164,8 @@ graph11_page = html.Div([
     dcc.Graph(figure=fig11, id="school-bar-line-chartt")
     ])
 
-# Data Comparison Graph
-comparison_page = html.Div([
+# Data Comparison Graph - Gender
+comparison_page_gender = html.Div([
     html.H2("Data Comparison - Gender Analysis", style={'textAlign': 'center'}),
     html.Div([
         html.Label("Select Region:"),
@@ -163,6 +177,50 @@ comparison_page = html.Div([
     ], style={'width': '300px', 'margin': '0 auto'}),
     dcc.Graph(id='comparison-gender-graph')
 ], style={'padding': '20px'})
+
+# Data Comparison Graph - Grade Level
+comparison_page_grade = html.Div([
+    html.H2("Data Comparison - Grade Level Analysis", style={
+        'textAlign': 'center',
+        'fontFamily': 'Arial Black',
+        'fontSize': '28px',
+        'marginBottom': '20px'
+    }),
+
+    html.Div([
+        html.Label("Select Region:", style={
+            'fontWeight': 'bold',
+            'fontFamily': 'Arial',
+            'fontSize': '16px',
+            'marginRight': '10px'
+        }),
+        dcc.Dropdown(
+            id='grade-region-dropdown',
+            options=[{'label': 'All Regions', 'value': 'All Regions'}] + [{'label': r, 'value': r} for r in get_region_list()],
+            value='All Regions',
+            style={'width': '250px'}
+        )
+    ], style={
+        'display': 'flex',
+        'justifyContent': 'center',
+        'fontFamily': 'Arial',
+        'alignItems': 'center',
+        'marginBottom': '8px',
+        'gap': '10px'
+    }),
+
+    dcc.Graph(id='grade-bar-graph', style={'marginTop': '8px'})
+],
+style={
+    'backgroundColor': 'white',
+    'padding': '20px',
+    'boxShadow': '0 2px 8px rgba(0,0,0,0.1)',
+    'borderRadius': '10px',
+    'maxWidth': '900px',
+    'margin': 'auto'
+})
+
+# Data Comparison Graph - Strand
 
 
 app.layout = html.Div([
@@ -196,8 +254,10 @@ def display_page(pathname):
         return graph10_page
     elif pathname == '/graph11':
         return graph11_page
-    elif pathname == '/data-comparison':
-        return comparison_page
+    elif pathname == '/data-comparison-gender': # New route for gender comparison
+        return comparison_page_gender
+    elif pathname == '/data-comparison-grade': # New route for grade level comparison
+        return comparison_page_grade
     else:
         return index_page
 

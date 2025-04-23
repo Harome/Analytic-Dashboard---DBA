@@ -16,33 +16,36 @@ const DataComp = () => {
         <h1>Data Comparison</h1>
       </header>
 
-      <div className="search-bar-container">
-        <input
-          type="text"
-          className="search-input-datacomp"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          placeholder="Search..."
-        />
-      </div>
+      <div className="outer-container">
+        <div className="dropdowns-row">
+          <select className="dropdown left-dropdown" value={category} onChange={handleCategoryChange}>
+            <option value="">Select Category</option>
+            <option value="gender">Gender</option>
+            <option value="grade-level">Grade Level</option>
+            <option value="grade-division">Grade Division</option>
+            <option value="sector">Sector</option>
+            <option value="school-type">School Type</option>
+          </select>
+        </div>
 
-      <div className="dropdowns-row">
-        <select className="dropdown left-dropdown" value={category} onChange={handleCategoryChange}>
-          <option value="">Select Category</option>
-          <option value="elementary">Elementary</option>
-          <option value="highschool">High School</option>
-          <option value="college">College</option>
-        </select>
+        <div className="datacomp-wrapper">
+          <div className="container-with-sticker">
+            <div className="container-icon">1</div>
+            <div className="left-container">
+              {/* Left content */}
+            </div>
+          </div>
 
-        <select className="dropdown right-dropdown" value={region} onChange={handleRegionChange}>
-          <option value="">Select Region</option>
-          <option value="ncr">NCR</option>
-          <option value="region-iv">Region IV-A</option>
-          <option value="region-vii">Region VII</option>
-        </select>
+          <div className="container-with-sticker">
+            <div className="container-icon">2</div>
+            <div className="right-container">
+              {/* Right content */}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-};
+}
 
 export default DataComp;

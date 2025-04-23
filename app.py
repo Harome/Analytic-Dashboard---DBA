@@ -8,10 +8,14 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 from Data.Clean_data.defineddata import (
+    get_region_list,
+    create_gender_comparison_figure,
     create_gender_plot, create_enrollment_bubble_chart,
     encoded_3, data_4, data_5, fig6,
     fig7, fig8, fig9, fig10, fig11
 )
+from flask import request
+
 
 app = dash.Dash(__name__)
 app.title = "Student Population Dashboard"
@@ -54,6 +58,29 @@ def upload_dataset():
         json.dump(config, f, indent=4)
 
     return jsonify({'status': 'success', 'message': f'File {filename} uploaded and config updated.'}), 200
+
+@server.route('/api/gender-comparison', methods=['GET'])
+def api_gender_comparison():
+    region = request.args.get('region', 'All Regions')
+    print(f"[/api/gender-comparison] Received region: {region}")  # Debugging: Log the region
+    try:
+        fig = create_gender_comparison_figure(region)
+        print("[/api/gender-comparison] Plotly Figure before JSON:")
+        print(json.dumps(fig.to_dict(), indent=4))  # Debugging: Log the figure object
+        json_data = jsonify(fig.to_plotly_json())
+        print("[/api/gender-comparison] JSON data sent to client:")
+        print(json.dumps(fig.to_plotly_json(), indent=4))  # Debugging: Log the JSON
+        return json_data
+    except Exception as e:
+        print(f"[/api/gender-comparison] Error: {e}")
+        return jsonify({'error': str(e)}), 500  # Return an error response
+    
+@app.callback(
+    Output('comparison-gender-graph', 'figure'),  # Update the 'figure' property of the graph
+    Input('comparison-region-dropdown', 'value')   # When the 'value' of the dropdown changes
+)
+def update_gender_comparison(region):
+    return create_gender_comparison_figure(region)  # Get the new figure data    
 
     # Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)  
 
@@ -139,6 +166,23 @@ graph11_page = html.Div([
     ])
 
 
+    # Data Comparison Graph
+initial_fig = go.Figure()  # Create an empty figure - RIGHT HERE!
+
+comparison_page = html.Div([
+    html.H2("Data Comparison - Gender Analysis", style={'textAlign': 'center'}),
+    html.Div([
+        html.Label("Select Region:"),
+        dcc.Dropdown(
+            id='comparison-region-dropdown',
+            options=[{'label': r, 'value': r} for r in get_region_list()],
+            value='All Regions'
+        )
+    ], style={'width': '300px', 'margin': '0 auto'}),
+    dcc.Graph(id='comparison-gender-graph', figure=initial_fig)  # The graph component!
+], style={'padding': '20px'})
+
+
 app.layout = html.Div([
         dcc.Location(id='url', refresh=False),
         html.Div(id='page-content')
@@ -146,6 +190,7 @@ app.layout = html.Div([
 
 @app.callback(Output('page-content', 'children'),
               Input('url', 'pathname'))
+              
 
 def display_page(pathname):
     if pathname == '/graph1':
@@ -170,9 +215,11 @@ def display_page(pathname):
         return graph10_page
     elif pathname == '/graph11':
         return graph11_page
-
+    elif pathname == '/data-comparison':
+        return comparison_page
     else:
         return index_page
+    
 
 if __name__ == '__main__':
     app.run(debug=False)

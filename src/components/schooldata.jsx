@@ -6,7 +6,7 @@ const SchoolData = () => {
   const [zoomLevel, setZoomLevel] = useState(1);  
   const [showUploadModal, setShowUploadModal] = useState(false);  
   const [file, setFile] = useState(null);  
-
+  const [iframeKey, setIframeKey] = useState(Date.now());
 
   const handleImport = () => setShowUploadModal(true);  
 
@@ -19,8 +19,8 @@ const SchoolData = () => {
       if (['csv', 'xls', 'xlsx'].includes(fileExtension)) {
         console.log('Submitting file:', file.name);
         const formData = new FormData();
-        formData.append('file', file);  // <== Don't forget to append the actual file!
-        formData.append('dataset_type', 'school');  // optional, if backend handles it
+        formData.append('file', file);  
+        formData.append('type', 'school');  
   
         try {
           const response = await fetch('http://localhost:8050/upload_dataset', {
@@ -33,8 +33,8 @@ const SchoolData = () => {
   
           if (result.status === 'success') {
             alert(result.message);
+            setIframeKey(Date.now());
             setSelectedCard(null);
-            setTimeout(() => window.location.reload(), 500);  // reload after success
           } else {
             alert("Upload failed: " + result.message);
           }
@@ -72,7 +72,7 @@ const SchoolData = () => {
       </header>
       
       <div className="import-export-sc">
-        <button onClick={handleImport}>Add New DataSet</button>  {/* Opens the modal when clicked */}
+        <button onClick={handleImport}>Add New DataSet</button> 
       </div>
 
       <div className="cards-wrapper">
@@ -87,6 +87,7 @@ const SchoolData = () => {
           >
             <label>{card.label}</label>
             <iframe
+              key={iframeKey}
               src={`${card.src}?t=${new Date().getTime()}`}
               title={card.label}
               style={{
@@ -101,7 +102,6 @@ const SchoolData = () => {
         ))}
       </div>
 
-      {/* Modal for the selected card */}
       {selectedCard && (
         <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
           <div className="modal-cards expanded-modal" onClick={(e) => e.stopPropagation()}>
@@ -115,6 +115,7 @@ const SchoolData = () => {
             >
               <h2>{selectedCard.label}</h2>
               <iframe
+                key={iframeKey}
                 src={selectedCard.src}
                 title={selectedCard.label}
                 style={{
@@ -128,7 +129,6 @@ const SchoolData = () => {
         </div>
       )}
 
-      {/* Modal for file upload */}
       {showUploadModal && (
         <div className="upload-modal-overlay-school" onClick={() => setShowUploadModal(false)}>
           <div className="upload-modal-school" onClick={(e) => e.stopPropagation()}>
@@ -136,7 +136,7 @@ const SchoolData = () => {
             <p>Upload a CSV or Excel file:</p>
             <input 
               type="file" 
-              onChange={handleFileChange}  // Calls handleFileChange when a file is selected
+              onChange={handleFileChange} 
               accept=".csv, .xls, .xlsx" 
             />
             <div className="modal-buttons-school">
@@ -146,7 +146,6 @@ const SchoolData = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

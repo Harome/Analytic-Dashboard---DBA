@@ -6,6 +6,7 @@ const StudentData = () => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [file, setFile] = useState(null);
+    const [iframeKey, setIframeKey] = useState(Date.now());
 
   const handleImport = () => setShowUploadModal(true);
 
@@ -19,7 +20,7 @@ const StudentData = () => {
         console.log('Submitting file:', file.name);
         const formData = new FormData();
         formData.append('file', file);  // <== Don't forget to append the actual file!
-        formData.append('dataset_type', 'student');  // optional, if backend handles it
+        formData.append('type', 'student');  // optional, if backend handles it
   
         try {
           const response = await fetch('http://localhost:8050/upload_dataset', {
@@ -32,8 +33,8 @@ const StudentData = () => {
   
           if (result.status === 'success') {
             alert(result.message);
+            setIframeKey(Date.now());
             setSelectedCard(null);
-            setTimeout(() => window.location.reload(), 500);  // reload after success
           } else {
             alert("Upload failed: " + result.message);
           }
@@ -86,6 +87,7 @@ const StudentData = () => {
           >
             <label>{card.label}</label>
             <iframe
+              key={iframeKey}
               src={card.src}
               title={card.label}
               style={{
@@ -113,6 +115,7 @@ const StudentData = () => {
             >
               <h2>{selectedCard.label}</h2>
               <iframe
+                key={iframeKey}
                 src={selectedCard.src}
                 title={selectedCard.label}
                 style={{
@@ -144,7 +147,6 @@ const StudentData = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

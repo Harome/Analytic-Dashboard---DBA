@@ -1436,7 +1436,6 @@ def create_shs_strand_comparison_figure(selected_region):
 
 
     return fig
-
 #data-comparison - grade division
 
 def create_grade_division_comparison_figure(selected_region):
@@ -1733,6 +1732,8 @@ def create_school_type_comparison_figure(selected_region):
     return fig
 
 def get_region_list():
-    available_regions = df_school['Region'].dropna().str.strip().unique()
-    ordered_regions = [region for region in region_order if region in available_regions]
-    return ['All Regions'] + ordered_regions
+    # This will include all regions from region_order in the dropdown
+    # regardless of whether they are present in the data.
+    # Regions not in the data will show up in the dropdown but will likely
+    # result in empty or zero-value graphs when selected.
+    return ['All Regions'] + region_order

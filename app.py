@@ -327,7 +327,6 @@ comparison_school_type_page = html.Div([
     dcc.Graph(id='comparison-school-type-graph') # New graph ID
 ], style={'padding': '20px'})
 
-
 app.layout = html.Div([
         dcc.Location(id='url', refresh=False),
         html.Div(id='page-content')

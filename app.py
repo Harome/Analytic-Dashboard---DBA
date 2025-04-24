@@ -1,21 +1,20 @@
 import dash
-from dash import dcc, html, dash_table, Input, Output, State
+from dash import dcc, html, dash_table, Input, Output
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import dash_uploader as du
-import base64
-import io
 import os
 from Data.Clean_data.defineddata import (
-    create_grade_level_comparison_figure,
     get_region_list,
-    create_gender_plot, create_enrollment_bubble_chart, df_school,
-    encoded_3, data_4, data_5, generate_graph6,
-    generate_graph7, generate_graph8, generate_graph9, generate_graph10, generate_graph11
+    create_gender_comparison_figure,
+    create_grade_level_comparison_figure,
+    create_shs_strand_comparison_figure, # Import the new function
+    create_gender_plot, create_enrollment_bubble_chart,
+    encoded_3, data_4, data_5, fig6,
+    fig7, fig8, fig9, fig10, fig11
 )
 from flask import request
 import traceback  # Import the traceback module
@@ -24,12 +23,6 @@ import traceback  # Import the traceback module
 app = dash.Dash(__name__)
 app.title = "Student Population Dashboard"
 server = app.server
-fig6 = generate_graph6(df_school)
-fig7 = generate_graph7(df_school)
-fig8 = generate_graph8(df_school)
-fig9 = generate_graph9(df_school)
-fig10 = generate_graph10(df_school)
-fig11 = generate_graph11(df_school)
 
 image_src_1 = create_gender_plot()
 image_src_2 = create_enrollment_bubble_chart()
@@ -51,11 +44,6 @@ def upload_dataset():
     file = request.files['file']
     if file.filename == '':
         return jsonify({'status': 'error', 'message': 'No selected file'}), 400
-    
-    if 'school' in file.filename.lower():
-        target_config = 'school_dataset_path'
-    else:
-        target_config = 'student_dataset_path'
 
     # Save the file to your target folder
     filename = file.filename
@@ -67,43 +55,12 @@ def upload_dataset():
     with open(config_path, 'r') as f:
         config = json.load(f)
 
-    config[target_config] = filepath
+    config['dataset_path'] = filepath
 
     with open(config_path, 'w') as f:
         json.dump(config, f, indent=4)
 
     return jsonify({'status': 'success', 'message': f'File {filename} uploaded and config updated.'}), 200
-
-def parse_contents(contents, filename):
-    content_type, content_string = contents.split(',')
-    decoded = base64.b64decode(content_string)
-    try:
-        df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-        print(f"Parsed DataFrame: {df.head()}")
-        return df
-    except Exception as e:
-        print(f"Error processing file: {e}")
-        return pd.DataFrame()  # Return empty DataFrame on erro
-    
-def process_school_file(contents):
-    content_type, content_string = contents.split(',')
-    decoded = base64.b64decode(content_string)
-    try:
-        df_school = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-        return df_school.to_dict('records')  # Or whatever structure your app expects
-    except Exception as e:
-        print(f"[process_school_file] Error: {e}")
-        return []
-
-def process_student_file(contents):
-    content_type, content_string = contents.split(',')
-    decoded = base64.b64decode(content_string)
-    try:
-        df_student = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-        return df_student.to_dict('records')  # Same here
-    except Exception as e:
-        print(f"[process_student_file] Error: {e}")
-        return []
 
 @server.route('/api/gender-comparison', methods=['GET'])
 def api_gender_comparison():
@@ -123,28 +80,52 @@ def api_gender_comparison():
         print(traceback.format_exc())  # Log the full traceback
         return jsonify({'error': str(e)}), 500
 
-# DASH CALLBACK for Gender Comparison
+@server.route('/api/grade-level-comparison', methods=['GET'])
+def api_grade_level_comparison():
+    region = request.args.get('region', 'All Regions')
+    try:
+        fig = create_grade_level_comparison_figure(region)
+        return jsonify(fig.to_plotly_json())
+    except Exception as e:
+        print(f"[/api/grade-level-comparison] Error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@server.route('/api/shs-strand-comparison', methods=['GET']) # New route for SHS strand comparison
+def api_shs_strand_comparison():
+    region = request.args.get('region', 'All Regions')
+    try:
+        fig = create_shs_strand_comparison_figure(region)
+        return jsonify(fig.to_plotly_json())
+    except Exception as e:
+        print(f"[/api/shs-strand-comparison] Error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+# *** DASH CALLBACKS ***
+
 @app.callback(
-    Output('comparison-gender-graph', 'figure'),  # Update the 'figure' property of the graph
-    Input('comparison-region-dropdown', 'value')   # When the 'value' of the dropdown changes
+    Output('comparison-gender-graph', 'figure'),
+    Input('comparison-region-dropdown', 'value')
 )
 def update_gender_comparison(region):
-    return create_gender_comparison_figure(region)  # Get the new figure data
+    return create_gender_comparison_figure(region)
 
-@server.route('/api/grade-comparison', methods=['GET'])
-def api_grade_comparison():
-    region = request.args.get('region', 'All Regions')
-    fig = create_grade_level_comparison_figure(region)
-    return jsonify(fig.to_plotly_json())
-
-# DASH CALLBACK for Grade Level Comparison
 @app.callback(
-    Output('grade-bar-graph', 'figure'),  # Update the 'figure' property of the graph
-    Input('grade-region-dropdown', 'value')   # When the 'value' of the dropdown changes
+    Output('comparison-grade-level-graph', 'figure'),
+    Input('comparison-grade-level-region-dropdown', 'value')
 )
-def update_grade_level_comparison(selected_region):
-    return create_grade_level_comparison_figure(selected_region)
+def update_grade_level_comparison(region):
+    return create_grade_level_comparison_figure(region)
 
+@app.callback( # New callback for SHS strand comparison
+    Output('comparison-shs-strand-graph', 'figure'),
+    Input('comparison-shs-strand-region-dropdown', 'value')
+)
+def update_shs_strand_comparison(region):
+    return create_shs_strand_comparison_figure(region)
+
+
+# *** END DASH CALLBACKS ***
 
 # Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)
 graph1_page = html.Div([
@@ -188,52 +169,28 @@ graph7_page = html.Div(
         ]
     )
 
-graph7_pag = html.Div(
-    children=[
-        dcc.Graph(
-            id='graph-7'  # ID must match the one you're updating in the callback
-        )
-    ]
-)
-
 # Graph 8: Student Data Analytics - Area Chart (Student Distribution per SHS Strand by Sector)
 graph8_page = html.Div([
     dcc.Graph(figure=fig8, id="Student-strand-area-chart")
     ]),
-
-graph8_pag = html.Div([
-    dcc.Graph(id="graph-8")  # Match callback target ID
-]),
 
 # Graph 9: Student Data Analytics - Donut Chart (Student Distribution by Grade Division and School Sector)
 graph9_page = html.Div([
     dcc.Graph(figure=fig9, id="Student-division-donut-chart")
     ]),
 
-graph9_pag = html.Div([
-    dcc.Graph(id="graph-9")  # Match callback target ID
-])
-
 # Graph 10: School Data Analytics - Sankey Chart (School Population per Sector, Sub-Classification, and Modified COC)
 graph10_page = html.Div([
     dcc.Graph(figure=fig10, id="school-sankey-chart")
     ]),
-
-graph10_pag = html.Div([
-    dcc.Graph(id="graph-10")  # Match callback target ID
-])
 
 # Graph 11: School Data Analytics - Line-Bar Chart (School Count by School Type and Sector)
 graph11_page = html.Div([
     dcc.Graph(figure=fig11, id="school-bar-line-chartt")
     ])
 
-graph11_pag = html.Div([
-    dcc.Graph(id="graph-11")  # Match callback target ID
-])
-
-# Data Comparison Graph - Gender
-comparison_page_gender = html.Div([
+# Data Comparison Gender Page
+comparison_gender_page = html.Div([
     html.H2("Data Comparison - Gender Analysis", style={'textAlign': 'center'}),
     html.Div([
         html.Label("Select Region:"),
@@ -246,72 +203,34 @@ comparison_page_gender = html.Div([
     dcc.Graph(id='comparison-gender-graph')
 ], style={'padding': '20px'})
 
-# Data Comparison Graph - Grade Level
-comparison_page_grade = html.Div([
-    html.H2("Data Comparison - Grade Level Analysis", style={
-        'textAlign': 'center',
-        'fontFamily': 'Arial Black',
-        'fontSize': '28px',
-        'marginBottom': '20px'
-    }),
-
+# Data Comparison Grade Level Page
+comparison_grade_level_page = html.Div([
+    html.H2("Data Comparison - Grade Level Analysis", style={'textAlign': 'center'}),
     html.Div([
-        html.Label("Select Region:", style={
-            'fontWeight': 'bold',
-            'fontFamily': 'Arial',
-            'fontSize': '16px',
-            'marginRight': '10px'
-        }),
+        html.Label("Select Region:"),
         dcc.Dropdown(
-            id='grade-region-dropdown',
-            options=[{'label': 'All Regions', 'value': 'All Regions'}] + [{'label': r, 'value': r} for r in get_region_list()],
-            value='All Regions',
-            style={'width': '250px'}
-        )
-    ], style={
-        'display': 'flex',
-        'justifyContent': 'center',
-        'fontFamily': 'Arial',
-        'alignItems': 'center',
-        'marginBottom': '8px',
-        'gap': '10px'
-    }),
+        id='comparison-grade-level-region-dropdown',
+        options=[{'label': r, 'value': r} for r in get_region_list()],
+        value='All Regions'
+)
+    ], style={'width': '300px', 'margin': '0 auto'}),
+    dcc.Graph(id='comparison-grade-level-graph')
+], style={'padding': '20px'})
 
-    dcc.Graph(id='grade-bar-graph', style={'marginTop': '8px'})
-],
-style={
-    'backgroundColor': 'white',
-    'padding': '20px',
-    'boxShadow': '0 2px 8px rgba(0,0,0,0.1)',
-    'borderRadius': '10px',
-    'maxWidth': '900px',
-    'margin': 'auto'
-})
+# Data Comparison SHS Strand Page
+comparison_shs_strand_page = html.Div([
+    html.H2("Data Comparison - SHS Strand Analysis", style={'textAlign': 'center'}),
+    html.Div([
+        html.Label("Select Region:"),
+        dcc.Dropdown(
+        id='comparison-shs-strand-region-dropdown', # New dropdown ID
+        options=[{'label': r, 'value': r} for r in get_region_list()],
+        value='All Regions'
+)
+    ], style={'width': '300px', 'margin': '0 auto'}),
+    dcc.Graph(id='comparison-shs-strand-graph') # New graph ID
+], style={'padding': '20px'})
 
-app.layout = html.Div([
-    dcc.Store(id='dataset-store', storage_type='memory'),  # Store for dataset
-    
-    # File upload components for school and student datasets
-    html.Div([
-        du.Upload(id='upload-school-data', text='Upload School Data'),
-        du.Upload(id='upload-student-data', text='Upload Student Data'),
-    ]),
-    
-    # Graphs for school data (Graph 10, 11)
-    html.Div([
-        dcc.Graph(id='graph-10'),
-        dcc.Graph(id='graph-11'),
-    ]),
-    
-    # Graphs for student data (Graph 7, 8, 9)
-    html.Div([
-        dcc.Graph(id='graph-7'),
-        dcc.Graph(id='graph-8'),
-        dcc.Graph(id='graph-9'),
-    ]),
-])
-
-# Data Comparison Graph - Strand
 
 app.layout = html.Div([
         dcc.Location(id='url', refresh=False),
@@ -344,89 +263,14 @@ def display_page(pathname):
         return graph10_page
     elif pathname == '/graph11':
         return graph11_page
-    elif pathname == '/data-comparison-gender': # New route for gender comparison
-        return comparison_page_gender
-    elif pathname == '/data-comparison-grade': # New route for grade level comparison
-        return comparison_page_grade
+    elif pathname == '/data-comparison-gender':
+        return comparison_gender_page
+    elif pathname == '/data-comparison-grade-level':
+        return comparison_grade_level_page
+    elif pathname == '/data-comparison-shs-strand': # New route for SHS strand comparison
+        return comparison_shs_strand_page
     else:
         return index_page
-    
-@app.callback(
-    Output('graph-10', 'figure'),
-    Output('graph-11', 'figure'),
-    Input('dataset-store', 'data'),
-    prevent_initial_call=True
-)
-def update_school_graphs(data):
-    df_school = pd.DataFrame(data['school_data'])  # Convert the stored dict back to DataFrame
-    
-    # Use the imported functions to generate the figures
-    fig_10 = generate_graph10(df_school)
-    fig_11 = generate_graph11(df_school)
-    
-    return fig_10, fig_11
-
-# Callback to update Graph 7, 8, 9 (Student data)
-@app.callback(
-    Output('graph-7', 'figure'),
-    Output('graph-8', 'figure'),
-    Output('graph-9', 'figure'),
-    Input('dataset-store', 'data'),
-    prevent_initial_call=True
-)
-def update_student_graphs(data):
-    df_student = pd.DataFrame(data['student_data'])  # Convert the stored dict back to DataFrame
-    
-    # Use the imported functions to generate the figures
-    fig_7 = generate_graph7(df_student)
-    fig_8 = generate_graph8(df_student)
-    fig_9 = generate_graph9(df_student)
-    
-    return fig_7, fig_8, fig_9
-
-@app.callback(
-    Output('store-student', 'data'),
-    Input('upload-data', 'isCompleted'),
-    State('upload-data', 'fileNames'),
-    prevent_initial_call=True
-)
-def update_store_after_upload(is_completed, filenames):
-    if is_completed and filenames:
-        uploaded_path = os.path.join("./uploads", filenames[0])
-        
-        # Load based on file type
-        if uploaded_path.endswith('.csv'):
-            df = pd.read_csv(uploaded_path)
-        elif uploaded_path.endswith('.xlsx'):
-            df = pd.read_excel(uploaded_path)
-        else:
-            return dash.no_update
-        
-        return df.to_dict('records')  # For app-wide usage
-    return dash.no_update
-
-
-@app.callback(
-    [Output('graph10', 'figure'), Output('graph11', 'figure'), Output('graph9', 'figure'), Output('graph8', 'figure'), Output('graph7', 'figure')],
-    [Input('upload-data', 'contents')],
-    [State('upload-data', 'filename'), State('upload-data', 'last_modified')]
-)
-def update_graphs(contents, filename, last_modified):
-    # Process the uploaded file and create the dataframe
-    if contents is None:
-        return dash.no_update, dash.no_update
-    
-    # Parse the dataset into a DataFrame
-    df_school = parse_contents(contents, filename)  # You should define `parse_contents` to handle the file parsing
-
-    # Generate Graph 10 and Graph 11 using the dataset
-    fig7 = generate_graph10(df_school)
-    fig8 = generate_graph10(df_school)
-    fig9 = generate_graph10(df_school)
-    fig10 = generate_graph10(df_school)
-    fig11 = generate_graph11(df_school)
-
-    return fig7, fig8, fig9, fig10, fig11
 
 if __name__ == '__main__':
     app.run(debug=False)

@@ -4,11 +4,26 @@ import './datacomp.css';
 const DataComp = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("");
-  const [region, setRegion] = useState(""); // This state might not be needed here anymore
+  const [region, setRegion] = useState(""); // State for region selection
 
-  const handleSearchChange = (e) => setSearchQuery(e.target.value);
-  const handleCategoryChange = (e) => setCategory(e.target.value);
-  const handleRegionChange = (e) => setRegion(e.target.value); // This handler might not be needed here anymore
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+    // Reset region when category changes
+    setRegion("");
+  };
+  const handleRegionChange = (e) => setRegion(e.target.value);
+
+  // Function to get the iframe source based on category and region
+  const getIframeSrc = (selectedCategory, selectedRegion) => {
+    if (selectedCategory === "gender") {
+      // Pass region as a query parameter to the gender comparison route in app.py
+      return `http://localhost:8050/data-comparison-gender?region=${selectedRegion || 'All Regions'}`;
+    } else if (selectedCategory === "grade-level") {
+      // Pass region as a query parameter to the grade level comparison route in app.py
+      return `http://localhost:8050/data-comparison-grade?region=${selectedRegion || 'All Regions'}`;
+    }
+    return ""; // Default empty source if no category is selected
+  };
 
   return (
     <div className="datacomp-container">
@@ -22,10 +37,10 @@ const DataComp = () => {
             <option value="">Select Category</option>
             <option value="gender">Gender</option>
             <option value="grade-level">Grade Level</option>
-            <option value="shs-strand">SHS Strand</option>
-            <option value="grade-division">Grade Division</option>
-            <option value="sector">Sector</option>
-            <option value="school-type">School Type</option> {/* Added School Type option */}
+            {/* Add other categories as needed */}
+            {/* <option value="grade-division">Grade Division</option> */}
+            {/* <option value="sector">Sector</option> */}
+            {/* <option value="school-type">School Type</option> */}
           </select>
         </div>
 
@@ -33,55 +48,11 @@ const DataComp = () => {
           <div className="container-with-sticker">
             <div className="container-icon">1</div>
             <div className="left-container">
-              {category === "gender" && (
+              {/* Display iframe only when a category is selected */}
+              {category && (
                 <iframe
-                  src="http://localhost:8050/data-comparison-gender"
-                  title="Dash Data Comparison Left"
-                  width="100%"
-                  height="400px"
-                  style={{ border: 'none' }}
-                />
-              )}
-               {category === "grade-level" && (
-                <iframe
-                  src="http://localhost:8050/data-comparison-grade-level"
-                  title="Dash Data Comparison Grade Level Left"
-                  width="100%"
-                  height="400px"
-                  style={{ border: 'none' }}
-                />
-              )}
-               {category === "shs-strand" && (
-                <iframe
-                  src="http://localhost:8050/data-comparison-shs-strand"
-                  title="Dash Data Comparison SHS Strand Left"
-                  width="100%"
-                  height="400px"
-                  style={{ border: 'none' }}
-                />
-              )}
-              {category === "grade-division" && (
-                <iframe
-                  src="http://localhost:8050/data-comparison-grade-division"
-                  title="Dash Data Comparison Grade Division Left"
-                  width="100%"
-                  height="400px"
-                  style={{ border: 'none' }}
-                />
-              )}
-               {category === "sector" && (
-                <iframe
-                  src="http://localhost:8050/data-comparison-sector"
-                  title="Dash Data Comparison Sector Left"
-                  width="100%"
-                  height="400px"
-                  style={{ border: 'none' }}
-                />
-              )}
-               {category === "school-type" && (
-                <iframe
-                  src="http://localhost:8050/data-comparison-school-type" // New route for school type
-                  title="Dash Data Comparison School Type Left"
+                  src={getIframeSrc(category, region)}
+                  title={`Dash Data Comparison ${category}`}
                   width="100%"
                   height="400px"
                   style={{ border: 'none' }}
@@ -93,55 +64,10 @@ const DataComp = () => {
           <div className="container-with-sticker">
             <div className="container-icon">2</div>
             <div className="right-container">
-              {category === "gender" && (
+               {category && (
                 <iframe
-                  src="http://localhost:8050/data-comparison-gender"
-                  title="Dash Data Comparison Right"
-                  width="100%"
-                  height="400px"
-                  style={{ border: 'none' }}
-                />
-              )}
-              {category === "grade-level" && (
-                <iframe
-                  src="http://localhost:8050/data-comparison-grade-level"
-                  title="Dash Data Comparison Grade Level Right"
-                  width="100%"
-                  height="400px"
-                  style={{ border: 'none' }}
-                />
-              )}
-               {category === "shs-strand" && (
-                <iframe
-                  src="http://localhost:8050/data-comparison-shs-strand"
-                  title="Dash Data Comparison SHS Strand Right"
-                  width="100%"
-                  height="400px"
-                  style={{ border: 'none' }}
-                />
-              )}
-               {category === "grade-division" && (
-                <iframe
-                  src="http://localhost:8050/data-comparison-grade-division"
-                  title="Dash Data Comparison Grade Division Right"
-                  width="100%"
-                  height="400px"
-                  style={{ border: 'none' }}
-                />
-              )}
-               {category === "sector" && (
-                <iframe
-                  src="http://localhost:8050/data-comparison-sector"
-                  title="Dash Data Comparison Sector Right"
-                  width="100%"
-                  height="400px"
-                  style={{ border: 'none' }}
-                />
-              )}
-               {category === "school-type" && ( 
-                <iframe
-                  src="http://localhost:8050/data-comparison-school-type" // New route for school type
-                  title="Dash Data Comparison School Type Right"
+                  src={getIframeSrc(category, region)} // Or a different source for comparison
+                  title={`Dash Data Comparison ${category} 2`}
                   width="100%"
                   height="400px"
                   style={{ border: 'none' }}

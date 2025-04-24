@@ -1737,3 +1737,13 @@ def get_region_list():
     # Regions not in the data will show up in the dropdown but will likely
     # result in empty or zero-value graphs when selected.
     return ['All Regions'] + region_order
+
+# Home Counter Numbers
+
+home_numbers = pd.read_excel(heat_map_file)
+
+total_schools_home = int(home_numbers["Region"].count())
+
+total_students_home = int(home_numbers.sum(numeric_only=True).drop(index = 'BEIS_School_ID').sum())
+
+highest_population_home = str(home_numbers.groupby("Region").sum(numeric_only=True).sum(axis=1).idxmax())

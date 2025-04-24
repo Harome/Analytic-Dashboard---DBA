@@ -17,7 +17,7 @@ from Data.Clean_data.defineddata import (
     create_school_type_comparison_figure, # Import the new function
     create_gender_plot, create_enrollment_bubble_chart,
     encoded_3, data_4, data_5, fig6,
-    fig7, fig8, fig9, fig10, fig11
+    fig7, fig8, fig9, fig10, fig11, total_schools_home, total_students_home, highest_population_home
 )
 from flask import request
 import traceback  # Import the traceback module
@@ -177,6 +177,20 @@ def update_sector_comparison(region):
 )
 def update_school_type_comparison(region):
     return create_school_type_comparison_figure(region)
+
+@server.route('/totalschools')
+def serve_total_schools():
+    return jsonify(total_schools_home)
+
+@server.route('/totalstudents')
+def serve_total_students():
+    return jsonify(int(total_students_home))
+
+@server.route('/highestpopulation')
+def serve_highest_population():
+    return str(highest_population_home)
+
+
 
 
 # *** END DASH CALLBACKS ***

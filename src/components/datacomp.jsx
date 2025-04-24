@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import './datacomp.css';
 
 const DataComp = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("");
   const [region, setRegion] = useState(""); // State for region selection
 
-  const handleSearchChange = (e) => setSearchQuery(e.target.value);
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
     // Reset region when category changes

@@ -232,3 +232,22 @@
   background-color: #0056b3;
 }
 
+/* Logout Button */
+.logout-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.logout-btn:hover {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-radius: 4px;
+}

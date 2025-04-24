@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Sidebar from './components/sidebar';
 import './App.css';
 import Home from './components/home';
@@ -7,21 +7,27 @@ import StudentData from './components/studentdata';
 import SchoolData from './components/schooldata';
 import DataComp from './components/datacomp';
 
-function App() {
+function App({ onLogout }) {
+  const navigate = useNavigate();  // Correct place to use `useNavigate`
+
+  const handleLogout = () => {
+    onLogout(); // Handle logout passed from RootComponent
+    navigate("/login");  // Redirect to login after logout
+  };
+
   return (
     <div className="app-layout">
-      {/* Sidebar Component */}
-      <Sidebar />
+      {/* Sidebar with logout */}
+      <Sidebar onLogout={handleLogout} />
 
       {/* Main Content */}
       <main className="content">
         <Routes>
-          <Route path="/home" element={<Home />} /> {/* ✅ Updated path */}
+          <Route path="/home" element={<Home />} />
           <Route path="/student-data" element={<StudentData />} />
           <Route path="/school-data" element={<SchoolData />} />
           <Route path="/data-comp" element={<DataComp />} />
-          {/* Optional: Default route redirects to /home */}
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home />} /> {/* Default route */}
         </Routes>
       </main>
     </div>

@@ -5,12 +5,13 @@ const DataComp = () => {
   const [category, setCategory] = useState("");
   const [region, setRegion] = useState(""); // This state might not be needed here anymore
 
-
+<<<<<<< HEAD
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
-
+    // Reset region when category changes
     setRegion("");
   };
+  const handleRegionChange = (e) => setRegion(e.target.value);
 
   // Function to get the iframe source based on category and region
   const getIframeSrc = (selectedCategory, selectedRegion) => {

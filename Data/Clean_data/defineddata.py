@@ -1170,13 +1170,14 @@ def create_gender_comparison_figure(selected_region):
     df['Region'] = df['Region'].str.strip()
 
     if selected_region == 'All Regions':
-        gender_totals_by_region = df.groupby('Region')[grade_columns_male + grade_columns_female].sum()
+        gender_totals_by_region = df_school.groupby('Region')[grade_columns_male + grade_columns_female].sum()
         gender_totals_by_region['Total_Male'] = gender_totals_by_region[grade_columns_male].sum(axis=1)
         gender_totals_by_region['Total_Female'] = gender_totals_by_region[grade_columns_female].sum(axis=1)
         gender_totals_by_region = gender_totals_by_region.reindex(region_order)
         gender_totals_by_region = gender_totals_by_region.dropna(subset=['Total_Male', 'Total_Female'])
 
         fig = go.Figure()
+
         fig.add_trace(go.Scatter(
             x=gender_totals_by_region.index,
             y=gender_totals_by_region['Total_Male'],
@@ -1184,6 +1185,7 @@ def create_gender_comparison_figure(selected_region):
             name='Male',
             line=dict(color='blue', width=3)
         ))
+
         fig.add_trace(go.Scatter(
             x=gender_totals_by_region.index,
             y=gender_totals_by_region['Total_Female'],
@@ -1195,35 +1197,32 @@ def create_gender_comparison_figure(selected_region):
         ))
 
     else:
-        filtered_df = df[df['Region'] == selected_region]
+        filtered_df = df_school[df_school['Region'] == selected_region]
         total_male = filtered_df[grade_columns_male].sum().sum()
         total_female = filtered_df[grade_columns_female].sum().sum()
 
         fig = go.Figure()
+
         fig.add_trace(go.Pie(
             labels=['Male', 'Female'],
             values=[total_male, total_female],
             hole=0.3,
             textinfo='label+percent',
-            marker=dict(colors=['#5c6dc9', '#ee6b6e'], line=dict(color='black', width=2)),
+            marker=dict(
+                colors=['#5c6dc9', '#ee6b6e'],
+                line=dict(color='black', width=2)
+            ),
             hoverinfo='label+percent+value',
             pull=[0.05, 0.05]
         ))
 
     fig.update_layout(
-        title={
-            'text': f"<b>{selected_region}</b>",
-            'y': 0.92,
-            'x': 0.5,
-            'xanchor': 'center',
-            'yanchor': 'top',
-            'font': dict(family="Arial Black", size=16)
-        },
         xaxis_title='Region' if selected_region == 'All Regions' else 'Gender',
         yaxis_title='Number of Students',
         template='plotly_white',
         font=dict(family="Arial Black", size=12, color="black"),
-        height=450,
+        height=400,
+        margin=dict(t=20, b=20, l=30, r=30),
         legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -1235,6 +1234,7 @@ def create_gender_comparison_figure(selected_region):
 
     return fig
 
+
 #data comparison - grade level
 
 def create_grade_level_comparison_figure(selected_region):
@@ -1243,84 +1243,62 @@ def create_grade_level_comparison_figure(selected_region):
     df['Region'] = df['Region'].str.strip()
 
     if selected_region == 'All Regions':
-        grade_totals_by_region = {}
-        for grade, cols in grade_levels.items():
-             grade_totals_by_region[grade] = df.groupby('Region')[cols].sum().sum(axis=1)
-
-        df_grade_totals_by_region = pd.DataFrame(grade_totals_by_region)
-        df_grade_totals_by_region = df_grade_totals_by_region.reindex(region_order)
-        df_grade_totals_by_region = df_grade_totals_by_region.dropna(how='all')
-
-
-        fig = go.Figure()
-        for grade in df_grade_totals_by_region.columns:
-            fig.add_trace(go.Scatter(
-                x=df_grade_totals_by_region.index,
-                y=df_grade_totals_by_region[grade],
-                mode='lines+markers',
-                name=grade,
-                # You can add colors here if needed
-            ))
-
-        fig.update_layout(
-            title={
-                'text': f"<b>Student Enrollment by Grade Level Across Regions</b>",
-                'y': 0.92,
-                'x': 0.5,
-                'xanchor': 'center',
-                'yanchor': 'top',
-                'font': dict(family="Arial Black", size=16)
-            },
-            xaxis_title='Region',
-            yaxis_title='Number of Students',
-            template='plotly_white',
-            font=dict(family="Arial Black", size=12, color="black"),
-            height=600,
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="center",
-                x=0.5
-            )
-        )
-
+        df_filtered = df_school
     else:
-        filtered_df = df[df['Region'] == selected_region]
-        grade_totals = []
-        for grade, cols in grade_levels.items():
-            total = filtered_df[cols].sum().sum()
-            grade_totals.append({"Grade Level": grade, "Total Students": total})
+        df_filtered = df_school[df_school['Region'] == selected_region]
 
-        df_grade_totals = pd.DataFrame(grade_totals)
-        df_grade_totals = df_grade_totals[df_grade_totals['Total Students'] > 0]
+    grade_totals = []
+    for grade, cols in grade_levels.items():
+        total = df_filtered[cols].sum().sum()
+        grade_totals.append({"Grade Level": grade, "Total Students": total})
 
+    df_grade_totals = pd.DataFrame(grade_totals)
+    df_grade_totals['ColorScale'] = df_grade_totals.index
 
-        fig = go.Figure()
+    fig = go.Figure()
+    for i, row in df_grade_totals.iterrows():
         fig.add_trace(go.Bar(
-            x=df_grade_totals["Grade Level"],
-            y=df_grade_totals["Total Students"],
-            marker_color=df_grade_totals["Total Students"], # Color based on student count
-            colorscale='Viridis', # Colormap for the bars
-             hovertemplate='<b>Grade Level:</b> %{x}<br><b>Total Students:</b> %{y:,}<extra></extra>'
+            x=[row["Grade Level"]],
+            y=[row["Total Students"]],
+            name=row["Grade Level"],
+            marker=dict(
+                color=row["ColorScale"],
+                colorscale="Bluered",
+                cmin=df_grade_totals["ColorScale"].min(),
+                cmax=df_grade_totals["ColorScale"].max(),
+                line=dict(color="black", width=2)),
+            width=0.9
         ))
 
-        fig.update_layout(
-            title={
-                'text': f"<b>Student Enrollment by Grade Level in {selected_region}</b>",
-                'y': 0.92,
-                'x': 0.5,
-                'xanchor': 'center',
-                'yanchor': 'top',
-                'font': dict(family="Arial Black", size=16)
-            },
-            xaxis_title='Grade Level',
-            yaxis_title='Number of Students',
-            template='plotly_white',
-            font=dict(family="Arial Black", size=12, color="black"),
-            height=450,
-        )
-
+    fig.update_layout(
+        xaxis_title="Grade Level",
+        yaxis_title="Total Students",
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        font=dict(family="Arial Black", size=10),
+        width=800,
+        height=400,
+        showlegend=True,
+        legend=dict(orientation="h",
+            yanchor="bottom",
+            y=1,
+            xanchor="center",
+            x=0.5,
+            traceorder='normal',
+            itemclick='toggleothers',
+            itemsizing='constant',
+            bgcolor='rgba(255, 255, 255, 0.8)',
+        ),
+        xaxis=dict(
+            tickangle=0,
+            tickfont=dict(size=8),
+            title_font=dict(size=10)),
+        yaxis=dict(
+            title_font=dict(size=10),
+            tickfont=dict(size=8)),
+        margin=dict(b=60, t=80, l=60, r=60),
+        bargap=0.2
+    )
 
     return fig
 
@@ -1345,94 +1323,48 @@ def create_shs_strand_comparison_figure(selected_region):
 
 
     if selected_region == 'All Regions':
-        strand_totals_by_region = {}
-        for strand, cols in shs_strands.items():
-             # Ensure all columns in 'cols' exist in the dataframe before summing
-            valid_cols = [col for col in cols if col in df.columns]
-            if valid_cols:
-                 strand_totals_by_region[strand] = df.groupby('Region')[valid_cols].sum().sum(axis=1)
-            else:
-                 strand_totals_by_region[strand] = pd.Series(0, index=df['Region'].unique()) # Add zero counts if no columns found
-
-        df_strand_totals_by_region = pd.DataFrame(strand_totals_by_region)
-        # Ensure all regions from region_order are included, even if they have no data for SHS (fill with 0)
-        df_strand_totals_by_region = df_strand_totals_by_region.reindex(region_order).fillna(0)
-        df_strand_totals_by_region = df_strand_totals_by_region.dropna(how='all') # Drop regions with all NaN after reindex
-
-        fig = go.Figure()
-        for strand in df_strand_totals_by_region.columns:
-            fig.add_trace(go.Scatter(
-                x=df_strand_totals_by_region.index,
-                y=df_strand_totals_by_region[strand],
-                mode='lines+markers',
-                name=strand,
-                # You can add colors here if needed
-            ))
-
-        fig.update_layout(
-            title={
-                'text': f"<b>Student Enrollment by SHS Strand Across Regions</b>",
-                'y': 0.92,
-                'x': 0.5,
-                'xanchor': 'center',
-                'yanchor': 'top',
-                'font': dict(family="Arial Black", size=16)
-            },
-            xaxis_title='Region',
-            yaxis_title='Number of Students',
-            template='plotly_white',
-            font=dict(family="Arial Black", size=12, color="black"),
-            height=600,
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="center",
-                x=0.5
-            )
-        )
-
+        filtered_df = df_school
     else:
-        filtered_df = df[df['Region'] == selected_region]
-        strand_totals = []
-        for strand, cols in shs_strands.items():
-            # Ensure all columns in 'cols' exist in the dataframe before summing
-            valid_cols = [col for col in cols if col in filtered_df.columns]
-            if valid_cols:
-                total = filtered_df[valid_cols].sum().sum()
-            else:
-                total = 0 # Assign zero if no columns found for this strand
+        filtered_df = df_school[df_school['Region'] == selected_region]
 
-            strand_totals.append({"SHS Strand": strand, "Total Students": total})
+    shs_totals = []
+    for strand, cols in shs_strands.items():
+        total = filtered_df[cols].sum().sum()
+        shs_totals.append({"SHS Strand": strand, "Total Students": total})
 
-        df_strand_totals = pd.DataFrame(strand_totals)
-        df_strand_totals = df_strand_totals[df_strand_totals['Total Students'] > 0]
+    df_shs_totals = pd.DataFrame(shs_totals)
 
+    custom_colors = ['#e1bbd9', '#6cc24a', '#5c6dc9', '#f1b04c', '#ee6b6e']
 
-        fig = go.Figure()
-        fig.add_trace(go.Bar(
-            x=df_strand_totals["SHS Strand"],
-            y=df_strand_totals["Total Students"],
-            marker_color=df_strand_totals["Total Students"], # Color based on student count
-            colorscale='Viridis', # Colormap for the bars
-             hovertemplate='<b>SHS Strand:</b> %{x}<br><b>Total Students:</b> %{y:,}<extra></extra>'
-        ))
+    fig = px.pie(
+        df_shs_totals,
+        names="SHS Strand",
+        values="Total Students",
+        color="SHS Strand",
+        color_discrete_sequence=custom_colors
+    )
 
-        fig.update_layout(
-            title={
-                'text': f"<b>Student Enrollment by SHS Strand in {selected_region}</b>",
-                'y': 0.92,
-                'x': 0.5,
-                'xanchor': 'center',
-                'yanchor': 'top',
-                'font': dict(family="Arial Black", size=16)
-            },
-            xaxis_title='SHS Strand',
-            yaxis_title='Number of Students',
-            template='plotly_white',
-            font=dict(family="Arial Black", size=12, color="black"),
-            height=450,
-        )
+    fig.update_traces(
+        marker=dict(line=dict(color='black', width=2))
+    )
+
+    fig.update_layout(
+        title={
+            'text': f"<b>{selected_region}</b>",
+            'y': 0.95,
+            'x': 0.5,
+            'xanchor': 'center',
+            'yanchor': 'top',
+            'font': dict(family="Arial Black", size=16)
+        },
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        font=dict(family="Arial Black", size=14),
+        margin=dict(l=40, r=40, t=50, b=50),
+        showlegend=True,
+        width=500,
+        height=400
+    )
 
 
     return fig
@@ -1471,7 +1403,6 @@ def create_grade_division_comparison_figure(selected_region):
 
         fig.update_layout(
             title={
-                'text': f"<b>Student Enrollment by Grade Division Across Regions</b>",
                 'y': 0.92,
                 'x': 0.5,
                 'xanchor': 'center',

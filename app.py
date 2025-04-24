@@ -10,8 +10,6 @@ import os
 from Data.Clean_data.defineddata import (
     get_region_list,
     create_gender_comparison_figure,
-    create_grade_level_comparison_figure,
-    create_shs_strand_comparison_figure, # Import the new function
     create_gender_plot, create_enrollment_bubble_chart,
     encoded_3, data_4, data_5, fig6,
     fig7, fig8, fig9, fig10, fig11
@@ -80,54 +78,17 @@ def api_gender_comparison():
         print(traceback.format_exc())  # Log the full traceback
         return jsonify({'error': str(e)}), 500
 
-@server.route('/api/grade-level-comparison', methods=['GET'])
-def api_grade_level_comparison():
-    region = request.args.get('region', 'All Regions')
-    try:
-        fig = create_grade_level_comparison_figure(region)
-        return jsonify(fig.to_plotly_json())
-    except Exception as e:
-        print(f"[/api/grade-level-comparison] Error: {e}")
-        return jsonify({'error': str(e)}), 500
-
-@server.route('/api/shs-strand-comparison', methods=['GET']) # New route for SHS strand comparison
-def api_shs_strand_comparison():
-    region = request.args.get('region', 'All Regions')
-    try:
-        fig = create_shs_strand_comparison_figure(region)
-        return jsonify(fig.to_plotly_json())
-    except Exception as e:
-        print(f"[/api/shs-strand-comparison] Error: {e}")
-        return jsonify({'error': str(e)}), 500
-
-
-# *** DASH CALLBACKS ***
-
+# *** DASH CALLBACK - RIGHT HERE ***
 @app.callback(
-    Output('comparison-gender-graph', 'figure'),
-    Input('comparison-region-dropdown', 'value')
+    Output('comparison-gender-graph', 'figure'),  # Update the 'figure' property of the graph
+    Input('comparison-region-dropdown', 'value')   # When the 'value' of the dropdown changes
 )
 def update_gender_comparison(region):
-    return create_gender_comparison_figure(region)
+    return create_gender_comparison_figure(region)  # Get the new figure data
 
-@app.callback(
-    Output('comparison-grade-level-graph', 'figure'),
-    Input('comparison-grade-level-region-dropdown', 'value')
-)
-def update_grade_level_comparison(region):
-    return create_grade_level_comparison_figure(region)
+# *** END DASH CALLBACK ***
 
-@app.callback( # New callback for SHS strand comparison
-    Output('comparison-shs-strand-graph', 'figure'),
-    Input('comparison-shs-strand-region-dropdown', 'value')
-)
-def update_shs_strand_comparison(region):
-    return create_shs_strand_comparison_figure(region)
-
-
-# *** END DASH CALLBACKS ***
-
-# Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)
+# Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)  
 graph1_page = html.Div([
     html.Img(src=image_src_1, style={'width': '100%', 'maxWidth': '800px'})
     ], id="Graph_1")
@@ -189,8 +150,8 @@ graph11_page = html.Div([
     dcc.Graph(figure=fig11, id="school-bar-line-chartt")
     ])
 
-# Data Comparison Gender Page
-comparison_gender_page = html.Div([
+# Data Comparison Graph
+comparison_page = html.Div([
     html.H2("Data Comparison - Gender Analysis", style={'textAlign': 'center'}),
     html.Div([
         html.Label("Select Region:"),
@@ -201,34 +162,6 @@ comparison_gender_page = html.Div([
 )
     ], style={'width': '300px', 'margin': '0 auto'}),
     dcc.Graph(id='comparison-gender-graph')
-], style={'padding': '20px'})
-
-# Data Comparison Grade Level Page
-comparison_grade_level_page = html.Div([
-    html.H2("Data Comparison - Grade Level Analysis", style={'textAlign': 'center'}),
-    html.Div([
-        html.Label("Select Region:"),
-        dcc.Dropdown(
-        id='comparison-grade-level-region-dropdown',
-        options=[{'label': r, 'value': r} for r in get_region_list()],
-        value='All Regions'
-)
-    ], style={'width': '300px', 'margin': '0 auto'}),
-    dcc.Graph(id='comparison-grade-level-graph')
-], style={'padding': '20px'})
-
-# Data Comparison SHS Strand Page
-comparison_shs_strand_page = html.Div([
-    html.H2("Data Comparison - SHS Strand Analysis", style={'textAlign': 'center'}),
-    html.Div([
-        html.Label("Select Region:"),
-        dcc.Dropdown(
-        id='comparison-shs-strand-region-dropdown', # New dropdown ID
-        options=[{'label': r, 'value': r} for r in get_region_list()],
-        value='All Regions'
-)
-    ], style={'width': '300px', 'margin': '0 auto'}),
-    dcc.Graph(id='comparison-shs-strand-graph') # New graph ID
 ], style={'padding': '20px'})
 
 
@@ -263,12 +196,8 @@ def display_page(pathname):
         return graph10_page
     elif pathname == '/graph11':
         return graph11_page
-    elif pathname == '/data-comparison-gender':
-        return comparison_gender_page
-    elif pathname == '/data-comparison-grade-level':
-        return comparison_grade_level_page
-    elif pathname == '/data-comparison-shs-strand': # New route for SHS strand comparison
-        return comparison_shs_strand_page
+    elif pathname == '/data-comparison':
+        return comparison_page
     else:
         return index_page
 

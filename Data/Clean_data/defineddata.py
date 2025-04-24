@@ -27,12 +27,41 @@ import json
 import matplotlib
 matplotlib.use('Agg')
 
-with open('config.json', 'r') as f:
-    config = json.load(f)
+config_path = 'config.json'
 
-path = config['dataset_path']
+def load_config():
+    with open(config_path, 'r') as f:
+        return json.load(f)
 
+config = load_config()
+path = config.get('dataset_path')
 df_school = pd.read_excel(path)
+
+def load_school_data():
+    config = load_config()
+    school_path = config.get('school_dataset_path')
+    default_path = config.get('dataset_path')
+
+    if school_path and os.path.exists(school_path):
+        return pd.read_excel(school_path, engine='openpyxl')
+
+    if default_path and os.path.exists(default_path):
+        return pd.read_excel(default_path, engine='openpyxl')
+
+    return None
+
+def load_student_data():
+    config = load_config()
+    student_path = config.get('student_dataset_path')
+    default_path = config.get('dataset_path')
+
+    if student_path and os.path.exists(student_path):
+        return pd.read_excel(student_path, engine='openpyxl')
+
+    if default_path and os.path.exists(default_path):
+        return pd.read_excel(default_path, engine='openpyxl')
+
+    return None
 
 region_order = ['Region I', 'Region II', 'Region III', 'Region IV-A', 'MIMAROPA', 'Region V',
                 'Region VI', 'Region VII', 'Region VIII', 'Region IX', 'Region X', 'Region XI',
@@ -260,7 +289,6 @@ def create_enrollment_bubble_chart():
     encoded_2 = base64.b64encode(buf2.read()).decode('utf-8')
     return f"data:image/png;base64,{encoded_2}"
 
-
 # Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
 fig3, ax = plt.subplots()
 
@@ -344,7 +372,7 @@ highlight_alpha = 0.2
 highlight_color = 'black'
 
 red_highlight = patches.Rectangle((x_positions[0], 0 + y_shift), book_width, book_height,
-                                  linewidth=1.5, edgecolor=highlight_color, facecolor=highlight_color, alpha=highlight_alpha)
+                                linewidth=1.5, edgecolor=highlight_color, facecolor=highlight_color, alpha=highlight_alpha)
 ax.add_patch(red_highlight)
 
 green_highlight = patches.Rectangle((x_positions[1], 0 + y_shift), book_width, green_book_height,
@@ -353,7 +381,7 @@ green_highlight = patches.Rectangle((x_positions[1], 0 + y_shift), book_width, g
 ax.add_patch(green_highlight)
 
 blue_highlight = patches.Rectangle((x_positions[2], 0 + y_shift), book_width, blue_book_height,
-                                   linewidth=1.5, edgecolor=highlight_color, facecolor=highlight_color, alpha=highlight_alpha)
+                                linewidth=1.5, edgecolor=highlight_color, facecolor=highlight_color, alpha=highlight_alpha)
 ax.add_patch(blue_highlight)
 
 ax.text(x_positions[0] + book_width / 2 + 0.2, book_height / 2 + y_shift + 3.2,
@@ -391,7 +419,6 @@ encoded_3 = base64.b64encode(buf3.read()).decode('utf-8')
 plt.close(fig3)
 
 # Graph 4: Main Dashboard - School Data No. 1 (Distribution of Schools Per Region)
-
 # Data and plotting logic (unchanged)
 regions = [("Region I", 3393), ("Region II", 2916), ("Region III", 5194), ("Region IV-A", 6007),
     ("MIMAROPA", 2684), ("Region V", 4467), ("Region VI", 5037), ("Region VII", 4697),
@@ -408,7 +435,7 @@ rows = [[region_dict["Region I"], region_dict["Region II"], region_dict["Region 
     [region_dict["Region VI"], region_dict["Region VII"], region_dict["Region VIII"]],
     [region_dict["Region VIII"], region_dict["Region IX"], region_dict["Region X"], region_dict["Region XI"]],
     [region_dict["Region XII"], region_dict["Caraga"], region_dict["BARMM"],
-     region_dict["CAR"], region_dict["NCR"], region_dict["PSO"]]]
+    region_dict["CAR"], region_dict["NCR"], region_dict["PSO"]]]
 
 scale = 1.2
 box_height = 2
@@ -425,7 +452,7 @@ roof_base_x = []
 roof_base_y = []
 
 plt.text(x_center, y_start + 3.5, "Distribution of Schools per Region",
-         fontsize=18, fontweight='bold', ha='center')
+        fontsize=18, fontweight='bold', ha='center')
 
 colors = ['#ba4141', '#2262bd', '#1b8e3e', '#FDD85D']
 
@@ -465,8 +492,8 @@ if roof_base_x:
     triangle_top = ((roof_base_x[0] + roof_base_x[1]) / 2, roof_base_y[0] + 3 + roof_gap)
     triangle = Polygon(
         [(roof_base_x[0], roof_base_y[0] + roof_gap),
-         (roof_base_x[1], roof_base_y[1] + roof_gap),
-         triangle_top],
+        (roof_base_x[1], roof_base_y[1] + roof_gap),
+        triangle_top],
         closed=True, facecolor='#7a4b47', edgecolor='black')
     ax.add_patch(triangle)
 
@@ -482,9 +509,7 @@ data_4 = base64.b64encode(buf4.getbuffer()).decode("ascii")
 
 plt.close(fig4)
 
-
 # Graph 5: Main Dashboard - School Data No. 2 (School Distribution per Sector)
-
 # Create the figure
 fig5, ax = plt.subplots(figsize=(12, 6))
 
@@ -528,7 +553,7 @@ def draw_pencil(x_offset, color, height, label, percentage, percentage_offset, l
             color='black', linewidth=1.5)
 
     wood_part = patches.Polygon([(x_offset - 50, height - 100), (x_offset + 50, height - 100), (x_offset, height - 30)],
-                                 closed=True, facecolor='#DEB887', edgecolor='black')
+                                closed=True, facecolor='#DEB887', edgecolor='black')
     ax.add_patch(wood_part)
 
     tip_y = height - 30
@@ -569,669 +594,546 @@ data_5 = base64.b64encode(buf5.getbuffer()).decode("ascii")
 
 plt.close(fig5)
 
-# Graph 6: Main Dashboard - Philippine Heatmap (Philippine Regions<br>Student Population Heatmap)
+def generate_graph6(df_school): 
+    # Graph 6: Main Dashboard - Philippine Heatmap (Philippine Regions<br>Student Population Heatmap)
+    heat_map_file = r'Data/Raw_data/ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx'
+    heatmap_df = pd.read_excel(heat_map_file)
 
-heat_map_file = r'Data/Raw_data/ANALYZED_SY_2023-2024_School_Level_Data_on_Official_Enrollment_13.xlsx'
-heatmap_df = pd.read_excel(heat_map_file)
+    region_code_name = {
+        "PH00": "NCR", "PH01": "Region I", "PH02": "Region II", "PH03": "Region III",
+        "PH05": "Region V", "PH06": "Region VI", "PH07": "Region VII", "PH08": "Region VIII",
+        "PH09": "Region IX", "PH10": "Region X", "PH11": "Region XI", "PH12": "Region XII",
+        "PH13": "CARAGA", "PH14": "BARMM", "PH15": "CAR", "PH40": "Region IV-A", "PH41": "MIMAROPA"
+    }
 
+    school_data = heatmap_df.groupby('Region').count()
+    school_data = school_data["Division"].rename('Total Schools').drop(index='PSO').to_dict()
 
-region_code_name = {
-    "PH00": "NCR", "PH01": "Region I", "PH02": "Region II", "PH03": "Region III",
-    "PH05": "Region V", "PH06": "Region VI", "PH07": "Region VII", "PH08": "Region VIII",
-    "PH09": "Region IX", "PH10": "Region X", "PH11": "Region XI", "PH12": "Region XII",
-    "PH13": "CARAGA", "PH14": "BARMM", "PH15": "CAR", "PH40": "Region IV-A", "PH41": "MIMAROPA"
-}
-
-school_data = heatmap_df.groupby('Region').count()
-school_data = school_data["Division"].rename('Total Schools').drop(index='PSO').to_dict()
-
-student_data = (
-    heatmap_df.drop(columns=['BEIS_School_ID'])
-    .groupby('Region').sum(numeric_only=True)
-    .sum(axis=1).rename('Total Students')
-    .drop(index='PSO')
-    .to_dict()
-)
-
-student_data = dict(sorted(student_data.items(), key=lambda x: x[1], reverse=True))
-school_data = dict(sorted(school_data.items(), key=lambda x: x[1], reverse=True))
-
-name_to_code = {v: k for k, v in region_code_name.items()}
-
-df_heatmap = pd.DataFrame({
-    'RegionName': list(student_data.keys()),
-    'RegionCode': [name_to_code[name] for name in student_data.keys()],
-    'Student<br>Population': list(student_data.values()),
-    'School Count': list(school_data.values())
-})
-
-heat_file_path = 'Data/Raw_data/ph.json'
-
-geojson = None  # Initialize geojson to avoid NameError
-
-if os.path.exists(heat_file_path):
-    with open(heat_file_path) as f:
-        geojson = json.load(f)  # Load the geojson data
-else:
-    print(f"Error: File not found at {heat_file_path}. Please ensure the file exists.")
-    # Optionally, you can raise an exception or provide a fallback mechanism here.
-
-# Ensure geojson is not used if it is None
-if geojson is None:
-    print("GeoJSON data is not available. Please check the file path and content.")
-
-fig6 = px.choropleth_mapbox(
-    df_heatmap,
-    geojson=geojson,
-    locations='RegionCode',
-    featureidkey='properties.id',
-    color='Student<br>Population',
-    hover_name='RegionName',
-    hover_data={'Student<br>Population': True, 'School Count': True, 'RegionCode': False},
-    color_continuous_scale=[
-        [0.0, '#FFFB97'],
-        [0.5, '#FE7F42'],
-        [1.0, '#B32C1A']
-    ],
-    mapbox_style='white-bg',
-    center={'lat': 12.5, 'lon': 121.7},
-    zoom=4.4,
-    opacity=1.0,
-    range_color=(0, 4000000),
-    title='Philippine Regions<br>Student Population Heatmap'
-)
-
-fig6.update_traces(
-    hovertemplate=(
-        '<b style="color:black; font-family:Arial Black;"> %{hovertext}</b><br><br>' +
-        '<b style="color:black; font-family:Arial Black;">Total Students:</b> %{customdata[0]:,}<br>' +
-        '<b style="color:black; font-family:Arial Black;">Total Schools:</b> %{customdata[1]:,}<extra></extra>'
+    student_data = (
+        heatmap_df.drop(columns=['BEIS_School_ID'])
+        .groupby('Region').sum(numeric_only=True)
+        .sum(axis=1).rename('Total Students')
+        .drop(index='PSO')
+        .to_dict()
     )
-)
 
-fig6.update_layout(
-    width=350, height=700,
-    margin=dict(l=18, r=18, t=80, b=10),
-    shapes=[dict(
-        type='rect', xref='paper', yref='paper',
-        x0=0, y0=0, x1=1, y1=1,
-        line=dict(color='black', width=2)
-    )],
-    title=dict(
-        x=0.5, xanchor='center',
-        font=dict(size=16, family='Arial Black', color='black')
-    ),
-    coloraxis_colorbar=dict(
-        title = dict(side="bottom"),
-        title_font=dict(family='Arial Black', size=12, color='black'),
-        tickfont=dict(family='Arial', size=10, color='black'),
-        outlinecolor='black', outlinewidth=1,
-        tickprefix=' ',
-        ticks='outside',  ticklen=5,
-        len=1,
-        thickness=15,
-        x=0.5,            # center it horizontally
-        xanchor='center',
-        y=-0.005,           # push it below the plot (adjust as needed)
-        yanchor='top',
-        orientation = 'h'
+    student_data = dict(sorted(student_data.items(), key=lambda x: x[1], reverse=True))
+    school_data = dict(sorted(school_data.items(), key=lambda x: x[1], reverse=True))
 
-    ),
-    hoverlabel=dict(
-        bgcolor="white",
-        font_size=13,
-        font_family="Arial"
+    name_to_code = {v: k for k, v in region_code_name.items()}
+
+    df_heatmap = pd.DataFrame({
+        'RegionName': list(student_data.keys()),
+        'RegionCode': [name_to_code[name] for name in student_data.keys()],
+        'Student<br>Population': list(student_data.values()),
+        'School Count': list(school_data.values())
+    })
+
+    heat_file_path = 'Data/Raw_data/ph.json'
+
+    geojson = None  # Initialize geojson to avoid NameError
+
+    if os.path.exists(heat_file_path):
+        with open(heat_file_path) as f:
+            geojson = json.load(f)  # Load the geojson data
+    else:
+        print(f"Error: File not found at {heat_file_path}. Please ensure the file exists.")
+        # Optionally, you can raise an exception or provide a fallback mechanism here.
+
+    # Ensure geojson is not used if it is None
+    if geojson is None:
+        print("GeoJSON data is not available. Please check the file path and content.")
+
+    fig6 = px.choropleth_mapbox(
+        df_heatmap,
+        geojson=geojson,
+        locations='RegionCode',
+        featureidkey='properties.id',
+        color='Student<br>Population',
+        hover_name='RegionName',
+        hover_data={'Student<br>Population': True, 'School Count': True, 'RegionCode': False},
+        color_continuous_scale=[
+            [0.0, '#FFFB97'],
+            [0.5, '#FE7F42'],
+            [1.0, '#B32C1A']
+        ],
+        mapbox_style='white-bg',
+        center={'lat': 12.5, 'lon': 121.7},
+        zoom=4.4,
+        opacity=1.0,
+        range_color=(0, 4000000),
+        title='Philippine Regions<br>Student Population Heatmap'
     )
-)
 
-
-# Graph 7: Student Data Analytics - Column-Bar Chart (Student Population per Grade Level by Gender)
-
-grade_labels = []
-male_counts = []
-female_counts = []
-
-for grade, columns in grade_levels.items():
-    male_counts.append(df_school[columns[0]].sum())
-    female_counts.append(df_school[columns[1]].sum())
-    grade_labels.append(grade)
-
-fig7 = go.Figure()
-
-fig7.add_trace(go.Bar(
-    x=[label for label in grade_labels],
-    y=male_counts,
-    name='Male',
-    marker_color='#33C3FF',
-    hovertemplate='<b style="color:black; font-family: Arial Black;">%{x}</b><br><b style="color:black;">Gender:</b> Male<br><b style="color:black;">Students:</b> %{y:,}<extra></extra>'
-
-))
-
-
-fig7.add_trace(go.Bar(
-    x=[label for label in grade_labels],
-    y=female_counts,
-    name='Female',
-    marker_color= '#FF746C',
-    hovertemplate='<b  style="color:black; font-family: Arial Black;">%{x}</b><br><b style="color:black;">Gender:</b> Female<br><b style="color:black;">Students:</b> %{y:,}<extra></extra>'
-))
-
-fig7.update_layout(
-    title=dict(
-        text='',
-        x=0.5,
-        xanchor='center',
-        font=dict(
-            family='Arial Black',
-            size=20,
-            color='black'
+    fig6.update_traces(
+        hovertemplate=(
+            '<b style="color:black; font-family:Arial Black;"> %{hovertext}</b><br><br>' +
+            '<b style="color:black; font-family:Arial Black;">Total Students:</b> %{customdata[0]:,}<br>' +
+            '<b style="color:black; font-family:Arial Black;">Total Schools:</b> %{customdata[1]:,}<extra></extra>'
         )
-    ),
-    shapes=[
-        dict(
-            type="rect",
-            xref="paper", yref="paper",
+    )
+
+    fig6.update_layout(
+        width=350, height=700,
+        margin=dict(l=18, r=18, t=80, b=10),
+        shapes=[dict(
+            type='rect', xref='paper', yref='paper',
             x0=0, y0=0, x1=1, y1=1,
-            line=dict(color="black", width=2)
+            line=dict(color='black', width=2)
+        )],
+        title=dict(
+            x=0.5, xanchor='center',
+            font=dict(size=16, family='Arial Black', color='black')
+        ),
+        coloraxis_colorbar=dict(
+            title = dict(side="bottom"),
+            title_font=dict(family='Arial Black', size=12, color='black'),
+            tickfont=dict(family='Arial', size=10, color='black'),
+            outlinecolor='black', outlinewidth=1,
+            tickprefix=' ',
+            ticks='outside',  ticklen=5,
+            len=1,
+            thickness=15,
+            x=0.5,            # center it horizontally
+            xanchor='center',
+            y=-0.005,           # push it below the plot (adjust as needed)
+            yanchor='top',
+            orientation = 'h'
+
+        ),
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=13,
+            font_family="Arial"
         )
-    ],
-    showlegend=True,
-    legend=dict(
-        title=dict(text='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gender', font=dict(size=12, family='Arial Black')),
-        x=1.01,
-        y=1.05,
-        orientation='v',
-        bgcolor='rgba(255,255,255,0.8)',
-        bordercolor='black',
-        borderwidth=1,
-        font=dict(size=11, family='Arial')
-    ),
-    xaxis_title='Grade Level<br>',
-    yaxis_title='<br>Student Population',
-    barmode='group',
-    xaxis=dict(
-        title='Grade Level<br>',
-        title_standoff=10,
-        tickangle=45,
-        tickfont=dict(size=12, family='Arial Black')
-    ),
-    uniformtext=dict(
-        minsize=10,
-        mode='show'
-    ),
-    yaxis=dict(
-        tickformat=',',
-        gridcolor='gray',
-        ticklen=10,
-        title_standoff=5,
-        automargin=True,
-        tickfont=dict(size=12, family='Arial Black'),
-        tick0=20,
-        ticksuffix="   "
-    ),
-    template='plotly_white',
-    margin=dict(l=100, r=100, t=100, b=100),
-    font=dict(family='Arial Black'),
-    hoverlabel=dict(
-        bgcolor="white",
-        font_size=12,
-        font_family="Arial"
     )
-)
 
-# Graph 8: Student Data Analytics - Area Chart (Student Distribution per SHS Strand by Sector)
+    return fig6
 
-sector_distribution = df_school.groupby("Sector").sum(numeric_only=True)
-sector_values = {
-    strand: sector_distribution[cols].sum(axis=1)
-    for strand, cols in shs_strands.items()
-}
-strand_df = pd.DataFrame(sector_values)
-strand_df.loc["SUCs/LUCs & PSO"] = strand_df.loc["SUCsLUCs"] + strand_df.loc["PSO"]
-strand_df = strand_df.drop(index=["SUCsLUCs", "PSO"])
+def generate_graph7(df_school):
+    df_school = load_student_data()
+    # Graph 7: Student Data Analytics - Column-Bar Chart (Student Population per Grade Level by Gender)
+    grade_labels = []
+    male_counts = []
+    female_counts = []
 
-sector_colors = {
-    "Private": ('#33C3FF', "rgba(168, 218, 220, 0.4)"),
-    "Public":  ("#FF746C", "rgba(255, 178, 162, 0.4)"),
-    "SUCs/LUCs & PSO": ('#2ECC71', "rgba(138, 177, 125, 0.4)")
-}
+    for grade, columns in grade_levels.items():
+        male_counts.append(df_school[columns[0]].sum())
+        female_counts.append(df_school[columns[1]].sum())
+        grade_labels.append(grade)
 
-fig8 = go.Figure()
+    fig7 = go.Figure()
 
-for sector in ["Public", "Private", "SUCs/LUCs & PSO"]:
-    line_color, fill_color = sector_colors.get(sector, ("gray", "rgba(128,128,128,0.2)"))
-    fig8.add_trace(go.Scatter(
-        x=strand_df.columns,
-        y=strand_df.loc[sector],
-        mode='lines+markers',
-        name=sector,
-        line=dict(color=line_color, width=5),
-        marker=dict(size=12, color=line_color, line=dict(color='white', width=3)),
-        fill='tozeroy',
-        fillcolor=fill_color,
-        hovertemplate= f'<b style="color:black; font-family: Arial Black; f">{sector}</b>' + '<br><b>Strand:</b> %{x}<br><b>Students:</b> %{y:,}<extra></extra>'
+    fig7.add_trace(go.Bar(
+        x=[label for label in grade_labels],
+        y=male_counts,
+        name='Male',
+        marker_color='#33C3FF',
+        hovertemplate='<b style="color:black; font-family: Arial Black;">%{x}</b><br><b style="color:black;">Gender:</b> Male<br><b style="color:black;">Students:</b> %{y:,}<extra></extra>'
+
     ))
 
-fig8.update_layout(
-    title=dict(
-        text='',
-        x=0.5,
-        xanchor='center',
-        font=dict(size=20, family='Arial Black', color='black')
-    ),
-    xaxis=dict(
-        title='SHS Strand<br>',
-        title_font=dict(size=16, family='Arial Black', color='black'),
-        tickmode='array',
-        tickvals=strand_df.columns,
-        tickangle=45,
-        showgrid=True,
-        gridcolor='lightgray',
-        range=[-0.1, 7.1]
-    ),
-    yaxis=dict(
-        title='<br>Number of Students<br>',
-        title_font=dict(size=16, family='Arial Black', color='black'),
-        showgrid=True,
-        gridcolor='gray',
-        rangemode='tozero',
-        ticksuffix='   ',
-        tickfont=dict(family='Arial Black', size=12),
-        range=[-35000, strand_df.values.max() + 100000]
-    ),
-    shapes=[
-        dict(
-            type="rect",
-            xref="paper", yref="paper",
-            x0=0, y0=0, x1=1, y1=1,
-            line=dict(color="black", width=2)
-        )
-    ],
-    legend_title="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;School Sector",
-    legend=dict(
-        x=0.99,
-        y=0.99,
-        xanchor="right",
-        yanchor="top",
-        bgcolor="rgba(255,255,255,0.8)",
-        bordercolor="black",
-        borderwidth=1,
-        title_font=dict(size=12, family='Arial Black'),
-        font=dict(size=11, family="Arial")
-    ),
-    font=dict(family="Arial Black", size=12),
-    plot_bgcolor='white',
-    height=500,
-    width=900,
-    margin=dict(l=30, r=30, t=60, b=80),
-    hoverlabel=dict(
-        bgcolor="white",
-        font_size=13,
-        font_family="Arial"
-    )
-)
 
-# Graph 9: Student Data Analytics - Donut Chart (Student Distribution by Grade Division and School Sector)
+    fig7.add_trace(go.Bar(
+        x=[label for label in grade_labels],
+        y=female_counts,
+        name='Female',
+        marker_color= '#FF746C',
+        hovertemplate='<b  style="color:black; font-family: Arial Black;">%{x}</b><br><b style="color:black;">Gender:</b> Female<br><b style="color:black;">Students:</b> %{y:,}<extra></extra>'
+    ))
 
-total_students = sum(inner_values)
-outer_percentages = np.array(outer_values)
-outer_mid_angles = np.cumsum(outer_percentages) - outer_percentages / 2
-outer_mid_angles *= 360
-
-fig9 = go.Figure()
-colorss = ['#FF746C', '#33C3FF', '#2ECC71']
-
-
-fig9.add_trace(go.Pie(
-    labels=inner_labels,
-    values=inner_values,
-    hole=0.55,
-    textinfo="percent+label",
-    textposition="inside",
-    textfont=dict(family="Arial Black", size=7, color="black", weight="bold"),
-    marker=dict(colors=['#33C3FF', "#FF746C", '#2ECC71'], line=dict(color='black', width=0.8)),
-    hovertemplate='<b style="color: black; font-family: Arial Black;">%{label}</b><br><b style="color: black;">Students:</b> %{value:,}<extra></extra>',
-    showlegend=False,
-    domain=dict(x=[0, 1], y=[0.2, 0.9]),
-    insidetextorientation="auto",
-))
-
-fig9.add_trace(go.Pie(
-    labels=outer_labels,
-    values=outer_values,
-    hole=0.9,
-    textinfo="percent+label",
-    textposition="outside",
-    textfont=dict(family="Arial Black", size=7, color="black", weight="bold"),
-    marker=dict(colors=['#33C3FF', "#FF746C", '#2ECC71'], line=dict(color='black', width=0.8)),
-    hovertemplate="<b style='color: black; font-family: Arial Black;'>%{label}</b><br><b style='color: black;'>Total:</b> %{value:,}<extra></extra>",
-    showlegend=False,
-    domain=dict(x=[0, 1], y=[0.1, 1]),
-    insidetextorientation="auto"
-))
-
-fig9.add_annotation(
-    text=f"Student Population<br>{total_students:,.0f}",
-    y=0.55,
-    font=dict(family="Arial Black", size=9, color="black", weight="bold"),
-    showarrow=False,
-    align="center"
-)
-
-fig9.update_layout(
-    title="",
-    title_font_size=20,
-    title_font_weight="bold",
-    title_x=0.5,
-    title_y=0.95,
-    height=500,
-    width=500,
-    xaxis=dict(tickfont=dict(family="Arial Black")),
-    yaxis=dict(tickfont=dict(family="Arial Black")),
-    hoverlabel=dict(
-        bgcolor="white",
-        font_size=13,
-        font_family="Arial"
-    )
-)
-
-# Graph 10: School Data Analytics - Sankey Chart (School Population per Sector, Sub-Classification, and Modified COC)
-
-def format_label(label):
-    wrapped = "<br>".join(textwrap.wrap(label.title(), width=20))
-    return f"<b>{wrapped}</b>"
-
-flows = df_school.groupby(['Sector', 'School_Subclassification', 'Modified_COC']).size().reset_index(name='count')
-
-labels_raw = pd.unique(flows[['Sector', 'School_Subclassification', 'Modified_COC']].values.ravel()).tolist()
-labels = [format_label(label) for label in labels_raw]
-label_index = {label: i for i, label in enumerate(labels_raw)}
-
-sector_colors_10 = {
-    "Public": "rgba(255, 87, 51, 0.7)",
-    "Private": "rgba(51, 195, 255, 0.7)",
-    "SUCs/LUCs": "rgba(46, 204, 113, 0.7)",
-    "PSO": "rgba(255, 181, 51, 0.7)",
-    "Others": "rgba(200, 200, 200, 0.7)"
-}
-
-sources = []
-targets = []
-values = []
-colors = []
-custom_hovertext = []
-
-node_totals = {i: 0 for i in range(len(labels_raw))}
-
-for _, row in flows.iterrows():
-    source = label_index[row['Sector']]
-    target = label_index[row['School_Subclassification']]
-    value = row['count']
-    color = sector_colors_10.get(row['Sector'], "rgba(128, 128, 128, 0.4)")
-
-    sources.append(source)
-    targets.append(target)
-    values.append(value)
-    colors.append(color)
-    node_totals[source] += value
-    node_totals[target] += value
-
-    source_label = row['Sector']
-    target_label = row['School_Subclassification']
-    hover = (
-        f"<b style='color: black; font-family: Arial Black;'>From:</b> {source_label}<br>"
-        f"<b style='color: black; font-family: Arial Black;'>To:</b> {target_label}<br>"
-        f"<b style='color: black; font-family: Arial Black;'>Students:</b> {value:,}"
-    )
-    custom_hovertext.append(hover)
-
-for _, row in flows.iterrows():
-    source = label_index[row['School_Subclassification']]
-    target = label_index[row['Modified_COC']]
-    value = row['count']
-    color = sector_colors_10.get(row['Sector'], "rgba(128, 128, 128, 0.4)")
-
-    sources.append(source)
-    targets.append(target)
-    values.append(value)
-    colors.append(color)
-    node_totals[source] += value
-    node_totals[target] += value
-
-    source_label = row['School_Subclassification']
-    target_label = row['Modified_COC']
-    hover = (
-        f"<b>From:</b> {source_label}<br>"
-        f"<b>To:</b> {target_label}<br>"
-        f"<b>Students:</b> {value:,}"
-    )
-    custom_hovertext.append(hover)
-
-node_hovertext = [f"<b>{label_raw}</b><br><b>Total Students:</b> {node_totals[i]:,}" for i, label_raw in enumerate(labels_raw)]
-
-fig10 = go.Figure(data=[go.Sankey(
-    node=dict(
-        pad=20,
-        thickness=20,
-        line=dict(color="black", width=1),
-        label=labels,
-        color="rgba(200, 200, 200, 0.2)",
-        customdata=node_hovertext,
-        hovertemplate="%{customdata}<extra></extra>"
-    ),
-    link=dict(
-        source=sources,
-        target=targets,
-        value=values,
-        color=colors,
-        customdata=custom_hovertext,
-        hovertemplate="%{customdata}<extra></extra>"
-    )
-)])
-
-fig10.update_layout(
-    title=dict(
-        text="",
-        x=0.5,
-        xanchor='center',
-        font_color='black'
-    ),
-    title_font_size=15,
-    font_color='black',
-    font_size=10,
-    height=450,
-    width=900,
-    hoverlabel=dict(
-        bgcolor="white",
-        font_size=13,
-        font_family="Arial"
-    )
-)
-
-# Graph 11: School Data Analytics - Line-Bar Chart (School Count by School Type and Sector)
-
-df_grouped = df_school.groupby(['School_Type', 'Sector']).size().reset_index(name='count')
-pivot_df = df_grouped.pivot(index='School_Type', columns='Sector', values='count').fillna(0)
-
-sector_colors_11 = {
-    'Public': '#FF746C',
-    'SUCsLUCs': '#2ECC71',
-    'Private': '#33C3FF',
-    'PSO': '#1D3557'
-}
-
-line_traces = [
-    go.Scatter(
-        x=pivot_df.index,
-        y=pivot_df[sector],
-        mode='lines+markers',
-        name=sector.replace('SUCsLUCs', 'SUCs/LUCs'),
-        line=dict(width=5, color=sector_colors_11[sector]),
-        marker=dict(size=12, color=sector_colors_11[sector], line=dict(color='white', width=3)),
-        hovertemplate=(
-            "<b style='color: black; font-family: Arial Black;'>School Type:</b> %{x}<br>" +
-            f"<b style='color: black; font-family: Arial Black;'>Sector:</b> {sector.replace('SUCsLUCs', 'SUCs/LUCs')}<br>" +
-            "<b style='color: black; font-family: Arial Black;'>Count:</b> %{y:,}<extra></extra>"
-        )
-    ) for sector in pivot_df.columns
-]
-
-school_counts = df_school.groupby('School_Type').size().reset_index(name='count')
-bar_trace = go.Bar(
-    x=school_counts['School_Type'],
-    y=school_counts['count'],
-    name='Total Schools',
-    marker=dict(color='#FFB533'),
-    text=[f'{count:,}' for count in school_counts['count']],
-    textposition='outside',
-    textfont=dict(size=12, family='Arial Black', color='black'),
-    hovertemplate="<b>School Type:</b> %{x}<br><b>Total Schools:</b> %{y:,}<extra></extra>"
-)
-
-fig11 = go.Figure(data=line_traces + [bar_trace])
-
-fig11.update_layout(
-    title="",
-    title_x=0.5,
-    xaxis=dict(
-        title='<b>School Type</b>',
-        tickangle=45,
-        tickfont=dict(size=12, )
-    ),
-    yaxis=dict(
-        title='<b>Number of Schools</b>',
-        tickformat=',',
-        showgrid=True,
-        gridcolor='gray',
-        ticksuffix=' ',
-        tickfont=dict(size=12, color='black')
-    ),
-    height=600,
-    width=900,
-    showlegend=True,
-    legend=dict(
-        x=1.05,
-        y=1,
-        orientation='v',
-        title=dict(text='School Categories', font=dict(size=14, family='Arial Black')),
-        font=dict(size=12, color='black'),
-        borderwidth=1,
-        bordercolor='black',
-        bgcolor='rgba(255,255,255,0.8)'
-    ),
-    barmode='group',
-    margin=dict(l=100, r=150, t=100, b=100),
-    template='plotly_white',
-    shapes=[dict(
-        type="rect", xref="paper", yref="paper",
-        x0=0.01, y0=0, x1=1, y1=1.06,
-        line=dict(color="black", width=2),
-
-    )],
-    hoverlabel=dict(
-        bgcolor="white",
-        font_size=13,
-        font_family="Arial"
-    )
-)
-
-# Additional Functions
-
-def plot_total_number_of_schools_by_sector():
-    # Example implementation for plotting total number of schools by sector
-    sector_distribution = df_school.groupby("Sector").size()
-    fig, ax = plt.subplots(figsize=(8, 6))
-    sector_distribution.plot(kind='bar', ax=ax, color=['#33C3FF', '#FF5733', '#2ECC71', '#FFC300'])
-    ax.set_title("Total Number of Schools by Sector")
-    ax.set_xlabel("Sector")
-    ax.set_ylabel("Number of Schools")
-    plt.tight_layout()
-    return fig
-
-
-def plot_total_number_of_schools_by_region():
-    # Example implementation for plotting total number of schools by region
-    region_distribution = df_school.groupby("Region").size()
-    fig, ax = plt.subplots(figsize=(10, 6))
-    region_distribution.plot(kind='bar', ax=ax, color='#1f77b4')
-    ax.set_title("Total Number of Schools by Region")
-    ax.set_xlabel("Region")
-    ax.set_ylabel("Number of Schools")
-    plt.xticks(rotation=45, ha='right')
-    plt.tight_layout()
-    return fig
-
-#data comparison
-def create_gender_comparison_figure(selected_region):
-    df = df_school.copy()
-    df.columns = df.columns.str.strip()
-    df['Region'] = df['Region'].str.strip()
-
-    if selected_region == 'All Regions':
-        gender_totals_by_region = df.groupby('Region')[grade_columns_male + grade_columns_female].sum()
-        gender_totals_by_region['Total_Male'] = gender_totals_by_region[grade_columns_male].sum(axis=1)
-        gender_totals_by_region['Total_Female'] = gender_totals_by_region[grade_columns_female].sum(axis=1)
-        gender_totals_by_region = gender_totals_by_region.reindex(region_order)
-        gender_totals_by_region = gender_totals_by_region.dropna(subset=['Total_Male', 'Total_Female'])
-
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=gender_totals_by_region.index,
-            y=gender_totals_by_region['Total_Male'],
-            mode='lines+markers',
-            name='Male',
-            line=dict(color='blue', width=3)
-        ))
-        fig.add_trace(go.Scatter(
-            x=gender_totals_by_region.index,
-            y=gender_totals_by_region['Total_Female'],
-            mode='lines+markers',
-            name='Female',
-            line=dict(color='#ff2c2c', width=2, dash='dash'),
-            fill='tozeroy',
-            fillcolor='rgba(255, 105, 180, 0.3)'
-        ))
-
-    else:
-        filtered_df = df[df['Region'] == selected_region]
-        total_male = filtered_df[grade_columns_male].sum().sum()
-        total_female = filtered_df[grade_columns_female].sum().sum()
-
-        fig = go.Figure()
-        fig.add_trace(go.Pie(
-            labels=['Male', 'Female'],
-            values=[total_male, total_female],
-            hole=0.3,
-            textinfo='label+percent',
-            marker=dict(colors=['#5c6dc9', '#ee6b6e'], line=dict(color='black', width=2)),
-            hoverinfo='label+percent+value',
-            pull=[0.05, 0.05]
-        ))
-
-    fig.update_layout(
-        title={
-            'text': f"<b>{selected_region}</b>",
-            'y': 0.92,
-            'x': 0.5,
-            'xanchor': 'center',
-            'yanchor': 'top',
-            'font': dict(family="Arial Black", size=16)
-        },
-        xaxis_title='Region' if selected_region == 'All Regions' else 'Gender',
-        yaxis_title='Number of Students',
-        template='plotly_white',
-        font=dict(family="Arial Black", size=12, color="black"),
-        height=450,
+    fig7.update_layout(
+        title=dict(
+            text='',
+            x=0.5,
+            xanchor='center',
+            font=dict(
+                family='Arial Black',
+                size=20,
+                color='black'
+            )
+        ),
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper", yref="paper",
+                x0=0, y0=0, x1=1, y1=1,
+                line=dict(color="black", width=2)
+            )
+        ],
+        showlegend=True,
         legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.04,
-            xanchor="center",
-            x=0.5
+            title=dict(text='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gender', font=dict(size=12, family='Arial Black')),
+            x=1.01,
+            y=1.05,
+            orientation='v',
+            bgcolor='rgba(255,255,255,0.8)',
+            bordercolor='black',
+            borderwidth=1,
+            font=dict(size=11, family='Arial')
+        ),
+        xaxis_title='Grade Level<br>',
+        yaxis_title='<br>Student Population',
+        barmode='group',
+        xaxis=dict(
+            title='Grade Level<br>',
+            title_standoff=10,
+            tickangle=45,
+            tickfont=dict(size=12, family='Arial Black')
+        ),
+        uniformtext=dict(
+            minsize=10,
+            mode='show'
+        ),
+        yaxis=dict(
+            tickformat=',',
+            gridcolor='gray',
+            ticklen=10,
+            title_standoff=5,
+            automargin=True,
+            tickfont=dict(size=12, family='Arial Black'),
+            tick0=20,
+            ticksuffix="   "
+        ),
+        template='plotly_white',
+        margin=dict(l=100, r=100, t=100, b=100),
+        font=dict(family='Arial Black'),
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=12,
+            font_family="Arial"
         )
     )
 
-    return fig
+    return fig7
+
+def generate_graph8(df_school):
+    df_school = load_student_data()
+    # Graph 8: Student Data Analytics - Area Chart (Student Distribution per SHS Strand by Sector)
+    sector_distribution = df_school.groupby("Sector").sum(numeric_only=True)
+    sector_values = {
+        strand: sector_distribution[cols].sum(axis=1)
+        for strand, cols in shs_strands.items()
+    }
+    strand_df = pd.DataFrame(sector_values)
+    strand_df.loc["SUCs/LUCs & PSO"] = strand_df.loc["SUCsLUCs"] + strand_df.loc["PSO"]
+    strand_df = strand_df.drop(index=["SUCsLUCs", "PSO"])
+
+    sector_colors = {
+        "Private": ('#33C3FF', "rgba(168, 218, 220, 0.4)"),
+        "Public":  ("#FF746C", "rgba(255, 178, 162, 0.4)"),
+        "SUCs/LUCs & PSO": ('#2ECC71', "rgba(138, 177, 125, 0.4)")
+    }
+
+    fig8 = go.Figure()
+
+    for sector in ["Public", "Private", "SUCs/LUCs & PSO"]:
+        line_color, fill_color = sector_colors.get(sector, ("gray", "rgba(128,128,128,0.2)"))
+        fig8.add_trace(go.Scatter(
+            x=strand_df.columns,
+            y=strand_df.loc[sector],
+            mode='lines+markers',
+            name=sector,
+            line=dict(color=line_color, width=5),
+            marker=dict(size=12, color=line_color, line=dict(color='white', width=3)),
+            fill='tozeroy',
+            fillcolor=fill_color,
+            hovertemplate= f'<b style="color:black; font-family: Arial Black; f">{sector}</b>' + '<br><b>Strand:</b> %{x}<br><b>Students:</b> %{y:,}<extra></extra>'
+        ))
+
+    fig8.update_layout(
+        title=dict(
+            text='',
+            x=0.5,
+            xanchor='center',
+            font=dict(size=20, family='Arial Black', color='black')
+        ),
+        xaxis=dict(
+            title='SHS Strand<br>',
+            title_font=dict(size=16, family='Arial Black', color='black'),
+            tickmode='array',
+            tickvals=strand_df.columns,
+            tickangle=45,
+            showgrid=True,
+            gridcolor='lightgray',
+            range=[-0.1, 7.1]
+        ),
+        yaxis=dict(
+            title='<br>Number of Students<br>',
+            title_font=dict(size=16, family='Arial Black', color='black'),
+            showgrid=True,
+            gridcolor='gray',
+            rangemode='tozero',
+            ticksuffix='   ',
+            tickfont=dict(family='Arial Black', size=12),
+            range=[-35000, strand_df.values.max() + 100000]
+        ),
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper", yref="paper",
+                x0=0, y0=0, x1=1, y1=1,
+                line=dict(color="black", width=2)
+            )
+        ],
+        legend_title="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;School Sector",
+        legend=dict(
+            x=0.99,
+            y=0.99,
+            xanchor="right",
+            yanchor="top",
+            bgcolor="rgba(255,255,255,0.8)",
+            bordercolor="black",
+            borderwidth=1,
+            title_font=dict(size=12, family='Arial Black'),
+            font=dict(size=11, family="Arial")
+        ),
+        font=dict(family="Arial Black", size=12),
+        plot_bgcolor='white',
+        height=500,
+        width=900,
+        margin=dict(l=30, r=30, t=60, b=80),
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=13,
+            font_family="Arial"
+        )
+    )
+
+    return fig8
+
+def generate_graph9(df_school):
+    df_school = load_student_data()
+    # Graph 9: Student Data Analytics - Donut Chart (Student Distribution by Grade Division and School Sector)
+    total_students = sum(inner_values)
+    outer_percentages = np.array(outer_values)
+    outer_mid_angles = np.cumsum(outer_percentages) - outer_percentages / 2
+    outer_mid_angles *= 360
+
+    fig9 = go.Figure()
+    colorss = ['#FF746C', '#33C3FF', '#2ECC71']
+
+
+    fig9.add_trace(go.Pie(
+        labels=inner_labels,
+        values=inner_values,
+        hole=0.55,
+        textinfo="percent+label",
+        textposition="inside",
+        textfont=dict(family="Arial Black", size=7, color="black", weight="bold"),
+        marker=dict(colors=['#33C3FF', "#FF746C", '#2ECC71'], line=dict(color='black', width=0.8)),
+        hovertemplate='<b style="color: black; font-family: Arial Black;">%{label}</b><br><b style="color: black;">Students:</b> %{value:,}<extra></extra>',
+        showlegend=False,
+        domain=dict(x=[0, 1], y=[0.2, 0.9]),
+        insidetextorientation="auto",
+    ))
+
+    fig9.add_trace(go.Pie(
+        labels=outer_labels,
+        values=outer_values,
+        hole=0.9,
+        textinfo="percent+label",
+        textposition="outside",
+        textfont=dict(family="Arial Black", size=7, color="black", weight="bold"),
+        marker=dict(colors=['#33C3FF', "#FF746C", '#2ECC71'], line=dict(color='black', width=0.8)),
+        hovertemplate="<b style='color: black; font-family: Arial Black;'>%{label}</b><br><b style='color: black;'>Total:</b> %{value:,}<extra></extra>",
+        showlegend=False,
+        domain=dict(x=[0, 1], y=[0.1, 1]),
+        insidetextorientation="auto"
+    ))
+
+    fig9.add_annotation(
+        text=f"Student Population<br>{total_students:,.0f}",
+        y=0.55,
+        font=dict(family="Arial Black", size=9, color="black", weight="bold"),
+        showarrow=False,
+        align="center"
+    )
+
+    fig9.update_layout(
+        title="",
+        title_font_size=20,
+        title_font_weight="bold",
+        title_x=0.5,
+        title_y=0.95,
+        height=500,
+        width=500,
+        xaxis=dict(tickfont=dict(family="Arial Black")),
+        yaxis=dict(tickfont=dict(family="Arial Black")),
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=13,
+            font_family="Arial"
+        )
+    )
+
+    return fig9
+
+def generate_graph10(df_school):
+    df_school = load_school_data()
+
+    def format_label(label):
+        wrapped = "<br>".join(textwrap.wrap(label.title(), width=20))
+        return f"<b>{wrapped}</b>"
+
+    flows = df_school.groupby(['Sector', 'School_Subclassification', 'Modified_COC']).size().reset_index(name='count')
+
+    labels_raw = pd.unique(flows[['Sector', 'School_Subclassification', 'Modified_COC']].values.ravel()).tolist()
+    labels = [format_label(label) for label in labels_raw]
+    label_index = {label: i for i, label in enumerate(labels_raw)}
+
+    sector_colors_10 = {
+        "Public": "rgba(255, 87, 51, 0.7)",
+        "Private": "rgba(51, 195, 255, 0.7)",
+        "SUCs/LUCs": "rgba(46, 204, 113, 0.7)",
+        "PSO": "rgba(255, 181, 51, 0.7)",
+        "Others": "rgba(200, 200, 200, 0.7)"
+    }
+
+    sources, targets, values, colors, custom_hovertext = [], [], [], [], []
+    node_totals = {i: 0 for i in range(len(labels_raw))}
+
+    for _, row in flows.iterrows():
+        source = label_index[row['Sector']]
+        target = label_index[row['School_Subclassification']]
+        value = row['count']
+        color = sector_colors_10.get(row['Sector'], "rgba(128, 128, 128, 0.4)")
+
+        sources.append(source)
+        targets.append(target)
+        values.append(value)
+        colors.append(color)
+        node_totals[source] += value
+        node_totals[target] += value
+
+        hover = (
+            f"<b style='color: black; font-family: Arial Black;'>From:</b> {row['Sector']}<br>"
+            f"<b style='color: black; font-family: Arial Black;'>To:</b> {row['School_Subclassification']}<br>"
+            f"<b style='color: black; font-family: Arial Black;'>Students:</b> {value:,}"
+        )
+        custom_hovertext.append(hover)
+
+    for _, row in flows.iterrows():
+        source = label_index[row['School_Subclassification']]
+        target = label_index[row['Modified_COC']]
+        value = row['count']
+        color = sector_colors_10.get(row['Sector'], "rgba(128, 128, 128, 0.4)")
+
+        sources.append(source)
+        targets.append(target)
+        values.append(value)
+        colors.append(color)
+        node_totals[source] += value
+        node_totals[target] += value
+
+        hover = (
+            f"<b>From:</b> {row['School_Subclassification']}<br>"
+            f"<b>To:</b> {row['Modified_COC']}<br>"
+            f"<b>Students:</b> {value:,}"
+        )
+        custom_hovertext.append(hover)
+
+    node_hovertext = [f"<b>{label_raw}</b><br><b>Total Students:</b> {node_totals[i]:,}" for i, label_raw in enumerate(labels_raw)]
+
+    fig10 = go.Figure(data=[go.Sankey(
+        node=dict(
+            pad=20,
+            thickness=20,
+            line=dict(color="black", width=1),
+            label=labels,
+            color="rgba(200, 200, 200, 0.2)",
+            customdata=node_hovertext,
+            hovertemplate="%{customdata}<extra></extra>"
+        ),
+        link=dict(
+            source=sources,
+            target=targets,
+            value=values,
+            color=colors,
+            customdata=custom_hovertext,
+            hovertemplate="%{customdata}<extra></extra>"
+        )
+    )])
+
+    fig10.update_layout(
+        title=dict(text="", x=0.5, xanchor='center', font_color='black'),
+        title_font_size=15,
+        font_color='black',
+        font_size=10,
+        height=450,
+        width=900,
+        hoverlabel=dict(bgcolor="white", font_size=13, font_family="Arial")
+    )
+    return fig10
+
+def generate_graph11(df_school):
+    df_school = load_school_data()
+
+    df_grouped = df_school.groupby(['School_Type', 'Sector']).size().reset_index(name='count')
+    pivot_df = df_grouped.pivot(index='School_Type', columns='Sector', values='count').fillna(0)
+
+    sector_colors_11 = {
+        'Public': '#FF746C',
+        'SUCsLUCs': '#2ECC71',
+        'Private': '#33C3FF',
+        'PSO': '#1D3557'
+    }
+
+    line_traces = [
+        go.Scatter(
+            x=pivot_df.index,
+            y=pivot_df[sector],
+            mode='lines+markers',
+            name=sector.replace('SUCsLUCs', 'SUCs/LUCs'),
+            line=dict(width=5, color=sector_colors_11[sector]),
+            marker=dict(size=12, color=sector_colors_11[sector], line=dict(color='white', width=3)),
+            hovertemplate=(
+                "<b style='color: black; font-family: Arial Black;'>School Type:</b> %{x}<br>" +
+                f"<b style='color: black; font-family: Arial Black;'>Sector:</b> {sector.replace('SUCsLUCs', 'SUCs/LUCs')}<br>" +
+                "<b style='color: black; font-family: Arial Black;'>Count:</b> %{y:,}<extra></extra>"
+            )
+        ) for sector in pivot_df.columns
+    ]
+
+    school_counts = df_school.groupby('School_Type').size().reset_index(name='count')
+    bar_trace = go.Bar(
+        x=school_counts['School_Type'],
+        y=school_counts['count'],
+        name='Total Schools',
+        marker=dict(color='#FFB533'),
+        text=[f'{count:,}' for count in school_counts['count']],
+        textposition='outside',
+        textfont=dict(size=12, family='Arial Black', color='black'),
+        hovertemplate="<b>School Type:</b> %{x}<br><b>Total Schools:</b> %{y:,}<extra></extra>"
+    )
+
+    fig11 = go.Figure(data=line_traces + [bar_trace])
+
+    fig11.update_layout(
+        title="",
+        title_x=0.5,
+        xaxis=dict(title='<b>School Type</b>', tickangle=45, tickfont=dict(size=12)),
+        yaxis=dict(title='<b>Number of Schools</b>', tickformat=',', showgrid=True, gridcolor='gray', ticksuffix=' ', tickfont=dict(size=12, color='black')),
+        height=600,
+        width=900,
+        showlegend=True,
+        legend=dict(
+            x=1.05,
+            y=1,
+            orientation='v',
+            title=dict(text='School Categories', font=dict(size=14, family='Arial Black')),
+            font=dict(size=12, color='black'),
+            borderwidth=1,
+            bordercolor='black',
+            bgcolor='rgba(255,255,255,0.8)'
+        ),
+        barmode='group',
+        margin=dict(l=100, r=150, t=100, b=100),
+        template='plotly_white',
+        shapes=[dict(type="rect", xref="paper", yref="paper", x0=0.01, y0=0, x1=1, y1=1.06, line=dict(color="black", width=2))],
+        hoverlabel=dict(bgcolor="white", font_size=13, font_family="Arial")
+    )
+    return fig11
 
 def get_region_list():
     available_regions = df_school['Region'].dropna().str.strip().unique()

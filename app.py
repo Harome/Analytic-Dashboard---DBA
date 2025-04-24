@@ -1,19 +1,21 @@
 import dash
-from dash import dcc, html, dash_table, Input, Output
+from dash import dcc, html, dash_table, Input, Output, State
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import dash_uploader as du
+import base64
+import io
 import os
 from Data.Clean_data.defineddata import (
     create_grade_level_comparison_figure,
     get_region_list,
-    create_gender_comparison_figure,
-    create_gender_plot, create_enrollment_bubble_chart,
-    encoded_3, data_4, data_5, fig6,
-    fig7, fig8, fig9, fig10, fig11
+    create_gender_plot, create_enrollment_bubble_chart, df_school,
+    encoded_3, data_4, data_5, generate_graph6,
+    generate_graph7, generate_graph8, generate_graph9, generate_graph10, generate_graph11
 )
 from flask import request
 import traceback  # Import the traceback module
@@ -22,6 +24,12 @@ import traceback  # Import the traceback module
 app = dash.Dash(__name__)
 app.title = "Student Population Dashboard"
 server = app.server
+fig6 = generate_graph6(df_school)
+fig7 = generate_graph7(df_school)
+fig8 = generate_graph8(df_school)
+fig9 = generate_graph9(df_school)
+fig10 = generate_graph10(df_school)
+fig11 = generate_graph11(df_school)
 
 image_src_1 = create_gender_plot()
 image_src_2 = create_enrollment_bubble_chart()
@@ -43,6 +51,11 @@ def upload_dataset():
     file = request.files['file']
     if file.filename == '':
         return jsonify({'status': 'error', 'message': 'No selected file'}), 400
+    
+    if 'school' in file.filename.lower():
+        target_config = 'school_dataset_path'
+    else:
+        target_config = 'student_dataset_path'
 
     # Save the file to your target folder
     filename = file.filename
@@ -54,12 +67,43 @@ def upload_dataset():
     with open(config_path, 'r') as f:
         config = json.load(f)
 
-    config['dataset_path'] = filepath
+    config[target_config] = filepath
 
     with open(config_path, 'w') as f:
         json.dump(config, f, indent=4)
 
     return jsonify({'status': 'success', 'message': f'File {filename} uploaded and config updated.'}), 200
+
+def parse_contents(contents, filename):
+    content_type, content_string = contents.split(',')
+    decoded = base64.b64decode(content_string)
+    try:
+        df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+        print(f"Parsed DataFrame: {df.head()}")
+        return df
+    except Exception as e:
+        print(f"Error processing file: {e}")
+        return pd.DataFrame()  # Return empty DataFrame on erro
+    
+def process_school_file(contents):
+    content_type, content_string = contents.split(',')
+    decoded = base64.b64decode(content_string)
+    try:
+        df_school = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+        return df_school.to_dict('records')  # Or whatever structure your app expects
+    except Exception as e:
+        print(f"[process_school_file] Error: {e}")
+        return []
+
+def process_student_file(contents):
+    content_type, content_string = contents.split(',')
+    decoded = base64.b64decode(content_string)
+    try:
+        df_student = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+        return df_student.to_dict('records')  # Same here
+    except Exception as e:
+        print(f"[process_student_file] Error: {e}")
+        return []
 
 @server.route('/api/gender-comparison', methods=['GET'])
 def api_gender_comparison():
@@ -144,25 +188,49 @@ graph7_page = html.Div(
         ]
     )
 
+graph7_pag = html.Div(
+    children=[
+        dcc.Graph(
+            id='graph-7'  # ID must match the one you're updating in the callback
+        )
+    ]
+)
+
 # Graph 8: Student Data Analytics - Area Chart (Student Distribution per SHS Strand by Sector)
 graph8_page = html.Div([
     dcc.Graph(figure=fig8, id="Student-strand-area-chart")
     ]),
+
+graph8_pag = html.Div([
+    dcc.Graph(id="graph-8")  # Match callback target ID
+]),
 
 # Graph 9: Student Data Analytics - Donut Chart (Student Distribution by Grade Division and School Sector)
 graph9_page = html.Div([
     dcc.Graph(figure=fig9, id="Student-division-donut-chart")
     ]),
 
+graph9_pag = html.Div([
+    dcc.Graph(id="graph-9")  # Match callback target ID
+])
+
 # Graph 10: School Data Analytics - Sankey Chart (School Population per Sector, Sub-Classification, and Modified COC)
 graph10_page = html.Div([
     dcc.Graph(figure=fig10, id="school-sankey-chart")
     ]),
 
+graph10_pag = html.Div([
+    dcc.Graph(id="graph-10")  # Match callback target ID
+])
+
 # Graph 11: School Data Analytics - Line-Bar Chart (School Count by School Type and Sector)
 graph11_page = html.Div([
     dcc.Graph(figure=fig11, id="school-bar-line-chartt")
     ])
+
+graph11_pag = html.Div([
+    dcc.Graph(id="graph-11")  # Match callback target ID
+])
 
 # Data Comparison Graph - Gender
 comparison_page_gender = html.Div([
@@ -220,8 +288,30 @@ style={
     'margin': 'auto'
 })
 
-# Data Comparison Graph - Strand
+app.layout = html.Div([
+    dcc.Store(id='dataset-store', storage_type='memory'),  # Store for dataset
+    
+    # File upload components for school and student datasets
+    html.Div([
+        du.Upload(id='upload-school-data', text='Upload School Data'),
+        du.Upload(id='upload-student-data', text='Upload Student Data'),
+    ]),
+    
+    # Graphs for school data (Graph 10, 11)
+    html.Div([
+        dcc.Graph(id='graph-10'),
+        dcc.Graph(id='graph-11'),
+    ]),
+    
+    # Graphs for student data (Graph 7, 8, 9)
+    html.Div([
+        dcc.Graph(id='graph-7'),
+        dcc.Graph(id='graph-8'),
+        dcc.Graph(id='graph-9'),
+    ]),
+])
 
+# Data Comparison Graph - Strand
 
 app.layout = html.Div([
         dcc.Location(id='url', refresh=False),
@@ -260,6 +350,83 @@ def display_page(pathname):
         return comparison_page_grade
     else:
         return index_page
+    
+@app.callback(
+    Output('graph-10', 'figure'),
+    Output('graph-11', 'figure'),
+    Input('dataset-store', 'data'),
+    prevent_initial_call=True
+)
+def update_school_graphs(data):
+    df_school = pd.DataFrame(data['school_data'])  # Convert the stored dict back to DataFrame
+    
+    # Use the imported functions to generate the figures
+    fig_10 = generate_graph10(df_school)
+    fig_11 = generate_graph11(df_school)
+    
+    return fig_10, fig_11
+
+# Callback to update Graph 7, 8, 9 (Student data)
+@app.callback(
+    Output('graph-7', 'figure'),
+    Output('graph-8', 'figure'),
+    Output('graph-9', 'figure'),
+    Input('dataset-store', 'data'),
+    prevent_initial_call=True
+)
+def update_student_graphs(data):
+    df_student = pd.DataFrame(data['student_data'])  # Convert the stored dict back to DataFrame
+    
+    # Use the imported functions to generate the figures
+    fig_7 = generate_graph7(df_student)
+    fig_8 = generate_graph8(df_student)
+    fig_9 = generate_graph9(df_student)
+    
+    return fig_7, fig_8, fig_9
+
+@app.callback(
+    Output('store-student', 'data'),
+    Input('upload-data', 'isCompleted'),
+    State('upload-data', 'fileNames'),
+    prevent_initial_call=True
+)
+def update_store_after_upload(is_completed, filenames):
+    if is_completed and filenames:
+        uploaded_path = os.path.join("./uploads", filenames[0])
+        
+        # Load based on file type
+        if uploaded_path.endswith('.csv'):
+            df = pd.read_csv(uploaded_path)
+        elif uploaded_path.endswith('.xlsx'):
+            df = pd.read_excel(uploaded_path)
+        else:
+            return dash.no_update
+        
+        return df.to_dict('records')  # For app-wide usage
+    return dash.no_update
+
+
+@app.callback(
+    [Output('graph10', 'figure'), Output('graph11', 'figure'), Output('graph9', 'figure'), Output('graph8', 'figure'), Output('graph7', 'figure')],
+    [Input('upload-data', 'contents')],
+    [State('upload-data', 'filename'), State('upload-data', 'last_modified')]
+)
+def update_graphs(contents, filename, last_modified):
+    # Process the uploaded file and create the dataframe
+    if contents is None:
+        return dash.no_update, dash.no_update
+    
+    # Parse the dataset into a DataFrame
+    df_school = parse_contents(contents, filename)  # You should define `parse_contents` to handle the file parsing
+
+    # Generate Graph 10 and Graph 11 using the dataset
+    fig7 = generate_graph10(df_school)
+    fig8 = generate_graph10(df_school)
+    fig9 = generate_graph10(df_school)
+    fig10 = generate_graph10(df_school)
+    fig11 = generate_graph11(df_school)
+
+    return fig7, fig8, fig9, fig10, fig11
 
 if __name__ == '__main__':
     app.run(debug=False)

@@ -15,31 +15,30 @@ const StudentData = () => {
     if (file) {
       const fileExtension = file.name.split('.').pop().toLowerCase();  
   
-      if (fileExtension === 'csv' || fileExtension === 'xls' || fileExtension === 'xlsx') {
+      if (['csv', 'xls', 'xlsx'].includes(fileExtension)) {
         console.log('Submitting file:', file.name);
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', file);  // <== Don't forget to append the actual file!
+        formData.append('dataset_type', 'student');  // optional, if backend handles it
   
         try {
           const response = await fetch('http://localhost:8050/upload_dataset', {
             method: 'POST',
             body: formData
           });
-
-          console.log('Server Response:', response);
   
           const result = await response.json();
+          console.log('Server Response:', result);
   
           if (result.status === 'success') {
             alert(result.message);
-            window.location.reload(); 
+            setSelectedCard(null);
+            setTimeout(() => window.location.reload(), 500);  // reload after success
           } else {
             alert("Upload failed: " + result.message);
           }
   
-        } 
-        
-        catch (error) {
+        } catch (error) {
           console.error('Error uploading file:', error);
           alert("An error occurred during upload.");
         }
@@ -50,7 +49,6 @@ const StudentData = () => {
       } else {
         alert("Please select a valid CSV or Excel file.");
       }
-  
     } else {
       alert("Please select a file before submitting.");
     }

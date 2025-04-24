@@ -11,7 +11,10 @@ from Data.Clean_data.defineddata import (
     get_region_list,
     create_gender_comparison_figure,
     create_grade_level_comparison_figure,
-    create_shs_strand_comparison_figure, # Import the new function
+    create_shs_strand_comparison_figure,
+    create_grade_division_comparison_figure,
+    create_sector_comparison_figure,
+    create_school_type_comparison_figure, # Import the new function
     create_gender_plot, create_enrollment_bubble_chart,
     encoded_3, data_4, data_5, fig6,
     fig7, fig8, fig9, fig10, fig11
@@ -90,7 +93,7 @@ def api_grade_level_comparison():
         print(f"[/api/grade-level-comparison] Error: {e}")
         return jsonify({'error': str(e)}), 500
 
-@server.route('/api/shs-strand-comparison', methods=['GET']) # New route for SHS strand comparison
+@server.route('/api/shs-strand-comparison', methods=['GET'])
 def api_shs_strand_comparison():
     region = request.args.get('region', 'All Regions')
     try:
@@ -98,6 +101,36 @@ def api_shs_strand_comparison():
         return jsonify(fig.to_plotly_json())
     except Exception as e:
         print(f"[/api/shs-strand-comparison] Error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@server.route('/api/grade-division-comparison', methods=['GET'])
+def api_grade_division_comparison():
+    region = request.args.get('region', 'All Regions')
+    try:
+        fig = create_grade_division_comparison_figure(region)
+        return jsonify(fig.to_plotly_json())
+    except Exception as e:
+        print(f"[/api/grade-division-comparison] Error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@server.route('/api/sector-comparison', methods=['GET'])
+def api_sector_comparison():
+    region = request.args.get('region', 'All Regions')
+    try:
+        fig = create_sector_comparison_figure(region)
+        return jsonify(fig.to_plotly_json())
+    except Exception as e:
+        print(f"[/api/sector-comparison] Error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@server.route('/api/school-type-comparison', methods=['GET']) # New route for school type comparison
+def api_school_type_comparison():
+    region = request.args.get('region', 'All Regions')
+    try:
+        fig = create_school_type_comparison_figure(region)
+        return jsonify(fig.to_plotly_json())
+    except Exception as e:
+        print(f"[/api/school-type-comparison] Error: {e}")
         return jsonify({'error': str(e)}), 500
 
 
@@ -117,12 +150,33 @@ def update_gender_comparison(region):
 def update_grade_level_comparison(region):
     return create_grade_level_comparison_figure(region)
 
-@app.callback( # New callback for SHS strand comparison
+@app.callback(
     Output('comparison-shs-strand-graph', 'figure'),
     Input('comparison-shs-strand-region-dropdown', 'value')
 )
 def update_shs_strand_comparison(region):
     return create_shs_strand_comparison_figure(region)
+
+@app.callback(
+    Output('comparison-grade-division-graph', 'figure'),
+    Input('comparison-grade-division-region-dropdown', 'value')
+)
+def update_grade_division_comparison(region):
+    return create_grade_division_comparison_figure(region)
+
+@app.callback(
+    Output('comparison-sector-graph', 'figure'),
+    Input('comparison-sector-region-dropdown', 'value')
+)
+def update_sector_comparison(region):
+    return create_sector_comparison_figure(region)
+
+@app.callback( # New callback for school type comparison
+    Output('comparison-school-type-graph', 'figure'),
+    Input('comparison-school-type-region-dropdown', 'value')
+)
+def update_school_type_comparison(region):
+    return create_school_type_comparison_figure(region)
 
 
 # *** END DASH CALLBACKS ***
@@ -223,12 +277,54 @@ comparison_shs_strand_page = html.Div([
     html.Div([
         html.Label("Select Region:"),
         dcc.Dropdown(
-        id='comparison-shs-strand-region-dropdown', # New dropdown ID
+        id='comparison-shs-strand-region-dropdown',
         options=[{'label': r, 'value': r} for r in get_region_list()],
         value='All Regions'
 )
     ], style={'width': '300px', 'margin': '0 auto'}),
-    dcc.Graph(id='comparison-shs-strand-graph') # New graph ID
+    dcc.Graph(id='comparison-shs-strand-graph')
+], style={'padding': '20px'})
+
+# Data Comparison Grade Division Page
+comparison_grade_division_page = html.Div([
+    html.H2("Data Comparison - Grade Division Analysis", style={'textAlign': 'center'}),
+    html.Div([
+        html.Label("Select Region:"),
+        dcc.Dropdown(
+        id='comparison-grade-division-region-dropdown',
+        options=[{'label': r, 'value': r} for r in get_region_list()],
+        value='All Regions'
+)
+    ], style={'width': '300px', 'margin': '0 auto'}),
+    dcc.Graph(id='comparison-grade-division-graph')
+], style={'padding': '20px'})
+
+# Data Comparison Sector Page
+comparison_sector_page = html.Div([
+    html.H2("Data Comparison - Sector Analysis", style={'textAlign': 'center'}),
+    html.Div([
+        html.Label("Select Region:"),
+        dcc.Dropdown(
+        id='comparison-sector-region-dropdown',
+        options=[{'label': r, 'value': r} for r in get_region_list()],
+        value='All Regions'
+)
+    ], style={'width': '300px', 'margin': '0 auto'}),
+    dcc.Graph(id='comparison-sector-graph')
+], style={'padding': '20px'})
+
+# Data Comparison School Type Page
+comparison_school_type_page = html.Div([
+    html.H2("Data Comparison - School Type Analysis", style={'textAlign': 'center'}),
+    html.Div([
+        html.Label("Select Region:"),
+        dcc.Dropdown(
+        id='comparison-school-type-region-dropdown', # New dropdown ID
+        options=[{'label': r, 'value': r} for r in get_region_list()],
+        value='All Regions'
+)
+    ], style={'width': '300px', 'margin': '0 auto'}),
+    dcc.Graph(id='comparison-school-type-graph') # New graph ID
 ], style={'padding': '20px'})
 
 
@@ -267,8 +363,14 @@ def display_page(pathname):
         return comparison_gender_page
     elif pathname == '/data-comparison-grade-level':
         return comparison_grade_level_page
-    elif pathname == '/data-comparison-shs-strand': # New route for SHS strand comparison
+    elif pathname == '/data-comparison-shs-strand':
         return comparison_shs_strand_page
+    elif pathname == '/data-comparison-grade-division':
+        return comparison_grade_division_page
+    elif pathname == '/data-comparison-sector':
+        return comparison_sector_page
+    elif pathname == '/data-comparison-school-type': 
+        return comparison_school_type_page
     else:
         return index_page
 

@@ -1437,6 +1437,301 @@ def create_shs_strand_comparison_figure(selected_region):
 
     return fig
 
+#data-comparison - grade division
+
+def create_grade_division_comparison_figure(selected_region):
+    df = df_school.copy()
+    df.columns = df.columns.str.strip()
+    df['Region'] = df['Region'].str.strip()
+
+    # Define grade division columns (ensure these match the column names in your df_school)
+    elementary_cols = ['Kindergarten_Male', 'Kindergarten_Female', 'G1_Male', 'G1_Female', 'G2_Male', 'G2_Female', 'G3_Male', 'G3_Female', 'G4_Male', 'G4_Female', 'G5_Male', 'G5_Female', 'G6_Male', 'G6_Female', 'Elem_NG_Male', 'Elem_NG_Female']
+    junior_high_cols = ['G7_Male', 'G7_Female', 'G8_Male', 'G8_Female', 'G9_Male', 'G9_Female', 'G10_Male', 'G10_Female', 'JHS_NG_Male', 'JHS_NG_Female']
+    # Assuming all G11 and G12 columns are Senior High
+    senior_high_cols = [col for col in df.columns if 'G11_' in col or 'G12_' in col]
+
+
+    if selected_region == 'All Regions':
+        division_totals_by_region = {}
+        division_totals_by_region['Elementary'] = df.groupby('Region')[elementary_cols].sum().sum(axis=1)
+        division_totals_by_region['Junior High'] = df.groupby('Region')[junior_high_cols].sum().sum(axis=1)
+        division_totals_by_region['Senior High'] = df.groupby('Region')[senior_high_cols].sum().sum(axis=1)
+
+
+        df_division_totals_by_region = pd.DataFrame(division_totals_by_region)
+        # Ensure all regions from region_order are included, even if they have no data (fill with 0)
+        df_division_totals_by_region = df_division_totals_by_region.reindex(region_order).fillna(0)
+        df_division_totals_by_region = df_division_totals_by_region.drop('All Regions', errors='ignore') # Drop the 'All Regions' row if it exists
+
+        fig = go.Figure(data=[
+            go.Bar(name='Elementary', x=df_division_totals_by_region.index, y=df_division_totals_by_region['Elementary'], marker_color='#5c6dc9'),
+            go.Bar(name='Junior High', x=df_division_totals_by_region.index, y=df_division_totals_by_region['Junior High'], marker_color='#919bf1'),
+            go.Bar(name='Senior High', x=df_division_totals_by_region.index, y=df_division_totals_by_region['Senior High'], marker_color='#a0aadf')
+        ])
+
+
+        fig.update_layout(
+            title={
+                'text': f"<b>Student Enrollment by Grade Division Across Regions</b>",
+                'y': 0.92,
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top',
+                'font': dict(family="Arial Black", size=16)
+            },
+            xaxis_title='Region',
+            yaxis_title='Number of Students',
+            template='plotly_white',
+            font=dict(family="Arial Black", size=12, color="black"),
+            height=600,
+            barmode='stack',
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="center",
+                x=0.5
+            ),
+            xaxis=dict(tickangle=45)
+        )
+
+    else:
+        filtered_df = df[df['Region'] == selected_region]
+        elementary_total = filtered_df[elementary_cols].sum().sum()
+        junior_high_total = filtered_df[junior_high_cols].sum().sum()
+        senior_high_total = filtered_df[senior_high_cols].sum().sum()
+
+        division_totals = {
+            'Elementary': elementary_total,
+            'Junior High': junior_high_total,
+            'Senior High': senior_high_total
+        }
+
+        # Remove divisions with zero students for a cleaner pie chart
+        division_totals = {k: v for k, v in division_totals.items() if v > 0}
+
+
+        fig = go.Figure()
+        fig.add_trace(go.Pie(
+            labels=list(division_totals.keys()),
+            values=list(division_totals.values()),
+            hole=0.3,
+            textinfo='label+percent',
+            marker=dict(colors=['#5c6dc9', '#919bf1', '#a0aadf'], line=dict(color='black', width=2)),
+            hoverinfo='label+percent+value',
+            pull=[0.05] * len(division_totals) # Pull slices slightly for better visualization
+        ))
+
+        fig.update_layout(
+            title={
+                'text': f"<b>Student Enrollment by Grade Division in {selected_region}</b>",
+                'y': 0.92,
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top',
+                'font': dict(family="Arial Black", size=16)
+            },
+            template='plotly_white',
+            font=dict(family="Arial Black", size=12, color="black"),
+            height=450,
+        )
+
+
+    return fig
+
+#data comparison sector
+def create_sector_comparison_figure(selected_region):
+    df = df_school.copy()
+    df.columns = df.columns.str.strip()
+    df['Region'] = df['Region'].str.strip()
+    df['Sector'] = df['Sector'].str.strip()
+
+    # Calculate total students per row
+    all_grade_columns = [col for grade, cols in grade_levels.items() for col in cols]
+    df['Total Students'] = df[all_grade_columns].sum(axis=1)
+
+
+    if selected_region == 'All Regions':
+        sector_region_data = df.groupby(['Region', 'Sector'])['Total Students'].sum().reset_index()
+        sector_region_pivot = sector_region_data.pivot_table(index='Region', columns='Sector', values='Total Students', aggfunc='sum', fill_value=0)
+        # Ensure all regions from region_order are included
+        sector_region_pivot = sector_region_pivot.reindex(region_order).fillna(0)
+        sector_region_pivot = sector_region_pivot.reset_index()
+        sector_region_pivot = sector_region_pivot.rename(columns={'index': 'Region'})
+
+
+        fig = go.Figure()
+        # Define colors for sectors (you can adjust these)
+        sector_colors = {
+            'Public': '#f1b04c',
+            'Private': '#f94449',
+            'SUCsLUCs': '#5c6dc9',
+            'PSO': '#6bb0a6'
+        }
+        # Ensure sectors are in a consistent order for coloring
+        sector_order = ['Public', 'Private', 'SUCsLUCs', 'PSO']
+
+        for sector in sector_order:
+            if sector in sector_region_pivot.columns:
+                fig.add_trace(go.Scatter(
+                    x=sector_region_pivot['Region'],
+                    y=sector_region_pivot[sector],
+                    name=sector,
+                    mode='lines+markers',
+                    fill='tonexty',
+                    marker=dict(size=5),
+                    line=dict(width=1.5, color=sector_colors.get(sector, 'gray')),
+                     hovertemplate='<b>Region:</b> %{x}<br><b>Sector:</b> ' + sector + '<br><b>Total Students:</b> %{y:,}<extra></extra>'
+                ))
+
+        fig.update_layout(
+            title={
+                'text': f"<b>Total Students Enrolled by Sector per Region</b>",
+                'y': 0.92,
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top',
+                'font': dict(family="Arial Black", size=16)
+            },
+            xaxis_title='Region',
+            yaxis_title='Number of Students',
+            template='plotly_white',
+            font=dict(family="Arial Black", size=12, color="black"),
+            height=600,
+            hovermode="x unified",
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="center",
+                x=0.5
+            ),
+            xaxis=dict(tickangle=45, categoryorder='array', categoryarray=region_order)
+        )
+
+    else:
+        filtered_df = df[df['Region'] == selected_region]
+        sector_totals = filtered_df.groupby('Sector')['Total Students'].sum().reset_index()
+
+        fig = go.Figure(data=[go.Pie(
+            labels=sector_totals['Sector'],
+            values=sector_totals['Total Students'],
+            hole=0.3,
+            textinfo='label+percent',
+            marker=dict(colors=['#f1b04c', '#f94449', '#5c6dc9', '#6bb0a6'][:len(sector_totals)], line=dict(color='black', width=2)),
+            hoverinfo='label+percent+value',
+            pull=[0.05] * len(sector_totals) # Pull slices slightly
+        )])
+
+        fig.update_layout(
+            title={
+                'text': f"<b>Student Enrollment by Sector in {selected_region}</b>",
+                'y': 0.92,
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top',
+                'font': dict(family="Arial Black", size=16)
+            },
+            template='plotly_white',
+            font=dict(family="Arial Black", size=12, color="black"),
+            height=450,
+        )
+
+
+    return fig
+
+# data comparison - school type
+
+def create_school_type_comparison_figure(selected_region):
+    df = df_school.copy()
+    df.columns = df.columns.str.strip()
+    df['Region'] = df['Region'].str.strip()
+    if 'School_Type' in df.columns:
+        df['School_Type'] = df['School_Type'].str.strip()
+
+    # Calculate total students per row (ensure grade columns are correctly defined and exist)
+    all_grade_columns = [col for grade, cols in grade_levels.items() for col in cols]
+    # Filter for only columns that exist in the dataframe
+    existing_grade_columns = [col for col in all_grade_columns if col in df.columns]
+    if existing_grade_columns:
+        df['Total_Students'] = df[existing_grade_columns].sum(axis=1)
+    else:
+        df['Total_Students'] = 0 # Or handle the case where no grade columns are found
+
+
+    if selected_region == "All Regions":
+        # Ensure 'School_Type' column exists before grouping
+        if 'School_Type' in df.columns:
+            school_distribution = df.groupby(["Region", "School_Type"])["Total_Students"].sum().reset_index()
+            school_distribution["Region"] = pd.Categorical(school_distribution["Region"], categories=region_order, ordered=True)
+            school_distribution = school_distribution.sort_values("Region")
+
+            fig = px.bar(
+                school_distribution,
+                x="Total_Students",
+                y="Region",
+                color="School_Type",
+                orientation="h",
+                labels={"Region": "Region", "Total_Students": "Total Number of Students"},
+                category_orders={"Region": region_order},
+                color_discrete_sequence=["#e74c3c", "#c0392b", "#ff6f61", "#ff4d4d"], # Example colors
+                title="Total Students by School Type Across Regions" # Add title here
+            )
+            fig.update_layout(title_x=0.5, title_y=0.92) # Center title
+
+        else:
+            fig = go.Figure()
+            fig.update_layout(title="School Type data not available", title_x=0.5, title_y=0.92)
+
+
+    else:
+        filtered_df = df[df["Region"] == selected_region]
+        # Ensure 'School_Type' column exists before grouping
+        if 'School_Type' in filtered_df.columns:
+            school_distribution = filtered_df.groupby("School_Type")["Total_Students"].sum().reset_index()
+
+            fig = px.pie(
+                school_distribution,
+                names="School_Type",
+                values="Total_Students",
+                labels={"Total_Students": "Total Number of Students"},
+                title=f"School Distribution for {selected_region}",
+                hole=0.3,
+                color_discrete_sequence=["#e74c3c", "#c0392b", "#ff6f61", "#ff4d4d"] # Example colors
+            )
+
+            fig.update_traces(
+                marker=dict(line=dict(color='black', width=1))
+            )
+            fig.update_layout(title_x=0.5, title_y=0.92) # Center title
+        else:
+            fig = go.Figure()
+            fig.update_layout(title=f"School Type data not available for {selected_region}", title_x=0.5, title_y=0.92)
+
+
+    fig.update_layout(
+        #title=None, # Title is now handled within the if/else
+        height=500,
+        width=800,
+        plot_bgcolor="white",
+        paper_bgcolor="white",
+        font=dict(family="Arial Black", size=12),
+        margin=dict(l=60, r=60, t=80, b=60),
+        legend=dict(
+            orientation="v",
+            yanchor="top",
+            y=0.9,
+            xanchor="left",
+            x=1.05,
+            font=dict(size=10),
+            bordercolor="black",
+            borderwidth=1,
+            bgcolor="white"
+        )
+    )
+
+    return fig
+
 def get_region_list():
     available_regions = df_school['Region'].dropna().str.strip().unique()
     ordered_regions = [region for region in region_order if region in available_regions]

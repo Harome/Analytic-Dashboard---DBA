@@ -1680,3 +1680,13 @@ total_schools_home = int(home_numbers["Region"].count())
 total_students_home = int(home_numbers.sum(numeric_only=True).drop(index = 'BEIS_School_ID').sum())
 
 highest_population_home = str(home_numbers.groupby("Region").sum(numeric_only=True).sum(axis=1).idxmax())
+
+# Home Counter Numbers
+
+home_numbers = pd.read_excel(heat_map_file)
+
+total_schools_home = int(home_numbers["Region"].count())
+
+total_students_home = int(home_numbers.sum(numeric_only=True).drop(index = 'BEIS_School_ID').sum())
+
+highest_population_home = str(home_numbers.groupby("Region").sum(numeric_only=True).sum(axis=1).idxmax())

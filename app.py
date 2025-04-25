@@ -37,7 +37,7 @@ fig11 = generate_graph11(df_school)
 
 image_src_1 = create_gender_plot()
 image_src_2 = create_enrollment_bubble_chart()
-
+'''
 index_page = html.Div([
     html.H1("Welcome to Student Dashboard"),
     html.P("Graphs 7–11 preview below for quick visualization:"),
@@ -59,7 +59,7 @@ index_page = html.Div([
         dcc.Graph(id='school-bar-line-chart', figure=fig11),
     ], style={'padding': '20px'})
 ])
-
+'''
 CORS(server)
 UPLOAD_FOLDER = 'Data/Raw_data/'
 server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -291,62 +291,49 @@ graph11_page = html.Div([
     ])
 
 
-# Data Comparison Graph - Gender
-comparison_page_gender = html.Div([
-    html.H2("Data Comparison - Gender Analysis", style={'textAlign': 'center'}),
-    html.Div([
-        html.Label("Select Region:"),
-        dcc.Dropdown(
-        id='comparison-region-dropdown',
-        options=[{'label': r, 'value': r} for r in get_region_list()],
-        value='All Regions'
-)
-    ], style={'width': '300px', 'margin': '0 auto'}),
-    dcc.Graph(id='comparison-gender-graph')
-], style={'padding': '20px'})
-
-# Data Comparison Graph - Grade Level
-comparison_page_grade = html.Div([
-    html.H2("Data Comparison - Grade Level Analysis", style={
+# Data Comparison Gender Page
+comparison_gender_page = html.Div([
+    html.H2("Data Comparison - Gender Analysis", style={
         'textAlign': 'center',
         'fontFamily': 'Arial Black',
-        'fontSize': '28px',
-        'marginBottom': '20px'
+        'fontSize': '22px',
+        'marginBottom': '15px'
     }),
 
     html.Div([
         html.Label("Select Region:", style={
             'fontWeight': 'bold',
+            'fontSize': '14px',
             'fontFamily': 'Arial',
-            'fontSize': '16px',
-            'marginRight': '10px'
+            'marginBottom': '8px'
         }),
         dcc.Dropdown(
-            id='grade-region-dropdown',
-            options=[{'label': 'All Regions', 'value': 'All Regions'}] + [{'label': r, 'value': r} for r in get_region_list()],
+            id='comparison-region-dropdown',
+            options=[{'label': r, 'value': r} for r in get_region_list()],
             value='All Regions',
-            style={'width': '250px'}
+            style={'width': '150px', 'fontFamily': 'Arial'}
         )
     ], style={
         'display': 'flex',
-        'justifyContent': 'center',
-        'fontFamily': 'Arial',
-        'alignItems': 'center',
-        'marginBottom': '8px',
-        'gap': '10px'
+        'flexDirection': 'column',
+        'alignItems': 'flex-start',
+        'marginBottom': '10px',
+        'marginLeft': '10px'
     }),
 
-    dcc.Graph(id='grade-bar-graph', style={'marginTop': '8px'})
+    dcc.Graph(id='comparison-gender-graph')
 ],
 style={
     'backgroundColor': 'white',
-    'padding': '20px',
+    'padding': '15px',
     'boxShadow': '0 2px 8px rgba(0,0,0,0.1)',
     'borderRadius': '10px',
-    'maxWidth': '900px',
+    'maxWidth': '600px',
+    'height': '550px',
     'margin': 'auto'
 })
 
+# Data Comparison Grade Level Page
 comparison_grade_level_page = html.Div([
     html.H2("Data Comparison - Grade Level Analysis", style={
         'textAlign': 'center',
@@ -606,13 +593,23 @@ def display_page(pathname):
         return graph10_page
     elif pathname == '/graph11':
         return graph11_page
-    elif pathname == '/data-comparison-gender': # New route for gender comparison
-        return comparison_page_gender
-    elif pathname == '/data-comparison-grade': # New route for grade level comparison
-        return comparison_page_grade
+    elif pathname == '/data-comparison-gender':
+        return comparison_gender_page
+    elif pathname == '/data-comparison-grade-level':
+        return comparison_grade_level_page
+    elif pathname == '/data-comparison-shs-strand':
+        return comparison_shs_strand_page
+    elif pathname == '/data-comparison-grade-division':
+        return comparison_grade_division_page
+    elif pathname == '/data-comparison-sector':
+        return comparison_sector_page
+    elif pathname == '/data-comparison-school-type': 
+        return comparison_school_type_page
     else:
         return index_page
-    
+
+if __name__ == '__main__':
+    app.run(debug=False)
 @app.callback(
     Output('student-population-bar-chart', 'figure'), 
     Output("Student-strand-area-chart", 'figure'), 

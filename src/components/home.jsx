@@ -11,11 +11,13 @@ const Home = () => {
   const [highestPop, setHighestPop] = useState(null);
 
   const graphs = [
+    { title: 'Graph 5', src: 'http://localhost:8050/graph5' },
     { title: 'Graph 1', src: 'http://localhost:8050/graph1' },
     { title: 'Graph 2', src: 'http://localhost:8050/graph2' },
-    { title: 'Graph 3', src: 'http://localhost:8050/graph3' },
     { title: 'Graph 4', src: 'http://localhost:8050/graph4' },
-    { title: 'Graph 5', src: 'http://localhost:8050/graph5' },
+    { title: 'Graph 3', src: 'http://localhost:8050/graph3' },
+
+  
   ];
 
   const filteredGraphs = graphs.filter((graph) =>
@@ -116,7 +118,7 @@ const Home = () => {
                 filteredGraphs.map((graph, index) => (
                   <div
                     key={index}
-                    className={`collage-card ${['wide', 'wide', 'small', 'small', 'wide'][index % 5]}`}
+                    className={`collage-card ${['wide', 'small', 'tall', 'wide', 'wide'][index % 5]}`}
                   >
                     <h3>{graph.title}</h3>
                     <iframe

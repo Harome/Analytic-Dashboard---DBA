@@ -17,6 +17,8 @@
   border-left: 1px solid transparent;
   position: relative;
   z-index: 1;
+  justify-content: center; 
+
 }
 
 /* Responsive Adjustments */
@@ -101,7 +103,7 @@
 /* Cards */
 .card {
   flex: 0 0 250px;
-  background-color: white;
+  background-color: #ffffff;
   border-radius: 20px;
   padding: 10px;
   min-height: 180px;
@@ -130,7 +132,7 @@
 
 /* Collage Grid */
 .collage-grid {
-  display: flex;
+  display:contents;
   flex-wrap: wrap;
   gap: 16px;
   padding: 20px;
@@ -140,8 +142,11 @@
 
 .collage-card {
   background: white;
+  justify-content: center;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
   padding: 10px;
   cursor: pointer;
@@ -150,41 +155,35 @@
   flex-direction: column;
 }
 
-.collage-card h3 {
-  margin-bottom: 10px;
-}
 
 /* Graph Sizes */
 .small {
-  width: 245px;
-  height: 350px;
+  width: 370px;
+  height: 580px;
+  justify-content: center;
 }
 
 .tall {
-  width: 250px;
-  height: 450px;
+  width: 500px;
+  height: 580px;
+  justify-content: center;
 }
 
 .wide {
-  width: 400px;
-  height: 350px;
+  width: 880px;
+  height: 575px;
+  justify-content: center;
 }
 
+.extra-wide {
+  width: 720px;
+  height: 580px;
+  justify-content: center;
+}
 .large {
-  width: 500px;
-  height: 350px;
-}
-
-.collage-card.expanded {
-  width: 90vw !important;
-  height: 80vh !important;
-  z-index: 100;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 650px;
+  height: 575px;
+  justify-content: center;
 }
 
 .iframe-graph {
@@ -312,9 +311,10 @@
 .dashboard-container {
   display: flex;
   flex-direction: row; 
-  gap: 20px;
+  gap: 10px;
   width: 100%;
   height: 100vh; 
+  
 }
 
 .top-container {
@@ -335,6 +335,7 @@
   flex-direction: column;
   gap: 10px;
   align-items: stretch;
+  
 }
 
 .middle-container {
@@ -342,12 +343,14 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: flex-start; 
   gap: 10px;
   background: rgba(255, 255, 255, 0.2);
   padding: 15px;
   border-radius: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+
 
 .right-section {
   width: 420px;
@@ -383,4 +386,3 @@
     width: 100%;
   }
 }
-

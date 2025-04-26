@@ -19,10 +19,8 @@ const SchoolData = () => {
   }, [zoomLevel]);
 
   const cardsData = [
-    { label: "School Distribution by Sector per region", src: "http://localhost:8050/graph1" },
-    { label: "School Distribution by Sub-classification per Region", src: "http://localhost:8050/graph2" },
-    { label: "School Distribution by Modified COC per Region", src: "http://localhost:8050/graph3" },
-    { label: "School Distribution by District per Region", src: "http://localhost:8050/graph4" }
+    { label: "School Distribution by Sector per region", src: "http://localhost:8050/graph10" },
+    { label: "School Distribution by Sub-classification per Region", src: "http://localhost:8050/graph11" }
   ];
 
   const filteredCards = cardsData.filter(card =>
@@ -41,7 +39,7 @@ const SchoolData = () => {
           placeholder="Search..."
         />
       </header>
-
+      
       <div className="import-export-sc">
         <button onClick={handleImport}>Import</button>
         <button onClick={handleExport}>Export</button>

@@ -4,11 +4,11 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import json
-from flask import Flask, request, jsonify
+from flask import request, jsonify
 from flask_cors import CORS
-import dash_uploader as du
+from io import BytesIO
 import base64
-import io
+import requests
 import os
 from Data.Clean_data.defineddata import (
     get_region_list,
@@ -37,28 +37,6 @@ fig11 = generate_graph11(df_school)
 
 image_src_1 = create_gender_plot()
 image_src_2 = create_enrollment_bubble_chart()
-
-index_page = html.Div([
-    html.H1("Welcome to Student Dashboard"),
-    html.P("Graphs 7–11 preview below for quick visualization:"),
-
-    html.Div([
-        html.H3("Graph 7: Student Population by Grade Level"),
-        dcc.Graph(id='student-population-bar-chart', figure=fig7),
-
-        html.H3("Graph 8: Student Strand Area Chart"),
-        dcc.Graph(id='Student-strand-area-chart', figure=fig8),
-
-        html.H3("Graph 9: Student Division Donut Chart"),
-        dcc.Graph(id='Student-division-donut-chart', figure=fig9),
-
-        html.H3("Graph 10: School Sankey Chart"),
-        dcc.Graph(id='school-sankey-chart', figure=fig10),
-
-        html.H3("Graph 11: School Bar-Line Chart"),
-        dcc.Graph(id='school-bar-line-chart', figure=fig11),
-    ], style={'padding': '20px'})
-])
 
 CORS(server)
 UPLOAD_FOLDER = 'Data/Raw_data/'
@@ -351,6 +329,7 @@ comparison_grade_level_page = html.Div([
             'fontSize': '14px',  # Reduced font size
             'marginRight': '10px'
         }),
+
         dcc.Dropdown(
             id='comparison-grade-level-region-dropdown',
             options=[{'label': r, 'value': r} for r in get_region_list()],
@@ -521,8 +500,9 @@ comparison_school_type_page = html.Div(style={'backgroundColor': 'white', 'paddi
         'padding': '20px',
         'backgroundColor': 'white',
         'margin': '0 auto',
-        'maxWidth': '750px',  # Adjusted max width
-        'height': '500px'  # Adjusted height
+        'maxWidth': '750px',
+        'height': '500px',
+        'overflow': 'hidden'
     }, children=[
         html.H1("Data Comparison - School Type Analysis", style={
             'textAlign': 'center',
@@ -530,7 +510,7 @@ comparison_school_type_page = html.Div(style={'backgroundColor': 'white', 'paddi
             'fontSize': '20px',
             'marginBottom': '10px'
         }),
-
+        
     html.Div([
             html.Div([
                 dcc.Graph(id='comparison-school-type-graph', style={'marginTop': '20px'})
@@ -543,6 +523,7 @@ comparison_school_type_page = html.Div(style={'backgroundColor': 'white', 'paddi
                     'fontSize': '16px',
                     'marginBottom': '5px'
                 }),
+
                 dcc.Dropdown(
                 id='comparison-school-type-region-dropdown',
                 options=[{'label': r, 'value': r} for r in get_region_list()],
@@ -563,6 +544,86 @@ comparison_school_type_page = html.Div(style={'backgroundColor': 'white', 'paddi
     ])
 ])
 
+
+upload_student_page = html.Div([
+    html.H2("Upload Student Dataset"),
+    dcc.Upload(
+        id='upload-data',
+        children=html.Div([
+            'Drag and Drop or ',
+            html.A('Select Files')
+        ]),
+        style={
+            'width': '100%',
+            'height': '60px',
+            'lineHeight': '60px',
+            'borderWidth': '2px',
+            'borderStyle': 'dashed',
+            'borderRadius': '5px',
+            'textAlign': 'center',
+            'margin': '10px'
+        },
+        multiple=False
+    ),
+    html.Div(id='file-selected', style={'marginTop': '20px', 'textAlign': 'center'}),
+    dcc.Store(id='store-uploaded-file'), 
+    dcc.Store(id='store-upload-context', data='student'), 
+    html.Div(id='submit-button-container', style={'marginTop': '20px', 'textAlign': 'center'}),\
+    html.Div(id='upload-response', style={'marginTop': '20px', 'textAlign': 'center'}),
+])
+
+upload_school_page = html.Div([
+    html.H2("Upload School Dataset"),
+    dcc.Upload(
+        id='upload-data',
+        children=html.Div([
+            'Drag and Drop or ',
+            html.A('Select Files')
+        ]),
+        style={
+            'width': '100%',
+            'height': '60px',
+            'lineHeight': '60px',
+            'borderWidth': '2px',
+            'borderStyle': 'dashed',
+            'borderRadius': '5px',
+            'textAlign': 'center',
+            'margin': '10px'
+        },
+        multiple=False
+    ),
+    html.Div(id='file-selected', style={'marginTop': '20px', 'textAlign': 'center'}),
+    dcc.Store(id='store-uploaded-file'),  
+    dcc.Store(id='store-upload-context', data='school'), 
+    html.Div(id='submit-button-container', style={'marginTop': '20px', 'textAlign': 'center'}),\
+    html.Div(id='upload-response', style={'marginTop': '20px', 'textAlign': 'center'}),
+])
+
+
+index_page = html.Div([
+    html.H1("Welcome to Student Dashboard"),
+    html.P("Graphs 7–11 preview below for quick visualization:"),
+
+    html.Div([
+        html.H3("Graph 7: Student Population by Grade Level"),
+        dcc.Graph(id='student-population-bar-chart', figure=fig7),
+
+        html.H3("Graph 8: Student Strand Area Chart"),
+        dcc.Graph(id='Student-strand-area-chart', figure=fig8),
+
+        html.H3("Graph 9: Student Division Donut Chart"),
+        dcc.Graph(id='Student-division-donut-chart', figure=fig9),
+
+        html.H3("Graph 10: School Sankey Chart"),
+        dcc.Graph(id='school-sankey-chart', figure=fig10),
+
+        html.H3("Graph 11: School Bar-Line Chart"),
+        dcc.Graph(id='school-bar-line-chart', figure=fig11),
+
+        html.H2("Upload Student Dataset"),
+        upload_student_page,
+    ], style={'padding': '20px'})
+])
 
 app.layout = html.Div([
         dcc.Location(id='url', refresh=False),
@@ -609,6 +670,10 @@ def display_page(pathname):
         return comparison_sector_page
     elif pathname == '/data-comparison-school-type': 
         return comparison_school_type_page
+    elif pathname == '/upload_student':
+        return upload_student_page, 'student'
+    elif pathname == '/upload_school':
+        return upload_school_page, 'school'
     else:
         return index_page
     

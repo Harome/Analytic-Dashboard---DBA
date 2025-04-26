@@ -1370,8 +1370,9 @@ def create_grade_level_comparison_figure(selected_region):
                 colorscale="Bluered",
                 cmin=df_grade_totals["ColorScale"].min(),
                 cmax=df_grade_totals["ColorScale"].max(),
-                line=dict(color="black", width=2)),
-            width=0.9,
+                line=dict(color="black", width=2)
+            ),
+            width=0.8,  # Slightly reduced bar width
             hovertemplate=(
                 "<b>%{x}</b><br>"
                 "<b style='color: rgb(65, 65, 65);'>Region:</b> " + selected_region + "<br>"
@@ -1385,7 +1386,6 @@ def create_grade_level_comparison_figure(selected_region):
                     color="black"
                 )
             )
-            
         ))
 
     fig.update_layout(
@@ -1394,8 +1394,8 @@ def create_grade_level_comparison_figure(selected_region):
         plot_bgcolor="white",
         paper_bgcolor="white",
         font=dict(family="Arial Black", size=10),
-        width=800,
-        height=400,
+        width=600,  # Reduced width
+        height=350,  # Reduced height
         showlegend=True,
         legend=dict(orientation="h",
                     yanchor="bottom",
@@ -1407,17 +1407,18 @@ def create_grade_level_comparison_figure(selected_region):
                     itemsizing='constant',
                     bgcolor='rgba(255, 255, 255, 0.8)'),
         xaxis=dict(
-            tickangle=0,
-            tickfont=dict(size=8),
-            title_font=dict(size=10)),
+            tickangle=45,
+            tickfont=dict(size=10),
+            title_font=dict(size=12)),
         yaxis=dict(
             title_font=dict(size=10),
             tickfont=dict(size=8)),
         margin=dict(b=60, t=80, l=60, r=60),
-        bargap=0.2
+        bargap=0.3  # Increased gap between bars
     )
 
     return fig
+
 
 #data comparison - shs strand
 def create_shs_strand_comparison_figure(selected_region):
@@ -1720,14 +1721,14 @@ def create_school_type_comparison_figure(selected_region):
             color = red_shades[school_distribution["School_Type"].unique().tolist().index(school_type) % len(red_shades)]
 
             fig.add_trace(go.Bar(
-                x=df_sub["Total_Students"],
-                y=df_sub["Region"],
+                x=df_sub["Region"],  # x: Regions
+                y=df_sub["Total_Students"],  # y: Number of students
                 name=school_type,
-                orientation="h",
+                orientation="v",  # Now vertical bars
                 hovertemplate=(
                     f"<b>{school_type}</b><br>"
-                    "<b style='color: rgb(65, 65, 65);'>Region:</b> %{y}<br>"
-                    "<b style='color: rgb(65, 65, 65);'>Students:</b> %{x}<extra></extra>"
+                    "<b style='color: rgb(65, 65, 65);'>Region:</b> %{x}<br>"
+                    "<b style='color: rgb(65, 65, 65);'>Students:</b> %{y}<extra></extra>"
                 ),
                 hoverlabel=dict(
                     bgcolor='white',
@@ -1737,7 +1738,7 @@ def create_school_type_comparison_figure(selected_region):
                         color="black"
                     )
                 ),
-                marker=dict(color=color)  # Set the color for each bar
+                marker=dict(color=color)
             ))
 
         fig.update_layout(
@@ -1745,7 +1746,7 @@ def create_school_type_comparison_figure(selected_region):
             legend=dict(
                 orientation="v",
                 yanchor="top",
-                y=0.6,
+                y=1.4,
                 xanchor="left",
                 x=0.7,
                 font=dict(size=10),
@@ -1754,33 +1755,30 @@ def create_school_type_comparison_figure(selected_region):
                 bgcolor="white"
             ),
             title=None,
-            height=400,  # Adjusted height
-            width=700,  # Adjusted width
-            plot_bgcolor="white",
-            paper_bgcolor="white",
+            height=400,
+            width=700,
+            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="rgba(0,0,0,0)",
             font=dict(family="Arial Black", size=12),
             margin=dict(l=60, r=60, t=80, b=60),
             bargap=0.25,
-            xaxis=dict(title="Number of Students"),  # Add title for x-axis
-            yaxis=dict(title="Region")  # Add title for y-axis
+            xaxis=dict(title="Region", categoryorder='array', categoryarray=region_order),
+            yaxis=dict(title="Number of Students")
         )
 
     else:
-        # Filter by selected region
         filtered_df = df_school[df_school["Region"] == selected_region]
         school_distribution = filtered_df.groupby("School_Type")["Total_Students"].sum().reset_index()
 
-        # Calculate the total number of students in the selected region
         total_students_region = school_distribution["Total_Students"].sum()
 
         fig = go.Figure()
 
-        # Pie chart with percentage calculation
         fig.add_trace(go.Pie(
             labels=school_distribution["School_Type"],
             values=school_distribution["Total_Students"],
             hole=0.3,
-            textinfo="percent",  # This displays the percentage directly on the pie chart
+            textinfo="percent",
             marker=dict(
                 colors=["#e74c3c", "#c0392b", "#ff6f61", "#ff4d4d"],
                 line=dict(color='black', width=1)
@@ -1813,16 +1811,16 @@ def create_school_type_comparison_figure(selected_region):
                 bgcolor="white"
             ),
             title=None,
-            height=400,  # Adjusted height
-            width=700,  # Adjusted width
+            height=400,
+            width=700,
             plot_bgcolor="white",
             paper_bgcolor="white",
             font=dict(family="Arial Black", size=12),
             margin=dict(l=60, r=60, t=80, b=60),
-            xaxis=dict(title="School Type"),  # Add title for x-axis
-            yaxis=dict(title="Total Students")  # Add title for y-axis
+            xaxis=dict(title="School Type"),
+            yaxis=dict(title="Total Students")
         )
-
+    
     return fig
 
 def get_region_list():

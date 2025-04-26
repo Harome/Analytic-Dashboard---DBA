@@ -5,62 +5,7 @@ const StudentData = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [file, setFile] = useState(null);
-  const [iframeKey, setIframeKey] = useState(Date.now());
-
-  const role = localStorage.getItem("role"); // 👈 get user role from localStorage
-
-  const handleImport = () => {
-    if (role === 'admin') {
-      setShowUploadModal(true);
-    } else {
-      alert("You don't have permission to add new datasets.");
-    }
-  };
-
-  const handleFileChange = (e) => setFile(e.target.files[0]);
-
-  const handleSubmit = async () => {
-    if (file) {
-      const fileExtension = file.name.split('.').pop().toLowerCase();
-
-      if (['csv', 'xls', 'xlsx'].includes(fileExtension)) {
-        console.log('Submitting file:', file.name);
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('type', 'student');
-
-        try {
-          const response = await fetch('http://localhost:8050/upload_dataset', {
-            method: 'POST',
-            body: formData
-          });
-
-          const result = await response.json();
-          console.log('Server Response:', result);
-
-          if (result.status === 'success') {
-            alert(result.message);
-            setIframeKey(Date.now());
-            setSelectedCard(null);
-          } else {
-            alert("Upload failed: " + result.message);
-          }
-        } catch (error) {
-          console.error('Error uploading file:', error);
-          alert("An error occurred during upload.");
-        }
-
-        setShowUploadModal(false);
-        setFile(null);
-
-      } else {
-        alert("Please select a valid CSV or Excel file.");
-      }
-    } else {
-      alert("Please select a file before submitting.");
-    }
-  };
+  const handleImport = () => setShowUploadModal(true);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--zoom', zoomLevel);
@@ -78,12 +23,9 @@ const StudentData = () => {
         <h1>Student Data</h1>
       </header>
 
-      {/* Only show Add button if user is admin */}
-      {role === 'admin' && (
-        <div className="import-export-top">
-          <button onClick={handleImport}>Add New DataSet</button>
-        </div>
-      )}
+      <div className="import-export-top">
+        <button onClick={handleImport}>Add New DataSet</button>
+      </div>
 
       <div className="cards-wrapper">
         {cardsData.map((card, index) => (
@@ -97,8 +39,7 @@ const StudentData = () => {
           >
             <label>{card.label}</label>
             <iframe
-              key={iframeKey}
-              src={`${card.src}?t=${new Date().getTime()}`}
+              src={card.src}
               title={card.label}
               style={{
                 width: '100%',
@@ -125,9 +66,8 @@ const StudentData = () => {
             >
               <h2>{selectedCard.label}</h2>
               <iframe
-                key={iframeKey}
                 src={selectedCard.src}
-                title={selectedCard.label}  
+                title={selectedCard.label}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -140,20 +80,22 @@ const StudentData = () => {
         </div>
       )}
 
-      {/* Upload Modal - visible only when admin clicks the button */}
       {showUploadModal && (
         <div className="upload-modal-overlay-student" onClick={() => setShowUploadModal(false)}>
           <div className="upload-modal-student" onClick={(e) => e.stopPropagation()}>
             <h2>Add New Dataset</h2>
-            <p>Upload a CSV or Excel file:</p>
-            <input 
-              type="file" 
-              onChange={handleFileChange} 
-              accept=".csv, .xls, .xlsx" 
+            <iframe
+              src="http://localhost:8050/upload_student"
+              title="Upload Student Dataset"
+              style={{
+                width: '100%',
+                height: '300px',
+                border: 'none',
+                borderRadius: '8px',
+              }}
             />
             <div className="modal-buttons-student">
               <button onClick={() => setShowUploadModal(false)} className="cancel-btn-student">Cancel</button>
-              <button onClick={handleSubmit} className="submit-btn-student">Submit</button>
             </div>
           </div>
         </div>

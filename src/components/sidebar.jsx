@@ -1,11 +1,11 @@
 // Sidebar.jsx
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaHome, FaUniversity, FaChartBar } from 'react-icons/fa';
+import { FaHome, FaUniversity, FaChartBar, FaSignOutAlt, FaInfoCircle } from 'react-icons/fa';
 import { MdCompare } from "react-icons/md";
 import './sidebar.css';
 
-const Sidebar = () => {
+const Sidebar = ({ onLogout }) => {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
@@ -30,8 +30,18 @@ const Sidebar = () => {
         </li>
         <li>
           <NavLink to="/data-comp">
-            <MdCompare/> Data Comparison
+            <MdCompare /> Data Comparison
           </NavLink>
+        </li>
+        <li>
+          <NavLink to="/about">
+            <FaInfoCircle /> About
+          </NavLink>
+        </li>
+        <li>
+          <button onClick={onLogout} className="logout-btn">
+            <FaSignOutAlt /> Logout
+          </button>
         </li>
       </ul>
     </div>

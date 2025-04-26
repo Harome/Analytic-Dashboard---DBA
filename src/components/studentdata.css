@@ -1,5 +1,5 @@
 .student-data-container {
-  background-color: rgba(146, 189, 247, 0.521);
+  background-color: #f4f4f8;
   display: flex;
   margin: 0%;
   flex: 1;
@@ -30,25 +30,6 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* Search Bar Styling */
-.search-input-student-data{
-  padding: 5px 20px;
-  font-size: 20px;
-  font-family: 'Poppins', sans-serif; 
-  border-radius: 10px;
-  border: 2px solid #0066b3; 
-  background-color: rgba(255, 255, 255, 0.8); 
-  color: #333;
-  width: 300px;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
-  margin: 0;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #004080; /* DepEd Darker Blue */
-}
-
 /* Header Section Adjustments */
 .student-header {
   width: 100%;
@@ -60,7 +41,7 @@
 }
 
 .student-header h1 {
-  font-size: 28px;
+  font-size: 40px;
   font-weight: bold;
   color: rgb(27, 93, 192);
   margin: 0;
@@ -84,7 +65,7 @@
   background-color: rgba(255, 255, 255, 0.7); 
   border-radius: 10px;
   padding: 20px;
-  min-height: 250px;
+  height: 800px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   position: relative;
@@ -137,51 +118,15 @@
 }
 
 /* Main expanded modal */
-.modal-card.expanded-modal {
-  width: 75%;
-  height: 85%;
+.modal-card-expanded-modal {
+  width:40%;
+  height: 80%;
   background: #fff;
   padding: 20px;
   border-radius: 16px;
-  overflow-y: auto;
   position: relative;
 }
 
-.side-settings-modal {
-  position: fixed;
-  top: 20%;
-  right: 20px; 
-  width: 100px; 
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 10px 8px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  z-index: 15;
-}
-
-.side-settings-modal button {
-  width: 100%;
-  padding: 8px 0;
-  background-color: #dc1f2f;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  text-align: center;
-  font-size: 14px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 5px 0; 
-  white-space: nowrap;
-}
-
-.side-settings-modal button:hover {
-  background-color: #1d3557;
-}
 
 .import-export-top {
   position: absolute;
@@ -207,4 +152,102 @@
 
 .import-export-top button:hover {
   background-color: #dc1f2f;
+}
+
+/* Overlay */
+.upload-modal-overlay-student {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal */
+.upload-modal-student {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+.upload-modal-student h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.upload-modal-student p {
+  font-size: 1rem;
+  color: #666;
+  margin: 10px 0;
+}
+
+.upload-modal-student input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+/* Modal Buttons */
+.modal-buttons-student {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cancel-btn-student,
+.submit-btn-student {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-btn-student {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.submit-btn-student {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.cancel-btn-student:hover {
+  background-color: #ddd;
+}
+
+.submit-btn-student:hover {
+  background-color: #0056b3;
+}
+
+/* Logout Button */
+.logout-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.logout-btn:hover {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-radius: 4px;
 }

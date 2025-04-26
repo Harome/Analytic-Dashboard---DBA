@@ -37,7 +37,7 @@ fig11 = generate_graph11(df_school)
 
 image_src_1 = create_gender_plot()
 image_src_2 = create_enrollment_bubble_chart()
-'''
+
 index_page = html.Div([
     html.H1("Welcome to Student Dashboard"),
     html.P("Graphs 7–11 preview below for quick visualization:"),
@@ -59,7 +59,7 @@ index_page = html.Div([
         dcc.Graph(id='school-bar-line-chart', figure=fig11),
     ], style={'padding': '20px'})
 ])
-'''
+
 CORS(server)
 UPLOAD_FOLDER = 'Data/Raw_data/'
 server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -174,7 +174,7 @@ def api_school_type_comparison():
 
 @app.callback(
     Output('comparison-gender-graph', 'figure'),
-    Input('comparison-region-dropdown', 'value')
+    Input('comparison-gender-region-dropdown', 'value')
 )
 def update_gender_comparison(region):
     return create_gender_comparison_figure(region)
@@ -291,95 +291,11 @@ graph11_page = html.Div([
     ])
 
 
-# Data Comparison Gender Page
-comparison_gender_page = html.Div([
-    html.H2("Data Comparison - Gender Analysis", style={
-        'textAlign': 'center',
-        'fontFamily': 'Arial Black',
-        'fontSize': '22px',
-        'marginBottom': '15px'
-    }),
-
-    html.Div([
-        html.Label("Select Region:", style={
-            'fontWeight': 'bold',
-            'fontSize': '14px',
-            'fontFamily': 'Arial',
-            'marginBottom': '8px'
-        }),
-        dcc.Dropdown(
-            id='comparison-region-dropdown',
-            options=[{'label': r, 'value': r} for r in get_region_list()],
-            value='All Regions',
-            style={'width': '150px', 'fontFamily': 'Arial'}
-        )
-    ], style={
-        'display': 'flex',
-        'flexDirection': 'column',
-        'alignItems': 'flex-start',
-        'marginBottom': '10px',
-        'marginLeft': '10px'
-    }),
-
-    dcc.Graph(id='comparison-gender-graph')
-],
-style={
-    'backgroundColor': 'white',
-    'padding': '15px',
-    'boxShadow': '0 2px 8px rgba(0,0,0,0.1)',
-    'borderRadius': '10px',
-    'maxWidth': '600px',
-    'height': '550px',
-    'margin': 'auto'
-})
-
-# Data Comparison Grade Level Page
-comparison_grade_level_page = html.Div([
-    html.H2("Data Comparison - Grade Level Analysis", style={
-        'textAlign': 'center',
-        'fontFamily': 'Arial Black',
-        'fontSize': '22px',
-        'marginBottom': '15px'
-    }),
-
-    html.Div([
-        html.Label("Select Region:", style={
-            'fontWeight': 'bold',
-            'fontFamily': 'Arial',
-            'fontSize': '16px',
-            'marginRight': '10px'
-        }),
-        dcc.Dropdown(
-            id='comparison-grade-level-region-dropdown',
-            options=[{'label': r, 'value': r} for r in get_region_list()],
-            value='All Regions',
-            style={'width': '150px', 'fontFamily': 'Arial'}
-        )
-    ], style={
-        'display': 'flex',
-        'flexDirection': 'column',
-        'alignItems': 'flex-start',
-        'marginBottom': '10px',
-        'marginLeft': '10px'
-    }),
-
-    dcc.Graph(id='comparison-grade-level-graph')
-],
-style={
-    'backgroundColor': 'white',
-    'padding': '15px',
-    'boxShadow': '0 2px 8px rgba(0,0,0,0.1)',
-    'borderRadius': '10px',
-    'maxWidth': '600px',
-    'height': '550px',
-    'margin': 'auto'
-})
-
-# Data Comparison SHS Strand Page
-comparison_shs_strand_page = html.Div([
+# Data Comparison Graph - Gender
+comparison_page_gender =  html.Div([
     html.Div([
         html.Div([
-            html.H2("Data Comparison - SHS Strand Analysis", style={
+            html.H2("Data Comparison - Gender Analysis", style={
                 'textAlign': 'center',
                 'fontFamily': 'Arial Black',
                 'fontSize': '22px',
@@ -393,7 +309,7 @@ comparison_shs_strand_page = html.Div([
                     'marginBottom': '5px'
                 }),
                 dcc.Dropdown(
-                    id='comparison-shs-strand-region-dropdown',
+                    id='comparison-gender-region-dropdown',
                     options=[{'label': r, 'value': r} for r in get_region_list()],
                     value='All Regions',
                     style={'width': '150px', 'fontFamily': 'Arial'}
@@ -406,7 +322,7 @@ comparison_shs_strand_page = html.Div([
                 'fontFamily': 'Arial'
             }),
 
-            dcc.Graph(id='comparison-shs-strand-graph')
+            dcc.Graph(id='comparison-gender-graph')
         ],
         style={
             'backgroundColor': 'white',
@@ -415,6 +331,95 @@ comparison_shs_strand_page = html.Div([
             'borderRadius': '10px',
             'maxWidth': '600px',
             'margin': 'auto'
+        })
+    ])
+])
+
+# Data Comparison Graph - Grade Level
+comparison_grade_level_page = html.Div([
+    html.H2("Data Comparison - Grade Level Analysis", style={
+        'textAlign': 'center',
+        'fontFamily': 'Arial Black',
+        'fontSize': '22px',  # Reduced font size
+        'marginBottom': '20px'
+    }),
+
+    html.Div([
+        html.Label("Select Region:", style={
+            'fontWeight': 'bold',
+            'fontFamily': 'Arial',
+            'fontSize': '14px',  # Reduced font size
+            'marginRight': '10px'
+        }),
+        dcc.Dropdown(
+            id='comparison-grade-level-region-dropdown',
+            options=[{'label': r, 'value': r} for r in get_region_list()],
+            value='All Regions',
+            style={'width': '150px'}
+        )
+    ], style={
+        'display': 'flex',
+        'justifyContent': 'flex-start',
+        'fontFamily': 'Arial',
+        'alignItems': 'center',
+        'marginBottom': '8px',
+        'gap': '10px'
+    }),
+
+    dcc.Graph(id='comparison-grade-level-graph', style={'marginTop': '8px'})
+],
+style={
+    'backgroundColor': 'white',
+    'padding': '12px',  # Reduced padding
+    'boxShadow': '0 2px 8px rgba(0,0,0,0.1)',
+    'borderRadius': '10px',
+    'maxWidth': '620px',  # Reduced max width
+    'margin': 'auto'
+})
+
+# Data Comparison SHS Strand Page
+comparison_shs_strand_page = html.Div([
+    html.Div([
+        html.Div([
+            html.H2("Data Comparison - SHS Strand Analysis", style={
+            'textAlign': 'center',
+            'fontFamily': 'Arial Black',
+            'fontSize': '22px',
+            'marginBottom': '10px'
+        }),
+
+            html.Div([
+                html.Label("Select Region:", style={
+                'fontWeight': 'bold',
+                'fontFamily': 'Arial Black',
+                'marginBottom': '5px'
+                }),
+                dcc.Dropdown(
+                    id='comparison-shs-strand-region-dropdown',
+                    options=[{'label': r, 'value': r} for r in get_region_list()],
+                    value='All Regions',
+                    style={'width': '50%', 'fontFamily': 'Arial'}
+                )
+            ], style={
+                'display': 'flex',
+                'flexDirection': 'column',
+                'alignItems': 'flex-start',
+                'marginBottom': '20px',
+                'fontFamily': 'Arial'
+            }),
+            html.Div([
+            dcc.Graph(id='comparison-shs-strand-graph')], style={
+            'display': 'flex',
+            'justifyContent': 'center'
+        })
+        ],
+        style={
+        'backgroundColor': 'white',
+        'padding': '20px',
+        'boxShadow': '0 2px 8px rgba(0,0,0,0.1)',
+        'borderRadius': '10px',
+        'maxWidth': '600px',
+        'margin': 'auto'
         })
     ])
 ])
@@ -434,7 +439,7 @@ comparison_grade_division_page = html.Div([
             'fontFamily': 'Arial',
             'fontSize': '16px',
             'marginRight': '10px'
-        }),
+            }),
         dcc.Dropdown(
             id='comparison-grade-division-region-dropdown',
             options=[{'label': r, 'value': r} for r in get_region_list()],
@@ -449,7 +454,8 @@ comparison_grade_division_page = html.Div([
         'gap': '10px'
     }),
 
-    dcc.Graph(id='comparison-grade-division-graph'),
+    dcc.Graph(id='comparison-grade-division-graph')
+
 ], style={
     'backgroundColor': 'white',
     'padding': '20px',
@@ -470,6 +476,7 @@ comparison_sector_page = html.Div(style={'backgroundColor': 'transparent', 'padd
         'backgroundColor': 'white',
     }, children=[
 
+
     html.H1("Data Comparison - Sector Analysis", style={
             'textAlign': 'center',
             'fontFamily': 'Arial Black',
@@ -487,7 +494,8 @@ comparison_sector_page = html.Div(style={'backgroundColor': 'transparent', 'padd
                 dcc.Dropdown(
                     id='comparison-sector-region-dropdown',
                     options=[{'label': r, 'value': r} for r in get_region_list()],
-                    value='All Regions',
+                    value="All Regions",
+                    clearable=False,
                     style={'width': '150px', 'fontFamily': 'Arial'}
                 )
             ], style={
@@ -513,8 +521,8 @@ comparison_school_type_page = html.Div(style={'backgroundColor': 'white', 'paddi
         'padding': '20px',
         'backgroundColor': 'white',
         'margin': '0 auto',
-        'maxWidth': '800px',
-        'height': '550px'
+        'maxWidth': '750px',  # Adjusted max width
+        'height': '500px'  # Adjusted height
     }, children=[
         html.H1("Data Comparison - School Type Analysis", style={
             'textAlign': 'center',
@@ -538,27 +546,23 @@ comparison_school_type_page = html.Div(style={'backgroundColor': 'white', 'paddi
                 dcc.Dropdown(
                 id='comparison-school-type-region-dropdown',
                 options=[{'label': r, 'value': r} for r in get_region_list()],
-                value='All Regions',
-                style={'width': '150px', 'fontFamily': 'Arial'}
+                value="All Regions",
+                clearable=False,
+                style={'width': '150px'}
             )
         ], style={
-            'display': 'flex',
-            'flexDirection': 'column',
-            'alignItems': 'flex-start',
-            'marginBottom': '10px',
-            'marginLeft': '10px'
-        }),
-            ], style={
-    'backgroundColor': 'white',
-    'padding': '15px',
-    'boxShadow': '0 2px 8px rgba(0,0,0,0.1)',
-    'borderRadius': '10px',
-    'maxWidth': '600px',
-    'height': '550px',
-    'margin': 'auto'
-})
+                'position': 'absolute',
+                'top': '20px',
+                'left': '30px',
+                'zIndex': '10',
+                'display': 'flex',
+                'flexDirection': 'column',
+                'alignItems': 'flex-start',
+            })
+        ], style={'position': 'relative', 'height': '490px', 'fontFamily': 'Arial'})
     ])
 ])
+
 
 app.layout = html.Div([
         dcc.Location(id='url', refresh=False),
@@ -594,7 +598,7 @@ def display_page(pathname):
     elif pathname == '/graph11':
         return graph11_page
     elif pathname == '/data-comparison-gender':
-        return comparison_gender_page
+        return comparison_page_gender
     elif pathname == '/data-comparison-grade-level':
         return comparison_grade_level_page
     elif pathname == '/data-comparison-shs-strand':
@@ -607,9 +611,7 @@ def display_page(pathname):
         return comparison_school_type_page
     else:
         return index_page
-
-if __name__ == '__main__':
-    app.run(debug=False)
+    
 @app.callback(
     Output('student-population-bar-chart', 'figure'), 
     Output("Student-strand-area-chart", 'figure'), 

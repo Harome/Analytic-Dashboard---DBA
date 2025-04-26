@@ -2,7 +2,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaHome, FaUniversity, FaChartBar, FaSignOutAlt, FaInfoCircle } from 'react-icons/fa';
-import { FaHome, FaUniversity, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
 import { MdCompare } from "react-icons/md";
 import './sidebar.css';
 

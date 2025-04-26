@@ -28,6 +28,7 @@ function App({ onLogout }) {
           <Route path="/student-data" element={<StudentData />} />
           <Route path="/school-data" element={<SchoolData />} />
           <Route path="/data-comp" element={<DataComp />} />
+          <Route path="/about" element={<About />} />
           <Route path="/" element={<Home />} /> {/* Default route */}
         </Routes>
       </main>

@@ -1,0 +1,159 @@
+.login-page {
+    display: flex;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif
+  }
+  
+  .login-left {
+    flex: 1;
+    background: linear-gradient(180deg, #fa5858, #385bbb, #ff5656);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+  
+  
+  .logo-top-left {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 200px; /* Adjust size as needed */
+    height: auto;
+    z-index: 10;
+  }
+  
+  .login-box {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 60px 40px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    border-radius: 16px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .login-box h1 {
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: #333;
+    text-align: left;
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #444;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
+  .login-button {
+    width: 100%;
+    background-color: #667eea;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .login-button:hover {
+    background-color: #5a67d8;
+  }
+  
+  .error-text {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    display: block;
+  }
+  
+  .login-right {
+    flex: 1;
+    position: relative;
+    background-color: #1e1e2f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  
+  /* Blurred floating shapes */
+  .login-right::before,
+    .login-right::after {
+  z-index: 1; /* Behind image */
+}
+
+  
+  .login-right::before {
+    width: 300px;
+    height: 300px;
+    background: #ff6ec7;
+    top: 10%;
+    left: 15%;
+  }
+  
+  .login-right::after {
+    width: 350px;
+    height: 350px;
+    background: #60a5fa;
+    bottom: 10%;
+    right: 15%;
+  }
+  
+  /* Optional: subtle grid pattern overlay */
+  .login-right::after {
+    background-image: radial-gradient(#ffffff11 1px, transparent 1px);
+    background-size: 40px 40px;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .login-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0; /* Behind blur and grid layers */
+    opacity: 0.15; /* Make it subtle */
+    animation: float 4s ease-in-out infinite;
+  }
+  
+  
+  
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  
+  

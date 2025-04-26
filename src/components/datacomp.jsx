@@ -19,7 +19,9 @@ const DataComp = () => {
       <div className="outer-container">
         <div className="dropdowns-row">
           <select className="dropdown left-dropdown" value={category} onChange={handleCategoryChange}>
-            <option value="">Select Category</option>
+            <option value="" disabled hidden>
+            Select Category
+          </option>
             <option value="gender">Gender</option>
             <option value="grade-level">Grade Level</option>
             <option value="shs-strand">SHS Strand</option>
@@ -38,8 +40,8 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-gender"
                   title="Dash Data Comparison Left"
                   width="100%"
-                  height="400px"
-                  style={{ border: 'none' }}
+              
+                  style={{ border: 'none', height: '100%' }}
                 />
               )}
                {category === "grade-level" && (
@@ -47,7 +49,7 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-grade-level"
                   title="Dash Data Comparison Grade Level Left"
                   width="100%"
-                  height="400px"
+                  height="900px"
                   style={{ border: 'none' }}
                 />
               )}
@@ -56,7 +58,7 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-shs-strand"
                   title="Dash Data Comparison SHS Strand Left"
                   width="100%"
-                  height="400px"
+                  height="900px"
                   style={{ border: 'none' }}
                 />
               )}
@@ -65,7 +67,7 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-grade-division"
                   title="Dash Data Comparison Grade Division Left"
                   width="100%"
-                  height="400px"
+                  height="900px"
                   style={{ border: 'none' }}
                 />
               )}
@@ -74,7 +76,7 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-sector"
                   title="Dash Data Comparison Sector Left"
                   width="100%"
-                  height="400px"
+                  height="900px"
                   style={{ border: 'none' }}
                 />
               )}
@@ -83,7 +85,7 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-school-type" // New route for school type
                   title="Dash Data Comparison School Type Left"
                   width="100%"
-                  height="400px"
+                  height="900px"
                   style={{ border: 'none' }}
                 />
               )}
@@ -98,7 +100,7 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-gender"
                   title="Dash Data Comparison Right"
                   width="100%"
-                  height="400px"
+                  height="900px"
                   style={{ border: 'none' }}
                 />
               )}
@@ -107,7 +109,7 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-grade-level"
                   title="Dash Data Comparison Grade Level Right"
                   width="100%"
-                  height="400px"
+                  height="900px"
                   style={{ border: 'none' }}
                 />
               )}
@@ -116,7 +118,7 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-shs-strand"
                   title="Dash Data Comparison SHS Strand Right"
                   width="100%"
-                  height="400px"
+                  height="900px"
                   style={{ border: 'none' }}
                 />
               )}
@@ -125,7 +127,7 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-grade-division"
                   title="Dash Data Comparison Grade Division Right"
                   width="100%"
-                  height="400px"
+                  height="900px"
                   style={{ border: 'none' }}
                 />
               )}
@@ -134,7 +136,7 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-sector"
                   title="Dash Data Comparison Sector Right"
                   width="100%"
-                  height="400px"
+                  height="900px"
                   style={{ border: 'none' }}
                 />
               )}
@@ -143,7 +145,7 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-school-type" // New route for school type
                   title="Dash Data Comparison School Type Right"
                   width="100%"
-                  height="400px"
+                  height="900px"
                   style={{ border: 'none' }}
                 />
               )}

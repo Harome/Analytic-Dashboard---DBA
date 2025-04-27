@@ -5,6 +5,7 @@
 }
 
 /* Home Container */
+/* Home Container */
 .home-container {
   background-color: #f4f4f8;
   display: flex;
@@ -17,9 +18,9 @@
   border-left: 1px solid transparent;
   position: relative;
   z-index: 1;
-  justify-content: center; 
-
+  justify-content: flex-start; /* CHANGED from center to flex-start */
 }
+
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -366,9 +367,6 @@
   height: 2545px;
 
 }
-
-
-
 
 /* Sample cards */
 .stat-card,

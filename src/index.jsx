@@ -51,9 +51,9 @@ function LoginWrapper() {
     localStorage.setItem("role", role);
 
     if (role === "admin") {
-      navigate("/school-data");
+      navigate("/home");
     } else if (role === "user") {
-      navigate("/student-data");
+      navigate("/home");
     } else {
       navigate("/home"); // fallback
     }
@@ -78,9 +78,9 @@ function RedirectBasedOnRole() {
   const role = localStorage.getItem("role");
 
   if (role === "admin") {
-    return <Navigate to="/school-data" replace />;
+    return <Navigate to="/home" replace />;
   } else if (role === "user") {
-    return <Navigate to="/student-data" replace />;
+    return <Navigate to="/home" replace />;
   } else {
     return <Navigate to="/home" replace />;
   }

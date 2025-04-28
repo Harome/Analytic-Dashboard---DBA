@@ -24,6 +24,7 @@ from Data.Clean_data.defineddata import (
 )
 from flask import request
 import traceback  # Import the traceback module
+from flask_executor import Executor
 
 
 app = dash.Dash(__name__)
@@ -37,6 +38,26 @@ fig11 = generate_graph11(df_school)
 
 image_src_1 = create_gender_plot()
 image_src_2 = create_enrollment_bubble_chart()
+
+# Initialize Flask-Executor for asynchronous tasks
+executor = Executor(server)
+
+# Function to process uploaded files asynchronously
+def process_uploaded_file(filepath, target_config):
+    try:
+        # Update config.json
+        config_path = 'config.json'
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+
+        config[target_config] = filepath
+
+        with open(config_path, 'w') as f:
+            json.dump(config, f, indent=4)
+
+        print(f"File {filepath} processed and config updated.")
+    except Exception as e:
+        print(f"Error processing file {filepath}: {e}")
 
 CORS(server)
 UPLOAD_FOLDER = 'Data/Raw_data/'
@@ -627,8 +648,9 @@ index_page = html.Div([
 
 app.layout = html.Div([
         dcc.Location(id='url', refresh=False),
-        dcc.Store(id='store-student'),
-        dcc.Store(id='store-school'), 
+        dcc.Store(id='store-upload-context'),
+        dcc.Store(id='store-student'),    
+        dcc.Store(id='store-school'),  
         html.Div(id='page-content')
     ])
 
@@ -659,7 +681,7 @@ def display_page(pathname):
     elif pathname == '/graph11':
         return graph11_page
     elif pathname == '/data-comparison-gender':
-        return comparison_page_gender
+        return comparison_gender_page
     elif pathname == '/data-comparison-grade-level':
         return comparison_grade_level_page
     elif pathname == '/data-comparison-shs-strand':
@@ -673,83 +695,162 @@ def display_page(pathname):
     elif pathname == '/upload_student':
         return upload_student_page, 'student'
     elif pathname == '/upload_school':
-        return upload_school_page, 'school'
+        return upload_student_page, 'school'
     else:
         return index_page
     
 @app.callback(
     Output('student-population-bar-chart', 'figure'), 
-    Output("Student-strand-area-chart", 'figure'), 
-    Output("Student-division-donut-chart", 'figure'), 
-    Input('store-student', 'data')
+    Output('Student-strand-area-chart', 'figure'), 
+    Output('Student-division-donut-chart', 'figure'), 
+    Input('store-student', 'data'),
+    prevent_initial_call=True 
 )
-
 def update_graph_student(data):
-    print("Data in store-student:", data)
     if not data:
-        return dash.no_update, dash.no_update, dash.no_update
-    df = pd.DataFrame(data)
-    fig7 = generate_graph7(df)
-    fig8 = generate_graph8(df)
-    fig9 = generate_graph9(df)
-    return fig7, fig8, fig9 
+        raise dash.exceptions.PreventUpdate
+    try:
+        df = pd.DataFrame(data)
+        fig7 = generate_graph7(df)
+        fig8 = generate_graph8(df)
+        fig9 = generate_graph9(df)
+        return fig7, fig8, fig9
+    except Exception as e:
+        print("Error generating student graphs:", e)
+        raise dash.exceptions.PreventUpdate
 
 @app.callback(
-    Output("school-sankey-chart", 'figure'), Output("school-bar-line-chart", 'figure'),  Input('store-school', 'data')
+    Output('school-sankey-chart', 'figure'), 
+    Output('school-bar-line-chart', 'figure'),  
+    Input('store-school', 'data'),
+    prevent_initial_call=True
 )
-
 def update_graph_school(data):
-    print("Data in store-school:", data)
     if not data:
-        return dash.no_update, dash.no_update
-    df = pd.DataFrame(data)
-    fig10 = generate_graph10(df)
-    fig11 = generate_graph11(df)
-    return fig10, fig11
+        raise dash.exceptions.PreventUpdate
+    try:
+        df = pd.DataFrame(data)
+        fig10 = generate_graph10(df)
+        fig11 = generate_graph11(df)
+        return fig10, fig11
+    except Exception as e:
+        print("Error generating school graphs:", e)
+        raise dash.exceptions.PreventUpdate
+
     
 @app.callback(
     Output('store-student', 'data'),
-    Input('upload-data', 'isCompleted'),
-    State('upload-data', 'fileNames'),
-    State('upload-type', 'data'),
+    Input('upload-data', 'contents'),
+    State('upload-data', 'filename'),
+    State('store-upload-context', 'data'),
     prevent_initial_call=True
 )
-def update_store_after_upload_student(is_completed, filenames, upload_type):
-    if is_completed and filenames and upload_type == "student":
-        uploaded_path = os.path.join("Data/Raw_data", filenames[0])
-        df = pd.read_excel(uploaded_path) if uploaded_path.endswith('.xlsx') else pd.read_csv(uploaded_path)
+def update_store_after_upload_student(contents, filename, upload_type):
+    if contents and filename and upload_type == "student":
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
+        uploaded_path = os.path.join("Data/Raw_data", filename)
 
-        # Update config.json
-        with open('config.json', 'r') as f:
-            config = json.load(f)
-        config['student_dataset_path'] = uploaded_path
-        with open('config.json', 'w') as f:
-            json.dump(config, f, indent=4)
+        try:
+            with open(uploaded_path, 'wb') as f:
+                f.write(decoded)
 
-        return df.to_dict('records')
+            df = pd.read_excel(uploaded_path) if uploaded_path.endswith('.xlsx') else pd.read_csv(uploaded_path)
+
+            # Debugging statement
+            print(f"Student dataset uploaded: {df.head()}")
+
+            # Update config.json
+            with open('config.json', 'r') as f:
+                config = json.load(f)
+            config['student_dataset_path'] = uploaded_path
+            with open('config.json', 'w') as f:
+                json.dump(config, f, indent=4)
+
+            return df.to_dict('records')
+        except Exception as e:
+            print(f"Error processing uploaded student file: {e}")
+            return dash.no_update
     return dash.no_update
 
 @app.callback(
     Output('store-school', 'data'),
-    Input('upload-data', 'isCompleted'),
-    State('upload-data', 'fileNames'),
-    State('upload-type', 'data'),
+    Input('upload-data', 'contents'),
+    State('upload-data', 'filename'),
+    State('store-upload-context', 'data'),
     prevent_initial_call=True
 )
-def update_store_after_upload_school(is_completed, filenames, upload_type):
-    if is_completed and filenames and upload_type == "school":
-        uploaded_path = os.path.join("Data/Raw_data", filenames[0])
-        df = pd.read_excel(uploaded_path) if uploaded_path.endswith('.xlsx') else pd.read_csv(uploaded_path)
+def update_store_after_upload_school(contents, filename, upload_type):
+    if contents and filename and upload_type == "school":
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
+        uploaded_path = os.path.join("Data/Raw_data", filename)
 
-        # Update config.json
-        with open('config.json', 'r') as f:
-            config = json.load(f)
-        config['school_dataset_path'] = uploaded_path
-        with open('config.json', 'w') as f:
-            json.dump(config, f, indent=4)
+        try:
+            with open(uploaded_path, 'wb') as f:
+                f.write(decoded)
 
-        return df.to_dict('records')
+            df = pd.read_excel(uploaded_path) if uploaded_path.endswith('.xlsx') else pd.read_csv(uploaded_path)
+
+            # Debugging statement
+            print(f"School dataset uploaded: {df.head()}")
+
+            # Update config.json
+            with open('config.json', 'r') as f:
+                config = json.load(f)
+            config['school_dataset_path'] = uploaded_path
+            with open('config.json', 'w') as f:
+                json.dump(config, f, indent=4)
+
+            return df.to_dict('records')
+        except Exception as e:
+            print(f"Error processing uploaded school file: {e}")
+            return dash.no_update
     return dash.no_update
+
+@app.callback(
+    Output('upload-response', 'children'),
+    Input('submit-upload', 'n_clicks'),
+    State('upload-data', 'contents'),
+    State('upload-data', 'filename'),
+    State('store-upload-context', 'data'),
+    prevent_initial_call=True
+)
+def submit_upload(n_clicks, contents, filename, upload_context):
+    if n_clicks == 0 or contents is None:
+        return ''
+
+    content_type, content_string = contents.split(',')
+    decoded = base64.b64decode(content_string)
+
+    files = {
+        'file': (filename, BytesIO(decoded))
+    }
+    data = {
+        'type': upload_context
+    }
+
+    try:
+        response = requests.post('http://localhost:8050/upload_dataset', files=files, data=data)
+
+        if response.status_code == 200:
+            # Debugging statement
+            print(f"Upload successful: {filename}")
+            return html.Div([
+                html.H4('Upload Successful!', style={'color': 'green'})
+            ])
+        else:
+            print(f"Upload failed: {response.text}")
+            return html.Div([
+                html.H4('Upload Failed!', style={'color': 'red'}),
+                html.Pre(response.text)
+            ])
+    except Exception as e:
+        print(f"Error during upload: {e}")
+        return html.Div([
+            html.H4('Error during upload!', style={'color': 'red'}),
+            html.Pre(str(e))
+        ])
 
 if __name__ == '__main__':
     app.run(debug=False)

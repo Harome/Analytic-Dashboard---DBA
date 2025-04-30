@@ -5,7 +5,6 @@
 }
 
 /* Home Container */
-/* Home Container */
 .home-container {
   background-color: #f4f4f8;
   display: flex;
@@ -148,7 +147,6 @@
   border-radius: 12px;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
   padding: 10px;
   cursor: pointer;
   transition: all 0.3s ease;

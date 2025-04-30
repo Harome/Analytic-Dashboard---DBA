@@ -11,11 +11,11 @@ const Home = () => {
   const [highestPop, setHighestPop] = useState(null);
 
   const graphs = [
-    { title: 'Graph 5', src: 'http://localhost:8050/graph5' },
-    { title: 'Graph 1', src: 'http://localhost:8050/graph1' },
-    { title: 'Graph 2', src: 'http://localhost:8050/graph2' },
-    { title: 'Graph 4', src: 'http://localhost:8050/graph4' },
-    { title: 'Graph 3', src: 'http://localhost:8050/graph3' },
+    { title: 'School Distribution per Sector', src: 'http://localhost:8050/graph5' },
+    { title: 'Gender Distribution of Enrollees', src: 'http://localhost:8050/graph1' },
+    { title: 'Total Stidents Enrolled Per Region', src: 'http://localhost:8050/graph2' },
+    { title: 'Distribution of Schools per Region ', src: 'http://localhost:8050/graph4' },
+    { title: 'Student Population Distribution by Grade Division', src: 'http://localhost:8050/graph3' },
 
   
   ];

@@ -202,7 +202,7 @@ def create_gender_plot():
 
     ax.text(center_x, 6.3, 'Male\n13,854,090', ha='center', va='center', fontsize=10, weight='bold', color='#2262bd')
     ax.text(center_x, 1.85, 'Female\n13,227,202', ha='center', va='center', fontsize=10, weight='bold', color='#d12e1e')
-    ax.text(center_x, 9.8, "Gender Distribution of Enrollees", fontsize=12, weight='bold', ha='center')
+    ax.text(center_x, 9.8, "", fontsize=12, weight='bold', ha='center')
 
     buf1 = io.BytesIO()
     plt.savefig(buf1, format="png", bbox_inches='tight', pad_inches=0)
@@ -290,7 +290,7 @@ def create_enrollment_bubble_chart():
     ax.set_ylim(0, 1)
     ax.set_aspect('equal')
     ax.axis('off')
-    plt.title("Total Students Enrolled Per Region", fontsize=16, fontweight='bold')
+    plt.title("", fontsize=16, fontweight='bold')
     plt.tight_layout()
 
     # Convert to base64 image
@@ -331,7 +331,7 @@ blue_book = patches.FancyBboxPatch(
     boxstyle="round,pad=0.05", linewidth=1, edgecolor='black', facecolor=colors[2])
 ax.add_patch(blue_book)
 
-plt.title("Student Population Distribution by Grade Division", fontsize=14, fontweight='bold')
+plt.title("", fontsize=14, fontweight='bold')
 
 ax.plot([x_positions[0], x_positions[0] + book_width], [book_height - 0.1 + y_shift, book_height - 0.1 + y_shift], color='#ffb2a2', linewidth=2)
 ax.plot([x_positions[0], x_positions[0] + book_width], [book_height - 0.3 + y_shift, book_height - 0.3 + y_shift], color='#ffb2a2', linewidth=2)
@@ -494,7 +494,7 @@ ax.axis('off')
 roof_base_x = []
 roof_base_y = []
 
-plt.text(x_center, y_start + 3.5, "Distribution of Schools per Region",
+plt.text(x_center, y_start + 3.5, "",
          fontsize=18, fontweight='bold', ha='center')
 
 colors = ['#F94449', '#5C6DC9', '#529A86', '#F1B04C']
@@ -639,7 +639,7 @@ draw_pencil(-60, '#ffa900', 250, 'SUCs/LUCs', '0.34%', 180, 'SUCs/LUCs\nsector h
 draw_pencil(180, '#2262bd', 300, 'Private', '20.16%', 205, 'Private sector\nhas 12,133\nschools', '#0b3d91')
 draw_pencil(420, '#ba4141', 200, 'PSO', '0.05%', 150, 'PSO sector\nhas 33\nschools', '#660000')
 
-plt.title("School Distribution per Sector", fontsize=14, fontweight='bold', y=0.92)
+plt.title("", fontsize=14, fontweight='bold', y=0.92)
 ax.set_xlim(-450, 550)
 ax.set_ylim(-150, 470)
 ax.set_aspect('equal')

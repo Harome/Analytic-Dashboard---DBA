@@ -6,11 +6,14 @@ const SchoolData = () => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [refreshKey, setRefreshKey] = useState(Date.now());
+  const [role, setRole] = useState('');
 
   const handleImport = () => setShowUploadModal(true);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--zoom', zoomLevel);
+    const storedRole = localStorage.getItem('role');
+    setRole(storedRole);
   }, [zoomLevel]);
 
   const cardsData = [
@@ -24,16 +27,17 @@ const SchoolData = () => {
     console.log("Submit clicked, closing modal and attempting graph refresh.");
   };
 
-
   return (
     <div className="school-data-container">
       <header className="school-header">
         <h1>School Data</h1>
       </header>
 
-      <div className="import-export-sc">
-        <button onClick={handleImport}>Add New DataSet</button>
-      </div>
+      {role !== "user" && (
+        <div className="import-export-sc">
+          <button onClick={handleImport}>Add New DataSet</button>
+        </div>
+      )}
 
       <div className="cards-wrapper">
         {cardsData.map((card, index) => (
@@ -62,37 +66,43 @@ const SchoolData = () => {
       </div>
 
       {selectedCard && (
-         <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
-           <div className="modal-cards expanded-modal" onClick={(e) => e.stopPropagation()}>
-             <div
-               className="modal-content"
-               style={{
-                 transform: `scale(${zoomLevel})`,
-                 width: '100%', 
-                 height: '100%',
-               }}
-             >
-               <h2>{selectedCard.label}</h2>
-               <iframe
-
-                 src={`${selectedCard.src}?t=${refreshKey}`}
-                 title={selectedCard.label}
-                 style={{
-                   width: '100%',
-                   height: 'calc(100% - 40px)', 
-                   border: 'none',
-                   transform: `scale(${zoomLevel})`,
-                   transformOrigin: 'top left'    
-                 }}
-               />
-               <div style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'rgba(255,255,255,0.8)', padding: '5px', borderRadius: '5px' }}>
-                 <button onClick={() => setZoomLevel(prev => Math.max(0.5, prev - 0.1))}>-</button>
-                 <span style={{ margin: '0 10px' }}>{Math.round(zoomLevel * 100)}%</span>
-                 <button onClick={() => setZoomLevel(prev => Math.min(3, prev + 0.1))}>+</button>
-               </div>
-             </div>
-           </div>
-         </div>
+        <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
+          <div className="modal-cards expanded-modal" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="modal-content"
+              style={{
+                transform: `scale(${zoomLevel})`,
+                width: '100%',
+                height: '100%',
+              }}
+            >
+              <h2>{selectedCard.label}</h2>
+              <iframe
+                src={`${selectedCard.src}?t=${refreshKey}`}
+                title={selectedCard.label}
+                style={{
+                  width: '100%',
+                  height: 'calc(100% - 40px)',
+                  border: 'none',
+                  transform: `scale(${zoomLevel})`,
+                  transformOrigin: 'top left'
+                }}
+              />
+              <div style={{
+                position: 'absolute',
+                bottom: '10px',
+                right: '10px',
+                background: 'rgba(255,255,255,0.8)',
+                padding: '5px',
+                borderRadius: '5px'
+              }}>
+                <button onClick={() => setZoomLevel(prev => Math.max(0.5, prev - 0.1))}>-</button>
+                <span style={{ margin: '0 10px' }}>{Math.round(zoomLevel * 100)}%</span>
+                <button onClick={() => setZoomLevel(prev => Math.min(3, prev + 0.1))}>+</button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {showUploadModal && (
@@ -101,7 +111,7 @@ const SchoolData = () => {
             <h2>Add New Dataset</h2>
             <p>Upload a CSV or Excel file:</p>
             <iframe
-              src={`http://localhost:8050/upload_school`}
+              src="http://localhost:8050/upload_school"
               title="Upload New Dataset"
               style={{
                 width: '100%',

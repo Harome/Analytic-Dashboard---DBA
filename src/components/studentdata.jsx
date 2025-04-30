@@ -5,10 +5,14 @@ const StudentData = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [role, setRole] = useState('');
+
   const handleImport = () => setShowUploadModal(true);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--zoom', zoomLevel);
+    const storedRole = localStorage.getItem('role');
+    setRole(storedRole);
   }, [zoomLevel]);
 
   const cardsData = [
@@ -23,9 +27,11 @@ const StudentData = () => {
         <h1>Student Data</h1>
       </header>
 
-      <div className="import-export-top">
-        <button onClick={handleImport}>Add New DataSet</button>
-      </div>
+      {role !== "user" && (
+        <div className="import-export-top">
+          <button onClick={handleImport}>Add New DataSet</button>
+        </div>
+      )}
 
       <div className="cards-wrapper">
         {cardsData.map((card, index) => (

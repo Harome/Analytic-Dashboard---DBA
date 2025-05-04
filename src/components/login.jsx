@@ -9,11 +9,17 @@ const Login = ({ onLogin }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setErrors("");
-
+  
+    let loggedInRole = null;
     if (username === "admin" && password === "admin123") {
-      onLogin("admin"); // Pass role
+      loggedInRole = "admin";
     } else if (username === "user" && password === "1234") {
-      onLogin("user"); // Pass role
+      loggedInRole = "user";
+    }
+  
+    if (loggedInRole) {
+      console.log("Login successful in Login component, calling onLogin with role:", loggedInRole);
+      onLogin(loggedInRole); // Pass role
     } else {
       setErrors("Invalid username or password");
     }

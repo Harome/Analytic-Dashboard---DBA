@@ -17,9 +17,9 @@
   border-left: 1px solid transparent;
   position: relative;
   z-index: 1;
-  justify-content: flex-start; /* CHANGED from center to flex-start */
-}
+  justify-content:flex-start; 
 
+}
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -147,6 +147,7 @@
   border-radius: 12px;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
   padding: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -155,35 +156,36 @@
 }
 
 
-/* Graph Sizes */
-.small {
-  width: 370px;
-  height: 580px;
+.g1,
+.g2,
+.g3,
+.g4,
+.g5 {
+  flex: 1 1 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-.tall {
-  width: 500px;
+.g1 {
+  max-width: 555px;
   height: 580px;
-  justify-content: center;
 }
 
-.wide {
-  width: 880px;
+.g2 {
+  max-width: 630px;
+  height: 580px;
+}
+
+.g3,
+.g4,
+.g5 {
+  max-width: 1500px;
   height: 575px;
-  justify-content: center;
 }
 
-.extra-wide {
-  width: 720px;
-  height: 580px;
-  justify-content: center;
-}
-.large {
-  width: 650px;
-  height: 575px;
-  justify-content: center;
-}
 
 .iframe-graph {
   flex: 1;
@@ -192,6 +194,14 @@
   border-radius: 8px;
   border: none;
 }
+
+@media (max-width: 960px) {
+  .g1, .g2, .g3, .g4, .g5 {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+
 
 /* Stats Section */
 .stats-container {
@@ -237,7 +247,7 @@
 }
 
 .stat-icon {
-  font-size: 48px; /* Bigger icon */
+  font-size: 48px; 
   color: #023e8a;
   margin-right: 15px;
   flex-shrink: 0;
@@ -288,12 +298,12 @@
 .datetime-value {
   display: flex;
   flex-direction: column;
-  align-items: center;      /* Center horizontally */
-  justify-content: center;  /* Center vertically */
-  text-align: center;       /* Ensure text itself is centered */
+  align-items: center;      
+  justify-content: center;  
+  text-align: center;      
   color: #023e8a;
-  height: 60%;             /* Optional: ensures vertical centering if parent has height */
-}
+  height: 60%; 
+}            
 
 .date-text {
   font-size: 14px;
@@ -339,30 +349,33 @@
 }
 
 .middle-container {
-  flex: 1; 
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: flex-start; 
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.2);
+  align-items: flex-start;
+  gap: 15px;
   padding: 15px;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-
 .right-section {
   width: 420px;
-  min-width: 250px;
+  min-width: 300px;
   display: flex;
+  max-height: 1000px;
   flex-direction: column;
   gap: 10px;
   background: rgba(255, 255, 255, 0.2);
   padding: 15px;
   border-radius: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  height: 2545px;
+  height: 1000px;
 
 }
 
@@ -388,3 +401,4 @@
     width: 100%;
   }
 }
+

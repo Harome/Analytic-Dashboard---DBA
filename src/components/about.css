@@ -1,3 +1,4 @@
+
 .about-page-container {
   background-color: #d0e3ff;
   display: flex;
@@ -44,10 +45,11 @@
   line-height: 1.9;
 }
 
-.contact-form-section:hover{
+.right-column .contact-card:hover {
   transform: scale(1.08);
-  background-color:skyblue;
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
+
 .contact-form-section {
   display: flex;
   flex-wrap: wrap;
@@ -133,9 +135,6 @@
   transition: background-color 0.3s ease;
 }
 
-.contact-form button:hover {
-  background-color: #005f99;
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -198,8 +197,8 @@
   border-radius: 12px;
   text-align: center;
   font-weight: bold;
-  max-width: 600px;  /* Increase width if needed */
-  max-height: 600px; /* Increase height if needed */
+  max-width: 600px;  
+  max-height: 600px;
   width: 100%;
   position: relative;
   animation: slideDown 0.3s ease-out;
@@ -215,12 +214,12 @@
   color: #dc3545;
 }
 
-/* Center the close button in the top-right corner */
+
 .email-popup-close {
   position: absolute;
-  top: 10px;  /* Adjust top position for better alignment */
-  right: 10px;  /* Adjust right position for better alignment */
-  font-size: 30px; /* Reasonable size for the close button */
+  top: 10px;  
+  right: 10px;  
+  font-size: 30px; 
   font-weight: bold;
   color: #aaa;
   cursor: pointer;

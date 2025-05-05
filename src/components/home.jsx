@@ -118,7 +118,7 @@ const Home = () => {
                 filteredGraphs.map((graph, index) => (
                   <div
                     key={index}
-                    className={`collage-card ${['wide', 'small', 'tall', 'wide', 'wide'][index % 5]}`}
+                    className={`collage-card ${['g5', 'g1', 'g2', 'g4', 'g3'][index % 5]}`}
                   >
                     <h3>{graph.title}</h3>
                     <iframe

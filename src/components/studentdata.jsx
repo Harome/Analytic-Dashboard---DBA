@@ -5,9 +5,16 @@ const StudentData = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(Date.now());
   const [role, setRole] = useState('');
 
   const handleImport = () => setShowUploadModal(true);
+
+  const handleSubmit = () => {
+    setShowUploadModal(false);
+    setRefreshKey(Date.now()); // Refresh iframe by updating key
+    console.log("Submit clicked, closing modal and refreshing graphs.");
+  };
 
   useEffect(() => {
     document.documentElement.style.setProperty('--zoom', zoomLevel);
@@ -45,7 +52,7 @@ const StudentData = () => {
           >
             <label>{card.label}</label>
             <iframe
-              src={card.src}
+              src={`${card.src}?t=${refreshKey}`}
               title={card.label}
               style={{
                 width: '100%',
@@ -72,7 +79,7 @@ const StudentData = () => {
             >
               <h2>{selectedCard.label}</h2>
               <iframe
-                src={selectedCard.src}
+                src={`${selectedCard.src}?t=${refreshKey}`}
                 title={selectedCard.label}
                 style={{
                   width: '100%',
@@ -102,6 +109,7 @@ const StudentData = () => {
             />
             <div className="modal-buttons-student">
               <button onClick={() => setShowUploadModal(false)} className="cancel-btn-student">Cancel</button>
+              <button onClick={handleSubmit} className="submit-btn-student">Submit</button>
             </div>
           </div>
         </div>

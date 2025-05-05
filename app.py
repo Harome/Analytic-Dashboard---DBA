@@ -18,9 +18,9 @@ from Data.Clean_data.defineddata import (
     create_grade_division_comparison_figure,
     create_sector_comparison_figure,
     create_school_type_comparison_figure,
-    create_gender_plot, create_enrollment_bubble_chart, df_school,
+    create_gender_plot, create_enrollment_bubble_chart,
     encoded_3, data_4, data_5, fig6,
-    generate_graph7, generate_graph8, generate_graph9, generate_graph10, generate_graph11, total_schools_home, total_students_home, highest_population_home
+    generate_graph7, generate_graph8, generate_graph9, generate_graph10, generate_graph11, total_schools_home, total_students_home, highest_population_home, load_student_data, load_school_data, load_data
 )
 from flask import request
 import traceback  # Import the traceback module
@@ -30,6 +30,7 @@ from flask_executor import Executor
 app = dash.Dash(__name__)
 app.title = "Student Population Dashboard"
 server = app.server
+df_school = load_data()
 fig7 = generate_graph7(df_school)
 fig8 = generate_graph8(df_school)
 fig9 = generate_graph9(df_school)
@@ -106,7 +107,7 @@ def api_gender_comparison():
     print(f"[/api/gender-comparison] Received region: {region}")
     try:
         print("[/api/gender-comparison] Calling create_gender_comparison_figure...")
-        fig = create_gender_comparison_figure(region)
+        fig = create_gender_comparison_figure(df_school, region)
         print("[/api/gender-comparison] Plotly Figure (dict) before JSON:")
         print(json.dumps(fig.to_dict(), indent=4))
         json_data = jsonify(fig.to_plotly_json())
@@ -122,7 +123,7 @@ def api_gender_comparison():
 def api_grade_level_comparison():
     region = request.args.get('region', 'All Regions')
     try:
-        fig = create_grade_level_comparison_figure(region)
+        fig = create_grade_level_comparison_figure(df_school, region)
         return jsonify(fig.to_plotly_json())
     except Exception as e:
         print(f"[/api/grade-level-comparison] Error: {e}")
@@ -132,7 +133,7 @@ def api_grade_level_comparison():
 def api_shs_strand_comparison():
     region = request.args.get('region', 'All Regions')
     try:
-        fig = create_shs_strand_comparison_figure(region)
+        fig = create_shs_strand_comparison_figure(df_school, region)
         return jsonify(fig.to_plotly_json())
     except Exception as e:
         print(f"[/api/shs-strand-comparison] Error: {e}")
@@ -142,7 +143,7 @@ def api_shs_strand_comparison():
 def api_grade_division_comparison():
     region = request.args.get('region', 'All Regions')
     try:
-        fig = create_grade_division_comparison_figure(region)
+        fig = create_grade_division_comparison_figure(df_school, region)
         return jsonify(fig.to_plotly_json())
     except Exception as e:
         print(f"[/api/grade-division-comparison] Error: {e}")
@@ -152,7 +153,7 @@ def api_grade_division_comparison():
 def api_sector_comparison():
     region = request.args.get('region', 'All Regions')
     try:
-        fig = create_sector_comparison_figure(region)
+        fig = create_sector_comparison_figure(df_school, region)
         return jsonify(fig.to_plotly_json())
     except Exception as e:
         print(f"[/api/sector-comparison] Error: {e}")
@@ -162,7 +163,7 @@ def api_sector_comparison():
 def api_school_type_comparison():
     region = request.args.get('region', 'All Regions')
     try:
-        fig = create_school_type_comparison_figure(region)
+        fig = create_school_type_comparison_figure(df_school, region)
         return jsonify(fig.to_plotly_json())
     except Exception as e:
         print(f"[/api/school-type-comparison] Error: {e}")
@@ -291,7 +292,7 @@ graph11_page = html.Div([
 
 
 # Data Comparison Graph - Gender
-comparison_page_gender =  html.Div([
+comparison_gender_page =  html.Div([
     html.Div([
         html.Div([
             html.H2("Data Comparison - Gender Analysis", style={
@@ -710,7 +711,7 @@ def update_graph_student(data):
     if not data:
         raise dash.exceptions.PreventUpdate
     try:
-        df = pd.DataFrame(data)
+        df = load_student_data()
         fig7 = generate_graph7(df)
         fig8 = generate_graph8(df)
         fig9 = generate_graph9(df)
@@ -729,7 +730,7 @@ def update_graph_school(data):
     if not data:
         raise dash.exceptions.PreventUpdate
     try:
-        df = pd.DataFrame(data)
+        df = load_school_data()
         fig10 = generate_graph10(df)
         fig11 = generate_graph11(df)
         return fig10, fig11

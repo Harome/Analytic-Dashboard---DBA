@@ -27,145 +27,153 @@ import warnings
 matplotlib.use('Agg')
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-
 config_path = 'config.json'
+
 def load_config():
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Config file not found at: {config_path}")
     with open(config_path, 'r') as f:
         return json.load(f)
-    
-config = load_config()
-path = config.get('dataset_path')
-df_school = pd.read_excel(path)
 
-def safe_load_excel(path):
-    if path and os.path.exists(path):
+# Global dataset cache
+_dataset_cache = {}
+
+def safe_load_parquet(path):
+    if not path:
+        return None
+
+    # Use cached version if available
+    if path in _dataset_cache:
+        return _dataset_cache[path]
+
+    parquet_path = path.replace('.xlsx', '.parquet')
+
+    # Load from parquet if exists
+    if os.path.exists(parquet_path):
         try:
-            return pd.read_excel(path, engine='openpyxl')
+            df = pd.read_parquet(parquet_path)
+            _dataset_cache[path] = df
+            return df
         except Exception as e:
-            print(f"[safe_load_excel] Failed to load {path}: {e}")
+            print(f"[safe_load_parquet] Failed to read parquet: {e}")
+
+    # Fallback: load from Excel and convert to parquet
+    if os.path.exists(path):
+        try:
+            df = pd.read_excel(path, engine='openpyxl')
+            df.to_parquet(parquet_path, index=False)
+            _dataset_cache[path] = df
+            return df
+        except Exception as e:
+            print(f"[safe_load_parquet] Failed to load Excel: {e}")
+
     return None
 
-def load_school_data():
+def load_data(path=None, dataset_key=None):
     config = load_config()
 
-    school_df = safe_load_excel(config.get('school_dataset_path'))
-    if school_df is not None:
-        return school_df
+    # Use default key if none provided
+    if dataset_key is None:
+        dataset_key = 'dataset_path'
 
-    default_df = safe_load_excel(config.get('dataset_path'))
-    if default_df is not None:
-        return default_df
+    if path is None:
+        path = config.get(dataset_key)
 
-    return pd.DataFrame() 
+    return safe_load_parquet(path)
+
+    return safe_load_parquet(path)
+
+def load_school_data():
+    return load_data(dataset_key='school_dataset_path')
 
 def load_student_data():
-    config = load_config()
+    return load_data(dataset_key='student_dataset_path')
 
-    student_df = safe_load_excel(config.get('student_dataset_path'))
-    if student_df is not None:
-        return student_df
+def load_and_cache_data():
+    # Load and cache the required datasets
+    school_data = load_school_data()
+    student_data = load_student_data()
+    
+    # Cache them for future reference
+    _dataset_cache['school_data'] = school_data
+    _dataset_cache['student_data'] = student_data
 
-    default_df = safe_load_excel(config.get('dataset_path'))
-    if default_df is not None:
-        return default_df
+    return school_data, student_data
 
-    return pd.DataFrame()
+def preprocess_data(df_school):
+    region_order = ['Region I', 'Region II', 'Region III', 'Region IV-A', 'MIMAROPA', 'Region V',
+                    'Region VI', 'Region VII', 'Region VIII', 'Region IX', 'Region X', 'Region XI',
+                    'Region XII', 'CARAGA', 'BARMM', 'CAR', 'NCR', 'PSO']
 
-region_order = ['Region I', 'Region II', 'Region III', 'Region IV-A', 'MIMAROPA', 'Region V',
-                'Region VI', 'Region VII', 'Region VIII', 'Region IX', 'Region X', 'Region XI',
-                'Region XII', 'CARAGA', 'BARMM', 'CAR', 'NCR', 'PSO']
+    grade_columns_male = ['Kindergarten_Male', 'G1_Male', 'G2_Male', 'G3_Male', 'G4_Male', 'G5_Male', 'G6_Male',
+                        'Elem_NG_Male', 'G7_Male', 'G8_Male', 'G9_Male', 'G10_Male', 'JHS_NG_Male',
+                        'G11_ABM_Male', 'G11_HUMSS_Male', 'G11_STEM_Male', 'G11_GAS_Male',
+                        'G11_PBM_Male', 'G11_TVL_Male', 'G11_SPORTS_Male', 'G11_ARTS_Male',
+                        'G12_ABM_Male', 'G12_HUMSS_Male', 'G12_STEM_Male', 'G12_GAS_Male',
+                        'G12_PBM_Male', 'G12_TVL_Male', 'G12_SPORTS_Male', 'G12_ARTS_Male']
 
-grade_columns_male = ['Kindergarten_Male', 'G1_Male', 'G2_Male', 'G3_Male', 'G4_Male', 'G5_Male', 'G6_Male',
-                     'Elem_NG_Male', 'G7_Male', 'G8_Male', 'G9_Male', 'G10_Male', 'JHS_NG_Male',
-                      'G11_ABM_Male', 'G11_HUMSS_Male', 'G11_STEM_Male', 'G11_GAS_Male',
-                      'G11_PBM_Male', 'G11_TVL_Male', 'G11_SPORTS_Male', 'G11_ARTS_Male',
-                      'G12_ABM_Male', 'G12_HUMSS_Male', 'G12_STEM_Male', 'G12_GAS_Male',
-                      'G12_PBM_Male', 'G12_TVL_Male', 'G12_SPORTS_Male', 'G12_ARTS_Male']
+    grade_columns_female = ['Kindergarten_Female', 'G1_Female', 'G2_Female', 'G3_Female', 'G4_Female', 'G5_Female', 'G6_Female',
+                        'Elem_NG_Female', 'G7_Female', 'G8_Female', 'G9_Female', 'G10_Female', 'JHS_NG_Female',
+                        'G11_ABM_Female', 'G11_HUMSS_Female', 'G11_STEM_Female', 'G11_GAS_Female',
+                        'G11_PBM_Female', 'G11_TVL_Female', 'G11_SPORTS_Female', 'G11_ARTS_Female',
+                        'G12_ABM_Female', 'G12_HUMSS_Female', 'G12_STEM_Female', 'G12_GAS_Female',
+                        'G12_PBM_Female', 'G12_TVL_Female', 'G12_SPORTS_Female', 'G12_ARTS_Female']
 
-grade_columns_female = ['Kindergarten_Female', 'G1_Female', 'G2_Female', 'G3_Female', 'G4_Female', 'G5_Female', 'G6_Female',
-                      'Elem_NG_Female', 'G7_Female', 'G8_Female', 'G9_Female', 'G10_Female', 'JHS_NG_Female',
-                      'G11_ABM_Female', 'G11_HUMSS_Female', 'G11_STEM_Female', 'G11_GAS_Female',
-                      'G11_PBM_Female', 'G11_TVL_Female', 'G11_SPORTS_Female', 'G11_ARTS_Female',
-                      'G12_ABM_Female', 'G12_HUMSS_Female', 'G12_STEM_Female', 'G12_GAS_Female',
-                      'G12_PBM_Female', 'G12_TVL_Female', 'G12_SPORTS_Female', 'G12_ARTS_Female']
+    grade_levels = {"Kindergarten": ["Kindergarten_Male", "Kindergarten_Female"], "Grade 1": ["G1_Male", "G1_Female"],"Grade 2": ["G2_Male", "G2_Female"],
+                    "Grade 3": ["G3_Male", "G3_Female"], "Grade 4": ["G4_Male", "G4_Female"],
+                    "Grade 5": ["G5_Male", "G5_Female"],"Grade 6": ["G6_Male", "G6_Female"],
+                    "Elem NG": ["Elem_NG_Male", "Elem_NG_Female"],"Grade 7": ["G7_Male", "G7_Female"],
+                    "Grade 8": ["G8_Male", "G8_Female"],"Grade 9": ["G9_Male", "G9_Female"],
+                    "Grade 10": ["G10_Male", "G10_Female"],"JHS NG": ["JHS_NG_Male", "JHS_NG_Female"],
+                    "Grade 11": [col for col in df_school.columns if "G11" in col],"Grade 12": [col for col in df_school.columns if "G12" in col]}
 
-grade_levels = {"Kindergarten": ["Kindergarten_Male", "Kindergarten_Female"], "Grade 1": ["G1_Male", "G1_Female"],"Grade 2": ["G2_Male", "G2_Female"],
-                "Grade 3": ["G3_Male", "G3_Female"], "Grade 4": ["G4_Male", "G4_Female"],
-                "Grade 5": ["G5_Male", "G5_Female"],"Grade 6": ["G6_Male", "G6_Female"],
-                "Elem NG": ["Elem_NG_Male", "Elem_NG_Female"],"Grade 7": ["G7_Male", "G7_Female"],
-                "Grade 8": ["G8_Male", "G8_Female"],"Grade 9": ["G9_Male", "G9_Female"],
-                "Grade 10": ["G10_Male", "G10_Female"],"JHS NG": ["JHS_NG_Male", "JHS_NG_Female"],
-                "Grade 11": [col for col in df_school.columns if "G11" in col],"Grade 12": [col for col in df_school.columns if "G12" in col]}
+    elementary_male = ["Kindergarten_Male","G1_Male", "G2_Male", "G3_Male", "G4_Male", "G5_Male", "G6_Male", "Elem_NG_Male"]
+    elementary_female = ["Kindergarten_Female","G1_Female", "G2_Female", "G3_Female", "G4_Female", "G5_Female", "G6_Female", "Elem_NG_Female"]
 
-elementary_male = ["Kindergarten_Male","G1_Male", "G2_Male", "G3_Male", "G4_Male", "G5_Male", "G6_Male", "Elem_NG_Male"]
-elementary_female = ["Kindergarten_Female","G1_Female", "G2_Female", "G3_Female", "G4_Female", "G5_Female", "G6_Female", "Elem_NG_Female"]
+    junior_high_male = ["G7_Male", "G8_Male", "G9_Male", "G10_Male", "JHS_NG_Male"]
+    junior_high_female = ["G7_Female", "G8_Female", "G9_Female", "G10_Female", "JHS_NG_Female"]
 
-junior_high_male = ["G7_Male", "G8_Male", "G9_Male", "G10_Male", "JHS_NG_Male"]
-junior_high_female = ["G7_Female", "G8_Female", "G9_Female", "G10_Female", "JHS_NG_Female"]
+    senior_high_male = ["G11_ABM_Male", "G11_HUMSS_Male", "G11_STEM_Male", "G11_GAS_Male","G11_PBM_Male", "G11_TVL_Male", "G11_SPORTS_Male", "G11_ARTS_Male",
+                        "G12_ABM_Male", "G12_HUMSS_Male", "G12_STEM_Male", "G12_GAS_Male","G12_PBM_Male", "G12_TVL_Male", "G12_SPORTS_Male", "G12_ARTS_Male"]
+    senior_high_female = ["G11_ABM_Female", "G11_HUMSS_Female", "G11_STEM_Female", "G11_GAS_Female", "G11_PBM_Female", "G11_TVL_Female", "G11_SPORTS_Female", "G11_ARTS_Female",
+                        "G12_ABM_Female", "G12_HUMSS_Female", "G12_STEM_Female", "G12_GAS_Female", "G12_PBM_Female", "G12_TVL_Female", "G12_SPORTS_Female", "G12_ARTS_Female"]
 
-senior_high_male = ["G11_ABM_Male", "G11_HUMSS_Male", "G11_STEM_Male", "G11_GAS_Male","G11_PBM_Male", "G11_TVL_Male", "G11_SPORTS_Male", "G11_ARTS_Male",
-                    "G12_ABM_Male", "G12_HUMSS_Male", "G12_STEM_Male", "G12_GAS_Male","G12_PBM_Male", "G12_TVL_Male", "G12_SPORTS_Male", "G12_ARTS_Male"]
-senior_high_female = ["G11_ABM_Female", "G11_HUMSS_Female", "G11_STEM_Female", "G11_GAS_Female", "G11_PBM_Female", "G11_TVL_Female", "G11_SPORTS_Female", "G11_ARTS_Female",
-                      "G12_ABM_Female", "G12_HUMSS_Female", "G12_STEM_Female", "G12_GAS_Female", "G12_PBM_Female", "G12_TVL_Female", "G12_SPORTS_Female", "G12_ARTS_Female"]
+    shs_strands = {
+        "ABM": ["G11_ABM_Male", "G11_ABM_Female", "G12_ABM_Male", "G12_ABM_Female"],
+        "HUMSS": ["G11_HUMSS_Male", "G11_HUMSS_Female", "G12_HUMSS_Male", "G12_HUMSS_Female"],
+        "STEM": ["G11_STEM_Male", "G11_STEM_Female", "G12_STEM_Male", "G12_STEM_Female"],
+        "GAS": ["G11_GAS_Male", "G11_GAS_Female", "G12_GAS_Male", "G12_GAS_Female"],
+        "PBM": ["G11_PBM_Male", "G11_PBM_Female", "G12_PBM_Male", "G12_PBM_Female"],
+        "TVL": ["G11_TVL_Male", "G11_TVL_Female", "G12_TVL_Male", "G12_TVL_Female"],
+        "SPORTS": ["G11_SPORTS_Male", "G11_SPORTS_Female", "G12_SPORTS_Male", "G12_SPORTS_Female"],
+        "ARTS": ["G11_ARTS_Male", "G11_ARTS_Female", "G12_ARTS_Male", "G12_ARTS_Female"]}
 
-shs_strands = {
-    "ABM": ["G11_ABM_Male", "G11_ABM_Female", "G12_ABM_Male", "G12_ABM_Female"],
-    "HUMSS": ["G11_HUMSS_Male", "G11_HUMSS_Female", "G12_HUMSS_Male", "G12_HUMSS_Female"],
-    "STEM": ["G11_STEM_Male", "G11_STEM_Female", "G12_STEM_Male", "G12_STEM_Female"],
-    "GAS": ["G11_GAS_Male", "G11_GAS_Female", "G12_GAS_Male", "G12_GAS_Female"],
-    "PBM": ["G11_PBM_Male", "G11_PBM_Female", "G12_PBM_Male", "G12_PBM_Female"],
-    "TVL": ["G11_TVL_Male", "G11_TVL_Female", "G12_TVL_Male", "G12_TVL_Female"],
-    "SPORTS": ["G11_SPORTS_Male", "G11_SPORTS_Female", "G12_SPORTS_Male", "G12_SPORTS_Female"],
-    "ARTS": ["G11_ARTS_Male", "G11_ARTS_Female", "G12_ARTS_Male", "G12_ARTS_Female"]}
+    Sector = ["Public", "Private", "SUCsLUCs", "PSO"]
 
-Sector = ["Public", "Private", "SUCsLUCs", "PSO"]
+    sector_students = {
+        "Public": ["Public"],
+        "Private": ["Private"],
+        "SUCsLUCs": ["SUCs/LUCs"],
+        "PSO": ["PSO"]
+    }
 
-sector_students = {
-    "Public": ["Public"],
-    "Private": ["Private"],
-    "SUCsLUCs": ["SUCs/LUCs"],
-    "PSO": ["PSO"]
-}
+    sector_distribution = df_school.groupby("Sector").sum(numeric_only=True)
 
-sector_distribution = df_school.groupby("Sector").sum(numeric_only=True)
+    sector_distribution["Elementary_Total"] = sector_distribution[elementary_male].sum(axis=1) + sector_distribution[elementary_female].sum(axis=1)
+    sector_distribution["Junior_HS_Total"] = sector_distribution[junior_high_male].sum(axis=1) + sector_distribution[junior_high_female].sum(axis=1)
+    sector_distribution["Senior_HS_Total"] = sector_distribution[senior_high_male].sum(axis=1) + sector_distribution[senior_high_female].sum(axis=1)
 
-sector_distribution["Elementary_Total"] = sector_distribution[elementary_male].sum(axis=1) + sector_distribution[elementary_female].sum(axis=1)
-sector_distribution["Junior_HS_Total"] = sector_distribution[junior_high_male].sum(axis=1) + sector_distribution[junior_high_female].sum(axis=1)
-sector_distribution["Senior_HS_Total"] = sector_distribution[senior_high_male].sum(axis=1) + sector_distribution[senior_high_female].sum(axis=1)
+    sector_distribution["Total"] = sector_distribution[["Elementary_Total", "Junior_HS_Total", "Senior_HS_Total"]].sum(axis=1)
 
-sector_distribution["Total"] = sector_distribution[["Elementary_Total", "Junior_HS_Total", "Senior_HS_Total"]].sum(axis=1)
-
-sector_distribution_totals = sector_distribution["Total"]
-
-inner_labels = ["Elementary", "Junior High", "Senior High"]
-inner_values = [
-    df_school[elementary_male + elementary_female].sum().sum(),
-    df_school[junior_high_male + junior_high_female].sum().sum(),
-    df_school[senior_high_male + senior_high_female].sum().sum()
-]
-
-outer_labels = ["Private", "Public", "Other Sectors"]
-sector_distribution = df_school.groupby("Sector").sum(numeric_only=True)
-sector_distribution["Total"] = (
-    sector_distribution[elementary_male + elementary_female].sum(axis=1) +
-    sector_distribution[junior_high_male + junior_high_female].sum(axis=1) +
-    sector_distribution[senior_high_male + senior_high_female].sum(axis=1)
-)
-
-outer_values = [
-    sector_distribution.loc["Private", "Total"],
-    sector_distribution.loc["Public", "Total"],
-    sector_distribution.loc[["SUCsLUCs", "PSO"], "Total"].sum()
-]
-
-regions = df_school['Region'].dropna().unique()
-school_subclassification = df_school['School_Subclassification'].dropna().unique()
-school_type = df_school['School_Type'].dropna().unique()
-modified_coc = df_school['Modified_COC'].dropna().unique()
+    sector_distribution_totals = sector_distribution["Total"]
 
 
+    regions = df_school['Region'].dropna().unique()
+    school_subclassification = df_school['School_Subclassification'].dropna().unique()
+    school_type = df_school['School_Type'].dropna().unique()
+    modified_coc = df_school['Modified_COC'].dropna().unique()
+
+    return sector_distribution, sector_distribution_totals, regions, school_subclassification, school_type, modified_coc, sector_students, Sector, shs_strands, region_order, grade_columns_female, grade_columns_male, grade_levels, elementary_male, elementary_female, junior_high_female, junior_high_male, senior_high_female, senior_high_male
 
 # Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)
 def create_gender_plot():
@@ -765,16 +773,24 @@ fig6.update_layout(
     )
 )
 
-def generate_graph7(df_school):
-    df_school = load_student_data()
+def generate_graph7(df_school_1):
+
+    grade_levels = {"Kindergarten": ["Kindergarten_Male", "Kindergarten_Female"], "Grade 1": ["G1_Male", "G1_Female"],"Grade 2": ["G2_Male", "G2_Female"],
+                    "Grade 3": ["G3_Male", "G3_Female"], "Grade 4": ["G4_Male", "G4_Female"],
+                    "Grade 5": ["G5_Male", "G5_Female"],"Grade 6": ["G6_Male", "G6_Female"],
+                    "Elem NG": ["Elem_NG_Male", "Elem_NG_Female"],"Grade 7": ["G7_Male", "G7_Female"],
+                    "Grade 8": ["G8_Male", "G8_Female"],"Grade 9": ["G9_Male", "G9_Female"],
+                    "Grade 10": ["G10_Male", "G10_Female"],"JHS NG": ["JHS_NG_Male", "JHS_NG_Female"],
+                    "Grade 11": [col for col in df_school_1.columns if "G11" in col],"Grade 12": [col for col in df_school_1.columns if "G12" in col]}
+    
     # Graph 7: Student Data Analytics - Column-Bar Chart (Student Population per Grade Level by Gender)
     grade_labels = []
     male_counts = []
     female_counts = []
 
     for grade, columns in grade_levels.items():
-        male_counts.append(df_school[columns[0]].sum())
-        female_counts.append(df_school[columns[1]].sum())
+        male_counts.append(df_school_1[columns[0]].sum())
+        female_counts.append(df_school_1[columns[1]].sum())
         grade_labels.append(grade)
 
     fig7 = go.Figure()
@@ -862,10 +878,20 @@ def generate_graph7(df_school):
 
     return fig7
 
-def generate_graph8(df_school):
-    df_school = load_student_data()
-    # Graph 8: Student Data Analytics - Area Chart (Student Distribution per SHS Strand by Sector)
-    sector_distribution = df_school.groupby("Sector").sum(numeric_only=True)
+def generate_graph8(df_school_1):
+ # Graph 8: Student Data Analytics - Area Chart (Student Distribution per SHS Strand by Sector)
+
+    shs_strands = {
+        "ABM": ["G11_ABM_Male", "G11_ABM_Female", "G12_ABM_Male", "G12_ABM_Female"],
+        "HUMSS": ["G11_HUMSS_Male", "G11_HUMSS_Female", "G12_HUMSS_Male", "G12_HUMSS_Female"],
+        "STEM": ["G11_STEM_Male", "G11_STEM_Female", "G12_STEM_Male", "G12_STEM_Female"],
+        "GAS": ["G11_GAS_Male", "G11_GAS_Female", "G12_GAS_Male", "G12_GAS_Female"],
+        "PBM": ["G11_PBM_Male", "G11_PBM_Female", "G12_PBM_Male", "G12_PBM_Female"],
+        "TVL": ["G11_TVL_Male", "G11_TVL_Female", "G12_TVL_Male", "G12_TVL_Female"],
+        "SPORTS": ["G11_SPORTS_Male", "G11_SPORTS_Female", "G12_SPORTS_Male", "G12_SPORTS_Female"],
+        "ARTS": ["G11_ARTS_Male", "G11_ARTS_Female", "G12_ARTS_Male", "G12_ARTS_Female"]}
+
+    sector_distribution = df_school_1.groupby("Sector").sum(numeric_only=True)
     sector_values = {
         strand: sector_distribution[cols].sum(axis=1)
         for strand, cols in shs_strands.items()
@@ -957,8 +983,41 @@ def generate_graph8(df_school):
 
     return fig8
 
-def generate_graph9(df_school):
-    df_school = load_student_data()
+def generate_graph9(df_school_1):
+
+    elementary_male = ["Kindergarten_Male","G1_Male", "G2_Male", "G3_Male", "G4_Male", "G5_Male", "G6_Male", "Elem_NG_Male"]
+    elementary_female = ["Kindergarten_Female","G1_Female", "G2_Female", "G3_Female", "G4_Female", "G5_Female", "G6_Female", "Elem_NG_Female"]
+
+    junior_high_male = ["G7_Male", "G8_Male", "G9_Male", "G10_Male", "JHS_NG_Male"]
+    junior_high_female = ["G7_Female", "G8_Female", "G9_Female", "G10_Female", "JHS_NG_Female"]
+
+    senior_high_male = ["G11_ABM_Male", "G11_HUMSS_Male", "G11_STEM_Male", "G11_GAS_Male","G11_PBM_Male", "G11_TVL_Male", "G11_SPORTS_Male", "G11_ARTS_Male",
+                        "G12_ABM_Male", "G12_HUMSS_Male", "G12_STEM_Male", "G12_GAS_Male","G12_PBM_Male", "G12_TVL_Male", "G12_SPORTS_Male", "G12_ARTS_Male"]
+    senior_high_female = ["G11_ABM_Female", "G11_HUMSS_Female", "G11_STEM_Female", "G11_GAS_Female", "G11_PBM_Female", "G11_TVL_Female", "G11_SPORTS_Female", "G11_ARTS_Female",
+                        "G12_ABM_Female", "G12_HUMSS_Female", "G12_STEM_Female", "G12_GAS_Female", "G12_PBM_Female", "G12_TVL_Female", "G12_SPORTS_Female", "G12_ARTS_Female"]
+
+
+    inner_labels = ["Elementary", "Junior High", "Senior High"]
+    inner_values = [
+        df_school_1[elementary_male + elementary_female].sum().sum(),
+        df_school_1[junior_high_male + junior_high_female].sum().sum(),
+        df_school_1[senior_high_male + senior_high_female].sum().sum()
+    ]
+
+    outer_labels = ["Private", "Public", "Other Sectors"]
+    sector_distribution = df_school_1.groupby("Sector").sum(numeric_only=True)
+    sector_distribution["Total"] = (
+        sector_distribution[elementary_male + elementary_female].sum(axis=1) +
+        sector_distribution[junior_high_male + junior_high_female].sum(axis=1) +
+        sector_distribution[senior_high_male + senior_high_female].sum(axis=1)
+    )
+
+    outer_values = [
+        sector_distribution.loc["Private", "Total"],
+        sector_distribution.loc["Public", "Total"],
+        sector_distribution.loc[["SUCsLUCs", "PSO"], "Total"].sum()
+    ]
+
     # Graph 9: Student Data Analytics - Donut Chart (Student Distribution by Grade Division and School Sector)
     total_students = sum(inner_values)
     outer_percentages = np.array(outer_values)
@@ -975,7 +1034,7 @@ def generate_graph9(df_school):
         hole=0.55,
         textinfo="percent+label",
         textposition="inside",
-        textfont=dict(family="Arial Black", size=7, color="black", weight="bold"),
+        textfont=dict(family="Arial Black", size=9, color="black", weight="bold"),
         marker=dict(colors=['#33C3FF', "#FF746C", '#2ECC71'], line=dict(color='black', width=0.8)),
         hovertemplate='<b style="color: black; font-family: Arial Black;">%{label}</b><br><b style="color: black;">Students:</b> %{value:,}<extra></extra>',
         showlegend=False,
@@ -989,7 +1048,7 @@ def generate_graph9(df_school):
         hole=0.9,
         textinfo="percent+label",
         textposition="outside",
-        textfont=dict(family="Arial Black", size=7, color="black", weight="bold"),
+        textfont=dict(family="Arial Black", size=9, color="black", weight="bold"),
         marker=dict(colors=['#33C3FF', "#FF746C", '#2ECC71'], line=dict(color='black', width=0.8)),
         hovertemplate="<b style='color: black; font-family: Arial Black;'>%{label}</b><br><b style='color: black;'>Total:</b> %{value:,}<extra></extra>",
         showlegend=False,
@@ -1000,7 +1059,7 @@ def generate_graph9(df_school):
     fig9.add_annotation(
         text=f"Student Population<br>{total_students:,.0f}",
         y=0.55,
-        font=dict(family="Arial Black", size=9, color="black", weight="bold"),
+        font=dict(family="Arial Black", size=10, color="black", weight="bold"),
         showarrow=False,
         align="center"
     )
@@ -1011,8 +1070,8 @@ def generate_graph9(df_school):
         title_font_weight="bold",
         title_x=0.5,
         title_y=0.95,
-        height=650,
-        width=650,
+        height=750,
+        width=750,
         xaxis=dict(tickfont=dict(family="Arial Black")),
         yaxis=dict(tickfont=dict(family="Arial Black")),
         hoverlabel=dict(
@@ -1024,14 +1083,13 @@ def generate_graph9(df_school):
 
     return fig9
 
-def generate_graph10(df_school):
-    df_school = load_school_data()
+def generate_graph10(df_school_2):
 
     def format_label(label):
         wrapped = "<br>".join(textwrap.wrap(label.title(), width=20))
         return f"<b>{wrapped}</b>"
 
-    flows = df_school.groupby(['Sector', 'School_Subclassification', 'Modified_COC']).size().reset_index(name='count')
+    flows = df_school_2.groupby(['Sector', 'School_Subclassification', 'Modified_COC']).size().reset_index(name='count')
 
     labels_raw = pd.unique(flows[['Sector', 'School_Subclassification', 'Modified_COC']].values.ravel()).tolist()
     labels = [format_label(label) for label in labels_raw]
@@ -1121,10 +1179,8 @@ def generate_graph10(df_school):
     )
     return fig10
 
-def generate_graph11(df_school):
-    df_school = load_school_data()
-
-    df_grouped = df_school.groupby(['School_Type', 'Sector']).size().reset_index(name='count')
+def generate_graph11(df_school_2):
+    df_grouped = df_school_2.groupby(['School_Type', 'Sector']).size().reset_index(name='count')
     pivot_df = df_grouped.pivot(index='School_Type', columns='Sector', values='count').fillna(0)
 
     sector_colors_11 = {
@@ -1150,7 +1206,7 @@ def generate_graph11(df_school):
         ) for sector in pivot_df.columns
     ]
 
-    school_counts = df_school.groupby('School_Type').size().reset_index(name='count')
+    school_counts = df_school_2.groupby('School_Type').size().reset_index(name='count')
     bar_trace = go.Bar(
         x=school_counts['School_Type'],
         y=school_counts['count'],
@@ -1194,7 +1250,7 @@ def generate_graph11(df_school):
 
 # Additional Functions
 
-def plot_total_number_of_schools_by_sector():
+def plot_total_number_of_schools_by_sector(df_school):
     # Example implementation for plotting total number of schools by sector
     sector_distribution = df_school.groupby("Sector").size()
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -1206,7 +1262,7 @@ def plot_total_number_of_schools_by_sector():
     return fig
 
 
-def plot_total_number_of_schools_by_region():
+def plot_total_number_of_schools_by_region(df_school):
     # Example implementation for plotting total number of schools by region
     region_distribution = df_school.groupby("Region").size()
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -1219,7 +1275,7 @@ def plot_total_number_of_schools_by_region():
     return fig
 
 #data comparison - gender
-def create_gender_comparison_figure(selected_region):
+def create_gender_comparison_figure(df_school, selected_region):
 
     df_school.columns = df_school.columns.str.strip()
     df_school['Region'] = df_school['Region'].str.strip()
@@ -1337,7 +1393,9 @@ def create_gender_comparison_figure(selected_region):
 
 #data comparison - grade level
 
-def create_grade_level_comparison_figure(selected_region):
+def create_grade_level_comparison_figure(df_school, selected_region):
+
+    _, _, _, _, _, _, _, _, _, _, _, _, grade_levels, *_ = preprocess_data(df_school)
 
     df_school.columns = df_school.columns.str.strip()
     df_school['Region'] = df_school['Region'].str.strip()
@@ -1421,7 +1479,7 @@ def create_grade_level_comparison_figure(selected_region):
 
 
 #data comparison - shs strand
-def create_shs_strand_comparison_figure(selected_region):
+def create_shs_strand_comparison_figure(df_school, selected_region):
     df = df_school.copy()
     df.columns = df.columns.str.strip()
     df['Region'] = df['Region'].str.strip()
@@ -1484,16 +1542,17 @@ def create_shs_strand_comparison_figure(selected_region):
             y=1.05,
             xanchor="center",
             x=0.5,
-            font=dict(family="Arial", size=10)
+            font=dict(family="Arial", size=9)
         ),
         plot_bgcolor="white",
         paper_bgcolor="white",
-        font=dict(family="Arial Black", size=12),
-        margin=dict(l=40, r=40, t=50, b=50),
+        font=dict(family="Arial Black", size=10),
+        margin=dict(l=20, r=20, t=30, b=30),
         showlegend=True,
-        width=500,
-        height=400
+        width=350,
+        height=300
     )
+
 
     return fig
 #data-comparison - grade division
@@ -1501,8 +1560,10 @@ def create_shs_strand_comparison_figure(selected_region):
 
 
 
-def create_grade_division_comparison_figure(selected_region):
+def create_grade_division_comparison_figure(df_school, selected_region):
 
+
+    _, _, _, _, _, _, _, _, _,region_order, _, _, _, elementary_male, elementary_female, junior_high_female, junior_high_male, senior_high_female, senior_high_male= preprocess_data(df_school)
     
     df_school.columns = df_school.columns.str.strip()
     df_school['Region'] = df_school['Region'].str.strip()
@@ -1618,7 +1679,11 @@ def create_grade_division_comparison_figure(selected_region):
         return fig
 
 #data comparison sector
-def create_sector_comparison_figure(selected_region):
+def create_sector_comparison_figure(df_school, selected_region):
+
+    _, _, _, _, _, _, _, _, _,region_order, grade_columns_female, grade_columns_male, *_= preprocess_data(df_school)
+    
+
     sector_region_data = df_school.groupby(['Region', 'Sector']).sum(numeric_only=True).reset_index()
     sector_region_data['Total'] = sector_region_data[grade_columns_male + grade_columns_female].sum(axis=1)
     sector_region_pivot = sector_region_data.pivot_table(index='Region', columns='Sector', values='Total', aggfunc='sum', fill_value=0)
@@ -1696,7 +1761,9 @@ def create_sector_comparison_figure(selected_region):
 
 # data comparison - school type
 
-def create_school_type_comparison_figure(selected_region):
+def create_school_type_comparison_figure(df_school, selected_region):
+    _, _, _, _, _, _, _, _, _,region_order, _, _, _, elementary_male, elementary_female, junior_high_female, junior_high_male, senior_high_female, senior_high_male= preprocess_data(df_school)
+
     df_school["Total_Students"] = df_school[[
     *elementary_male, *elementary_female,
     *junior_high_male, *junior_high_female,
@@ -1824,10 +1891,9 @@ def create_school_type_comparison_figure(selected_region):
     return fig
 
 def get_region_list():
-    # This will include all regions from region_order in the dropdown
-    # regardless of whether they are present in the data.
-    # Regions not in the data will show up in the dropdown but will likely
-    # result in empty or zero-value graphs when selected.
+    region_order = ['Region I', 'Region II', 'Region III', 'Region IV-A', 'MIMAROPA', 'Region V',
+                    'Region VI', 'Region VII', 'Region VIII', 'Region IX', 'Region X', 'Region XI',
+                    'Region XII', 'CARAGA', 'BARMM', 'CAR', 'NCR', 'PSO']
     return ['All Regions'] + region_order
 
 # Home Counter Numbers

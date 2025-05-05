@@ -7,20 +7,17 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
-import App from "./App"; // Corrected import for App.jsx
+import App from "./App";
 import Login from "./components/login";
 
 const root = createRoot(document.getElementById("root"));
 
-// Conditionally clear isLoggedIn during development
 if (process.env.NODE_ENV === 'development') {
   localStorage.removeItem('isLoggedIn');
 }
 
-// Protect routes from unauthenticated access
 const ProtectedRoute = ({ children }) => {
-  // TEMPORARY: Force isLoggedIn to true for debugging
-  const isLoggedIn = true;
+  const isLoggedIn = true; // FORCED TRUE
   console.log("ProtectedRoute - isLoggedIn (FORCED TRUE):", isLoggedIn);
   return isLoggedIn ? children : <Navigate to="/login" />;
 };
@@ -31,10 +28,7 @@ function RootRoutes() {
 
   return (
     <Routes>
-      {/* Public Login Route */}
       <Route path="/login" element={<LoginWrapper />} />
-
-      {/* Protected Routes */}
       <Route
         path="/*"
         element={
@@ -43,43 +37,37 @@ function RootRoutes() {
           </ProtectedRoute>
         }
       />
-
-      {/* Redirect root path to /home if logged in, otherwise to /login */}
+      {/* Make the root path a protected route */}
       <Route
         path="/"
-        element={<Navigate to={isLoggedIn ? "/home" : "/login"} />}
+        element={
+          <ProtectedRoute>
+            <AppWrapper />
+          </ProtectedRoute>
+        }
       />
-
-      {/* Catch-all route to redirect any unknown paths to login */}
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
 }
 
-
 function LoginWrapper() {
   const navigate = useNavigate();
-
   const handleLogin = (role) => {
-    console.log("handleLogin called with role:", role);
     localStorage.setItem("isLoggedIn", "true");
     localStorage.setItem("role", role);
-    console.log("isLoggedIn set to true in localStorage");
-    navigate("/home"); // Redirect to home after login
+    navigate("/home");
   };
-
   return <Login onLogin={handleLogin} />;
 }
 
 function AppWrapper() {
   const navigate = useNavigate();
-
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("role");
-    navigate("/login"); // Redirect to login after logout
+    navigate("/login");
   };
-
   return <App onLogout={handleLogout} />;
 }
 

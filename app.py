@@ -107,7 +107,7 @@ def api_gender_comparison():
     print(f"[/api/gender-comparison] Received region: {region}")
     try:
         print("[/api/gender-comparison] Calling create_gender_comparison_figure...")
-        fig = create_gender_comparison_figure(df_school, region)
+        fig = create_gender_comparison_figure(region)
         print("[/api/gender-comparison] Plotly Figure (dict) before JSON:")
         print(json.dumps(fig.to_dict(), indent=4))
         json_data = jsonify(fig.to_plotly_json())
@@ -123,7 +123,7 @@ def api_gender_comparison():
 def api_grade_level_comparison():
     region = request.args.get('region', 'All Regions')
     try:
-        fig = create_grade_level_comparison_figure(df_school, region)
+        fig = create_grade_level_comparison_figure(region)
         return jsonify(fig.to_plotly_json())
     except Exception as e:
         print(f"[/api/grade-level-comparison] Error: {e}")
@@ -133,7 +133,7 @@ def api_grade_level_comparison():
 def api_shs_strand_comparison():
     region = request.args.get('region', 'All Regions')
     try:
-        fig = create_shs_strand_comparison_figure(df_school, region)
+        fig = create_shs_strand_comparison_figure(region)
         return jsonify(fig.to_plotly_json())
     except Exception as e:
         print(f"[/api/shs-strand-comparison] Error: {e}")
@@ -143,7 +143,7 @@ def api_shs_strand_comparison():
 def api_grade_division_comparison():
     region = request.args.get('region', 'All Regions')
     try:
-        fig = create_grade_division_comparison_figure(df_school, region)
+        fig = create_grade_division_comparison_figure(region)
         return jsonify(fig.to_plotly_json())
     except Exception as e:
         print(f"[/api/grade-division-comparison] Error: {e}")
@@ -153,7 +153,7 @@ def api_grade_division_comparison():
 def api_sector_comparison():
     region = request.args.get('region', 'All Regions')
     try:
-        fig = create_sector_comparison_figure(df_school, region)
+        fig = create_sector_comparison_figure(region)
         return jsonify(fig.to_plotly_json())
     except Exception as e:
         print(f"[/api/sector-comparison] Error: {e}")
@@ -163,7 +163,7 @@ def api_sector_comparison():
 def api_school_type_comparison():
     region = request.args.get('region', 'All Regions')
     try:
-        fig = create_school_type_comparison_figure(df_school, region)
+        fig = create_school_type_comparison_figure(region)
         return jsonify(fig.to_plotly_json())
     except Exception as e:
         print(f"[/api/school-type-comparison] Error: {e}")

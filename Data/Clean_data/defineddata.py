@@ -100,6 +100,8 @@ def load_and_cache_data():
 
     return school_data, student_data
 
+df_school = load_data()
+
 def preprocess_data(df_school):
     region_order = ['Region I', 'Region II', 'Region III', 'Region IV-A', 'MIMAROPA', 'Region V',
                     'Region VI', 'Region VII', 'Region VIII', 'Region IX', 'Region X', 'Region XI',
@@ -1034,7 +1036,7 @@ def generate_graph9(df_school_1):
         hole=0.55,
         textinfo="percent+label",
         textposition="inside",
-        textfont=dict(family="Arial Black", size=9, color="black", weight="bold"),
+        textfont=dict(family="Arial Black", size=10, color="black", weight="bold"),
         marker=dict(colors=['#33C3FF', "#FF746C", '#2ECC71'], line=dict(color='black', width=0.8)),
         hovertemplate='<b style="color: black; font-family: Arial Black;">%{label}</b><br><b style="color: black;">Students:</b> %{value:,}<extra></extra>',
         showlegend=False,
@@ -1048,7 +1050,7 @@ def generate_graph9(df_school_1):
         hole=0.9,
         textinfo="percent+label",
         textposition="outside",
-        textfont=dict(family="Arial Black", size=9, color="black", weight="bold"),
+        textfont=dict(family="Arial Black", size=10, color="black", weight="bold"),
         marker=dict(colors=['#33C3FF', "#FF746C", '#2ECC71'], line=dict(color='black', width=0.8)),
         hovertemplate="<b style='color: black; font-family: Arial Black;'>%{label}</b><br><b style='color: black;'>Total:</b> %{value:,}<extra></extra>",
         showlegend=False,
@@ -1250,7 +1252,7 @@ def generate_graph11(df_school_2):
 
 # Additional Functions
 
-def plot_total_number_of_schools_by_sector(df_school):
+def plot_total_number_of_schools_by_sector():
     # Example implementation for plotting total number of schools by sector
     sector_distribution = df_school.groupby("Sector").size()
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -1262,7 +1264,7 @@ def plot_total_number_of_schools_by_sector(df_school):
     return fig
 
 
-def plot_total_number_of_schools_by_region(df_school):
+def plot_total_number_of_schools_by_region():
     # Example implementation for plotting total number of schools by region
     region_distribution = df_school.groupby("Region").size()
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -1275,7 +1277,7 @@ def plot_total_number_of_schools_by_region(df_school):
     return fig
 
 #data comparison - gender
-def create_gender_comparison_figure(df_school, selected_region):
+def create_gender_comparison_figure(selected_region):
 
     df_school.columns = df_school.columns.str.strip()
     df_school['Region'] = df_school['Region'].str.strip()
@@ -1393,7 +1395,7 @@ def create_gender_comparison_figure(df_school, selected_region):
 
 #data comparison - grade level
 
-def create_grade_level_comparison_figure(df_school, selected_region):
+def create_grade_level_comparison_figure(selected_region):
 
     _, _, _, _, _, _, _, _, _, _, _, _, grade_levels, *_ = preprocess_data(df_school)
 
@@ -1560,7 +1562,7 @@ def create_shs_strand_comparison_figure(df_school, selected_region):
 
 
 
-def create_grade_division_comparison_figure(df_school, selected_region):
+def create_grade_division_comparison_figure(selected_region):
 
 
     _, _, _, _, _, _, _, _, _,region_order, _, _, _, elementary_male, elementary_female, junior_high_female, junior_high_male, senior_high_female, senior_high_male= preprocess_data(df_school)
@@ -1679,7 +1681,7 @@ def create_grade_division_comparison_figure(df_school, selected_region):
         return fig
 
 #data comparison sector
-def create_sector_comparison_figure(df_school, selected_region):
+def create_sector_comparison_figure(selected_region):
 
     _, _, _, _, _, _, _, _, _,region_order, grade_columns_female, grade_columns_male, *_= preprocess_data(df_school)
     
@@ -1761,7 +1763,7 @@ def create_sector_comparison_figure(df_school, selected_region):
 
 # data comparison - school type
 
-def create_school_type_comparison_figure(df_school, selected_region):
+def create_school_type_comparison_figure(selected_region):
     _, _, _, _, _, _, _, _, _,region_order, _, _, _, elementary_male, elementary_female, junior_high_female, junior_high_male, senior_high_female, senior_high_male= preprocess_data(df_school)
 
     df_school["Total_Students"] = df_school[[

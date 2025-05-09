@@ -10,10 +10,13 @@ import {
 import App from "./App";
 import Login from "./components/login";
 
+
 const root = createRoot(document.getElementById("root"));
+
 
 if (process.env.NODE_ENV === 'development') {
   localStorage.removeItem('isLoggedIn');
+
 }
 
 const ProtectedRoute = ({ children }) => {
@@ -23,9 +26,6 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function RootRoutes() {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  console.log("RootRoutes - isLoggedIn on render:", isLoggedIn);
-
   return (
     <Routes>
       <Route path="/login" element={<LoginWrapper />} />
@@ -37,16 +37,9 @@ function RootRoutes() {
           </ProtectedRoute>
         }
       />
-      {/* Make the root path a protected route */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <AppWrapper />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="*" element={<Navigate to="/login" />} />
+      {/* Redirect to /login on the root path */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

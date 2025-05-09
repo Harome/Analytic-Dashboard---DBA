@@ -14,7 +14,7 @@ const Sidebar = ({ onLogout }) => {
       </div>
       <ul className="sidebar-list">
         <li>
-          <NavLink to="/" end>
+          <NavLink to="/home" end>
             <FaHome /> Home
           </NavLink>
         </li>

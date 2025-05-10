@@ -81,8 +81,6 @@ def load_data(path=None, dataset_key=None):
 
     return safe_load_parquet(path)
 
-    return safe_load_parquet(path)
-
 def load_school_data():
     return load_data(dataset_key='school_dataset_path')
 
@@ -179,7 +177,7 @@ def preprocess_data(df_school):
 
 # Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)
 def create_gender_plot():
-    fig1, ax = plt.subplots(figsize=(5, 4))
+    fig, ax = plt.subplots(figsize=(5, 4))
     ax.set_aspect('equal')
     ax.axis('off')
 
@@ -212,14 +210,14 @@ def create_gender_plot():
 
     ax.text(center_x, 6.3, 'Male\n13,854,090', ha='center', va='center', fontsize=10, weight='bold', color='#2262bd')
     ax.text(center_x, 1.85, 'Female\n13,227,202', ha='center', va='center', fontsize=10, weight='bold', color='#d12e1e')
-    ax.text(center_x, 9.8, "", fontsize=12, weight='bold', ha='center')
+    ax.text(center_x, 9.8, "Gender Distribution of Enrollees", fontsize=12, weight='bold', ha='center')
 
-    buf1 = io.BytesIO()
-    plt.savefig(buf1, format="png", bbox_inches='tight', pad_inches=0)
-    plt.close(fig1)
-    buf1.seek(0)
-    encoded_1 = base64.b64encode(buf1.read()).decode('utf-8')
-    return f"data:image/png;base64,{encoded_1}"
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", bbox_inches='tight', pad_inches=0)
+    plt.close(fig)
+    buf.seek(0)
+    encoded = base64.b64encode(buf.read()).decode('utf-8')
+    return f"data:image/png;base64,{encoded}"
 
 
 
@@ -312,7 +310,7 @@ def create_enrollment_bubble_chart():
     return f"data:image/png;base64,{encoded_2}"
 
 # Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
-fig3, ax = plt.subplots()
+fig, ax = plt.subplots()
 
 y_shift = -0.3
 
@@ -341,7 +339,7 @@ blue_book = patches.FancyBboxPatch(
     boxstyle="round,pad=0.05", linewidth=1, edgecolor='black', facecolor=colors[2])
 ax.add_patch(blue_book)
 
-plt.title("", fontsize=14, fontweight='bold')
+plt.title("Student Population Distribution by Grade Division", fontsize=14, fontweight='bold')
 
 ax.plot([x_positions[0], x_positions[0] + book_width], [book_height - 0.1 + y_shift, book_height - 0.1 + y_shift], color='#ffb2a2', linewidth=2)
 ax.plot([x_positions[0], x_positions[0] + book_width], [book_height - 0.3 + y_shift, book_height - 0.3 + y_shift], color='#ffb2a2', linewidth=2)
@@ -461,13 +459,13 @@ ax.axis('off')
 plt.gca().set_aspect('equal', adjustable='box')
 
 # Convert to image
-buf3 = io.BytesIO()
-plt.savefig(buf3, format="png", bbox_inches='tight')
-buf3.seek(0)
-encoded_3 = base64.b64encode(buf3.read()).decode('utf-8')
-buf3.close()
+buf = io.BytesIO()
+plt.savefig(buf, format="png", bbox_inches='tight')
+buf.seek(0)
+encoded = base64.b64encode(buf.read()).decode('utf-8')
+buf.close()
 
-plt.close(fig3)
+plt.close(fig)
 
 # Graph 4: Main Dashboard - School Data No. 1 (Distribution of Schools Per Region)
 # Data and plotting logic (unchanged)

@@ -170,13 +170,13 @@
 }
 
 .g1 {
-  max-width: 555px;
-  height: 580px;
+  max-width: 600px;
+  height: 720px;
 }
 
 .g2 {
-  max-width: 630px;
-  height: 580px;
+  max-width: 580px;
+  height: 720px;
 }
 
 .g3,
@@ -401,4 +401,6 @@
     width: 100%;
   }
 }
+
+
 

@@ -126,7 +126,7 @@ const Home = () => {
                       title={graph.title}
                       className="iframe-graph"
                       style={{
-                        width: '100%',
+                        width: '50%',
                         height: '100%',
                         border: 'none',
                       }}

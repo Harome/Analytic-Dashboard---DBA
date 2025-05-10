@@ -177,7 +177,7 @@ def preprocess_data(df_school):
 
 # Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)
 def create_gender_plot():
-    fig, ax = plt.subplots(figsize=(5, 4))
+    fig, ax = plt.subplots(figsize=(4, 3))  # Keep size the same
     ax.set_aspect('equal')
     ax.axis('off')
 
@@ -185,7 +185,7 @@ def create_gender_plot():
     ax.set_ylim(2.5, 10.5)
 
     def draw_gender_pie(x, y, pie_center, r, percent, color, symbol, label_offset=(0, -1.7), rotate=False):
-        ax.text(x, y, symbol, fontsize=80, ha='center', va='center', color='black')
+        ax.text(x, y, symbol, fontsize=60, ha='center', va='center', color='black')  # same symbol size
         angle = 360 * (percent / 100)
         if not rotate:
             ax.add_patch(patches.Wedge(pie_center, r, 90, 90 - angle, color=color, zorder=5))
@@ -195,7 +195,7 @@ def create_gender_plot():
             ax.add_patch(patches.Wedge(pie_center, r, 270 - angle, -90, color='#f1f1f1', zorder=4))
         ax.add_patch(patches.Circle(pie_center, r, edgecolor='black', facecolor='none', linewidth=1, zorder=6))
         offset_x, offset_y = label_offset
-        ax.text(x + offset_x, y + offset_y, f"{percent}%", ha='center', fontsize=8, weight='bold', color=color)
+        ax.text(x + offset_x, y + offset_y, f"{percent}%", ha='center', fontsize=7, weight='bold', color=color)
 
     center_x = 8
 
@@ -208,9 +208,10 @@ def create_gender_plot():
         color='#d12e1e', symbol='\u2640', label_offset=(1.0, -0.39), rotate=True
     )
 
-    ax.text(center_x, 6.3, 'Male\n13,854,090', ha='center', va='center', fontsize=10, weight='bold', color='#2262bd')
-    ax.text(center_x, 1.85, 'Female\n13,227,202', ha='center', va='center', fontsize=10, weight='bold', color='#d12e1e')
-    ax.text(center_x, 9.8, "Gender Distribution of Enrollees", fontsize=12, weight='bold', ha='center')
+    ax.text(center_x, 6.3, 'Male\n13,854,090', ha='center', va='center', fontsize=9, weight='bold', color='#2262bd')
+    ax.text(center_x, 1.85, 'Female\n13,227,202', ha='center', va='center', fontsize=9, weight='bold', color='#d12e1e')
+
+    # Title removed
 
     buf = io.BytesIO()
     plt.savefig(buf, format="png", bbox_inches='tight', pad_inches=0)
@@ -224,13 +225,13 @@ def create_gender_plot():
 # Graph 2: Main Dashboard - Student Data No. 2 (Total Students Enrolled Per Region)
 def create_enrollment_bubble_chart():
     regions = [
-        ("Region I", "1,244,604"), ("Region II", "899,159"), ("Region III", "2,966,748"),
-        ("Region IV-A", "3,951,663"), ("MIMAROPA", "887,334"), ("Region V", "1,733,251"),
-        ("Region VI", "2,012,930"), ("Region VII", "2,106,461"), ("Region VIII", "1,219,378"),
-        ("Region IX", "1,048,341"), ("Region X", "1,330,705"), ("Region XI", "1,384,153"),
-        ("Region XII", "1,178,506"), ("CARAGA", "767,014"), ("BARMM", "1,061,213"),
-        ("CAR", "432,266"), ("NCR", "2,834,118"), ("PSO", "23,448")
-    ]
+    ("Region I", "1,244,604"), ("Region II", "899,159"), ("Region III", "2,966,748"),
+    ("Region IV-A", "3,951,663"), ("MIMAROPA", "887,334"), ("Region V", "1,733,251"),
+    ("Region VI", "2,012,930"), ("Region VII", "2,106,461"), ("Region VIII", "1,219,378"),
+    ("Region IX", "1,048,341"), ("Region X", "1,330,705"), ("Region XI", "1,384,153"),
+    ("Region XII", "1,178,506"), ("CARAGA", "767,014"), ("BARMM", "1,061,213"),
+    ("CAR", "432,266"), ("NCR", "2,834,118"), ("PSO", "23,448")
+]
 
     watercolor_colors = [
         '#264653', '#287271', '#2A9D8F', '#BAB170', '#E9C46A', '#EFB306',
@@ -277,7 +278,7 @@ def create_enrollment_bubble_chart():
         'black', 'black', 'black', 'white', 'white', 'white'
     ]
 
-    fig2, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(6, 5))  # Adjusted size to match previous codes
     for i, ((x, y), size, color, name, pop) in enumerate(zip(adjusted_positions, sizes, watercolor_colors, names, pops)):
         radius = np.sqrt(size) / 100
 
@@ -298,19 +299,19 @@ def create_enrollment_bubble_chart():
     ax.set_ylim(0, 1)
     ax.set_aspect('equal')
     ax.axis('off')
-    plt.title("", fontsize=16, fontweight='bold')
     plt.tight_layout()
 
-    # Convert to base64 image
+    # Convert to image
     buf2 = io.BytesIO()
     plt.savefig(buf2, format="png", bbox_inches='tight')
-    plt.close(fig2)
     buf2.seek(0)
-    encoded_2 = base64.b64encode(buf2.read()).decode('utf-8')
-    return f"data:image/png;base64,{encoded_2}"
+    encoded = base64.b64encode(buf2.read()).decode('utf-8')
+    buf2.close()
+
+    plt.close(fig)
 
 # Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
-fig, ax = plt.subplots()
+fig_3, ax = plt.subplots()
 
 y_shift = -0.3
 
@@ -339,8 +340,6 @@ blue_book = patches.FancyBboxPatch(
     boxstyle="round,pad=0.05", linewidth=1, edgecolor='black', facecolor=colors[2])
 ax.add_patch(blue_book)
 
-plt.title("Student Population Distribution by Grade Division", fontsize=14, fontweight='bold')
-
 ax.plot([x_positions[0], x_positions[0] + book_width], [book_height - 0.1 + y_shift, book_height - 0.1 + y_shift], color='#ffb2a2', linewidth=2)
 ax.plot([x_positions[0], x_positions[0] + book_width], [book_height - 0.3 + y_shift, book_height - 0.3 + y_shift], color='#ffb2a2', linewidth=2)
 
@@ -364,7 +363,6 @@ def draw_stick_man(x_pos, book_height, book_width, offset_y):
     ax.add_patch(head)
 
     ax.plot([head_center[0], head_center[0]], [head_center[1] - head_radius, head_center[1] - head_radius - body_height], color='black', linewidth=2)
-
     ax.plot([head_center[0] - 0.1, head_center[0] + 0.1],
             [head_center[1] - head_radius - 0.15, head_center[1] - head_radius - 0.15], color='black', linewidth=2)
 
@@ -379,7 +377,8 @@ def draw_stick_man(x_pos, book_height, book_width, offset_y):
     color_map = {
         x_positions[0]: '#ffb2a2',
         x_positions[1] - 0.5: '#98fb98',
-        x_positions[2]: '#add8e6',}
+        x_positions[2]: '#add8e6',
+    }
     ax.add_patch(patches.Rectangle(
         (rect_x, rect_y), rect_width, rect_height,
         facecolor=color_map.get(x_pos, 'gray'), edgecolor='black', linewidth=0.2))
@@ -404,13 +403,11 @@ blue_highlight = patches.Rectangle((x_positions[2], 0 + y_shift), book_width, bl
                                    linewidth=1.5, edgecolor=highlight_color, facecolor=highlight_color, alpha=highlight_alpha)
 ax.add_patch(blue_highlight)
 
-# Helper function to add text with line spacing adjustment
 def add_multiline_text_with_spacing(x, y, text, ax, line_spacing=1.2, fontsize=7, color='black', fontweight='bold'):
     lines = text.split("\n")
     for i, line in enumerate(lines):
         ax.text(x, y + i * line_spacing, line, fontsize=fontsize, color=color, va='center', ha='left', fontweight=fontweight)
 
-# Adjusting text with line spacing
 add_multiline_text_with_spacing(
     x_positions[0] + book_width / 2 + 0.2,
     book_height / 2 + y_shift + 3,
@@ -459,13 +456,13 @@ ax.axis('off')
 plt.gca().set_aspect('equal', adjustable='box')
 
 # Convert to image
-buf = io.BytesIO()
-plt.savefig(buf, format="png", bbox_inches='tight')
-buf.seek(0)
-encoded = base64.b64encode(buf.read()).decode('utf-8')
-buf.close()
+buf_3 = io.BytesIO()
+plt.savefig(buf_3, format="png", bbox_inches='tight')
+buf_3.seek(0)
+encoded_3 = base64.b64encode(buf_3.read()).decode('utf-8')
+buf_3.close()
+plt.close(fig_3)
 
-plt.close(fig)
 
 # Graph 4: Main Dashboard - School Data No. 1 (Distribution of Schools Per Region)
 # Data and plotting logic (unchanged)
@@ -473,20 +470,18 @@ regions = [("Region I", 3393), ("Region II", 2916), ("Region III", 5194), ("Regi
     ("MIMAROPA", 2684), ("Region V", 4467), ("Region VI", 5037), ("Region VII", 4697),
     ("Region VIII", 4466), ("Region IX", 2868), ("Region X", 3106), ("Region XI", 2704),
     ("Region XII", 2541), ("Caraga", 2355), ("BARMM", 2932), ("CAR", 2080),
-    ("NCR", 2687), ("PSO", 33)]  # PSO value set to 33
+    ("NCR", 2687), ("PSO", 33)]
 
-# Recalculate the total and region_percent
 total = sum(val for _, val in regions)
 regions_percent = [(name, val, round((val / total) * 100, 2)) for name, val in regions]
 region_dict = {name: (name, val, perc) for name, val, perc in regions_percent}
 
-# Modify rows to include PSO
 rows = [[region_dict["Region I"], region_dict["Region II"], region_dict["Region III"]],
-        [region_dict["Region IV-A"], region_dict["MIMAROPA"], region_dict["Region V"]],
-        [region_dict["Region VI"], region_dict["Region VII"], region_dict["Region VIII"]],
-        [region_dict["Region VIII"], region_dict["Region IX"], region_dict["Region X"], region_dict["Region XI"]],
-        [region_dict["Region XII"], region_dict["Caraga"], region_dict["BARMM"],
-         region_dict["CAR"], region_dict["NCR"], region_dict["PSO"]]]  # Keep PSO in rows
+    [region_dict["Region IV-A"], region_dict["MIMAROPA"], region_dict["Region V"]],
+    [region_dict["Region VI"], region_dict["Region VII"], region_dict["Region VIII"]],
+    [region_dict["Region VIII"], region_dict["Region IX"], region_dict["Region X"], region_dict["Region XI"]],
+    [region_dict["Region XII"], region_dict["Caraga"], region_dict["BARMM"],
+     region_dict["CAR"], region_dict["NCR"], region_dict["PSO"]]]
 
 scale = 1.2
 box_height = 2
@@ -495,24 +490,18 @@ x_center = 25
 y_start = 100
 fixed_fontsize = 12
 
-fig4, ax = plt.subplots(figsize=(10, 6), dpi=80)
+fig4, ax = plt.subplots(figsize=(8, 4.8), dpi=80)  # Adjusted size
 ax.set_aspect('equal')
 ax.axis('off')
 
 roof_base_x = []
 roof_base_y = []
 
-plt.text(x_center, y_start + 3.5, "",
-         fontsize=18, fontweight='bold', ha='center')
 
-colors = ['#F94449', '#5C6DC9', '#529A86', '#F1B04C']
+colors = ['#ba4141', '#2262bd', '#1b8e3e', '#FDD85D']
 
 min_x_draw = float('inf')
 max_x_draw = float('-inf')
-
-# Add label coordinates for PSO
-pso_x = 0
-pso_y = 0
 
 for row_index, row in enumerate(rows):
     widths = [p * scale for _, _, p in row]
@@ -533,23 +522,15 @@ for row_index, row in enumerate(rows):
         box = patches.Rectangle((x, y), width, box_height, facecolor=color, edgecolor='black', alpha=0.9)
         ax.add_patch(box)
 
-        # Only display label for regions that have a non-zero value
-        if count > 0 and region != "PSO":
-            ax.text(x + width / 2, y + box_height / 2,
-                    f"{region}\n{count}",
-                    ha='center', va='center',
-                    fontsize=fixed_fontsize, fontweight='bold')
-
-        # Track PSO's position to move the label to the side
-        if region == "PSO":
-            pso_x = x + width + 0.2  # Position to the right of the bar
-            pso_y = y + box_height / 2  # Center vertically
+        ax.text(x + width / 2, y + box_height / 2,
+                f"{region}\n{count}",
+                ha='center', va='center',
+                fontsize=fixed_fontsize, fontweight='bold')
 
         min_x_draw = min(min_x_draw, x)
         max_x_draw = max(max_x_draw, x + width)
         x += width + spacing
 
-# Add triangle roof
 if roof_base_x:
     roof_gap = 0.3
     triangle_top = ((roof_base_x[0] + roof_base_x[1]) / 2, roof_base_y[0] + 3 + roof_gap)
@@ -557,14 +538,11 @@ if roof_base_x:
         [(roof_base_x[0], roof_base_y[0] + roof_gap),
          (roof_base_x[1], roof_base_y[1] + roof_gap),
          triangle_top],
-        closed=True, facecolor='#BE7158', edgecolor='black')
+        closed=True, facecolor='#7a4b47', edgecolor='black')
     ax.add_patch(triangle)
 
 ax.set_xlim(min_x_draw - 1, max_x_draw + 1)
 ax.set_ylim(last_row_y - 1, y_start + 6)
-
-# Display PSO label on the side
-ax.text(pso_x, pso_y, f"PSO\n33", ha='left', va='center', fontsize=fixed_fontsize, fontweight='bold')
 
 plt.subplots_adjust(left=0.05, right=0.95, top=0.92, bottom=0.08)
 
@@ -572,12 +550,11 @@ plt.subplots_adjust(left=0.05, right=0.95, top=0.92, bottom=0.08)
 buf4 = io.BytesIO()
 fig4.savefig(buf4, format="png", bbox_inches='tight')
 data_4 = base64.b64encode(buf4.getbuffer()).decode("ascii")
-
 plt.close(fig4)
 
 # Graph 5: Main Dashboard - School Data No. 2 (School Distribution per Sector)
 # Create the figure
-fig5, ax = plt.subplots(figsize=(12, 6))
+fig5, ax = plt.subplots(figsize=(8, 4.5))  # Slightly smaller for uniformity
 
 def draw_pencil(x_offset, color, height, label, percentage, percentage_offset, left_value, shadow_color):
     pencil_bottom = -100
@@ -605,7 +582,6 @@ def draw_pencil(x_offset, color, height, label, percentage, percentage_offset, l
     ax.plot([groove_x + shadow_offset, groove_x + shadow_offset],
             [center_y - split_half - split_gap + shadow_offset, center_y - split_gap + shadow_offset],
             color=shadow_color, linewidth=1.5, alpha=0.6)
-
     ax.plot([groove_x, groove_x],
             [center_y - split_half - split_gap, center_y - split_gap],
             color='black', linewidth=1.5)
@@ -613,13 +589,12 @@ def draw_pencil(x_offset, color, height, label, percentage, percentage_offset, l
     ax.plot([groove_x + shadow_offset, groove_x + shadow_offset],
             [center_y + split_gap + shadow_offset, center_y + split_half + split_gap + shadow_offset],
             color=shadow_color, linewidth=1.5, alpha=0.6)
-
     ax.plot([groove_x, groove_x],
             [center_y + split_gap, center_y + split_half + split_gap],
             color='black', linewidth=1.5)
 
     wood_part = patches.Polygon([(x_offset - 50, height - 100), (x_offset + 50, height - 100), (x_offset, height - 30)],
-                                closed=True, facecolor='#DEB887', edgecolor='black')
+                                 closed=True, facecolor='#DEB887', edgecolor='black')
     ax.add_patch(wood_part)
 
     tip_y = height - 30
@@ -641,19 +616,18 @@ def draw_pencil(x_offset, color, height, label, percentage, percentage_offset, l
 
     ax.text(x_offset - 25, line_start_y + 15, str(left_value), ha='right', va='center', fontsize=10, color=color, fontweight='bold')
 
-# Draw pencils (same data as before)
+# Draw pencils
 draw_pencil(-300, '#1b8e3e', 350, 'Public', '79.45%', 230, 'Public sector\nhas 47,818\nschools', '#0a4d2c')
 draw_pencil(-60, '#ffa900', 250, 'SUCs/LUCs', '0.34%', 180, 'SUCs/LUCs\nsector has\n203 schools', '#b38600')
 draw_pencil(180, '#2262bd', 300, 'Private', '20.16%', 205, 'Private sector\nhas 12,133\nschools', '#0b3d91')
 draw_pencil(420, '#ba4141', 200, 'PSO', '0.05%', 150, 'PSO sector\nhas 33\nschools', '#660000')
 
-plt.title("", fontsize=14, fontweight='bold', y=0.92)
 ax.set_xlim(-450, 550)
 ax.set_ylim(-150, 470)
 ax.set_aspect('equal')
 ax.axis('off')
 
-# Convert to base64 PNG
+# Convert to image
 buf5 = io.BytesIO()
 fig5.savefig(buf5, format="png", bbox_inches='tight')
 data_5 = base64.b64encode(buf5.getbuffer()).decode("ascii")
@@ -1479,7 +1453,7 @@ def create_grade_level_comparison_figure(selected_region):
 
 
 #data comparison - shs strand
-def create_shs_strand_comparison_figure(df_school, selected_region):
+def create_shs_strand_comparison_figure(selected_region):
     df = df_school.copy()
     df.columns = df.columns.str.strip()
     df['Region'] = df['Region'].str.strip()

@@ -58,10 +58,17 @@
 .sidebar-list {
   list-style-type: none;
   padding: 0;
+  margin-bottom: 20px; /* Add some space before the separator */
 }
 
 .sidebar-list li {
   margin: 18px 0;
+}
+
+/* Separator */
+.sidebar-separator {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 20px 0;
 }
 
 /* Sidebar Links */
@@ -88,7 +95,7 @@
   transform: translateX(5px);
   color: #1e3c72;
   font-weight: 500;
-  font-weight: bold
+  font-weight: bold;
 }
 
 .sidebar-list li a:hover svg {
@@ -107,4 +114,38 @@
 .sidebar-list li a.active svg {
   color: #1e3c72;
   transform: scale(1.2);
+}
+
+/* Logout Button Styling */
+.logout-btn {
+  background: transparent;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 20px; /* Add some space above the logout button */
+}
+
+.logout-btn svg {
+  margin-right: 12px;
+  font-size: 18px;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
+  color: #1e3c72;
+  font-weight: bold;
+}
+
+.logout-btn:hover svg {
+  transform: scale(1.2);
+  color: #1e3c72;
 }

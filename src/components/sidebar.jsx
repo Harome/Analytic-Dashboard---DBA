@@ -38,12 +38,11 @@ const Sidebar = ({ onLogout }) => {
             <FaInfoCircle /> About
           </NavLink>
         </li>
-        <li>
-          <button onClick={onLogout} className="logout-btn">
-            <FaSignOutAlt /> Logout
-          </button>
-        </li>
       </ul>
+      <div className="sidebar-separator"></div> {/* Add the separator here */}
+      <button onClick={onLogout} className="logout-btn">
+        <FaSignOutAlt /> Logout
+      </button>
     </div>
   );
 };

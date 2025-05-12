@@ -1,99 +1,153 @@
-
 .school-data-container {
   background-color: #f4f4f8;
   display: flex;
-  margin: 0%;
+  margin: 0;
   flex: 1;
   flex-direction: column;
   align-items: center;
-  padding: 30px;
+  padding: 2rem;
   height: 100vh;
   overflow-y: auto;
-  background-size: 200% 200%; 
-  border-left: 1px solid transparent; 
   position: relative;
   z-index: 1;
 }
 
-/* Apply Poppins font globally */
 * {
   font-family: 'Poppins', sans-serif;
 }
 
-/* Header Section Adjustments */
 .school-header {
   width: 100%;
   display: flex;
-  justify-content: space-between; 
-  align-items: center; 
-  margin-bottom: 40px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  background-color: rgba(255, 255, 255, 0.411);
   padding: 15px 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(78, 75, 255, 0.1); 
 }
 
 .school-header h1 {
-  font-size: 40px;
+  font-size: 35px;
   font-weight: bold;
   color: rgb(27, 93, 192);
   margin: 0;
   flex: 1; 
 }
-/* Cards container (2x2 grid layout) */
-.cards-wrapper {
+
+.school-cards-wrapper {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(700px, 1fr));
+  gap: 10px; /* smaller gap like student cards */
   width: 100%;
-  padding: 10px;
+  padding: 10px; /* match .cards-wrapper */
   box-sizing: border-box;
 }
 
-/* Default Card Style */
 .school-card {
-  top: 50px;
-  background-color: rgba(255, 255, 255, 0.7); 
-  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 30px;
+  border: none !important;
   padding: 20px;
-  height: 700px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  min-height: 700px;
+  height: 60vh;
+  box-shadow: 4px 12px 20px rgba(3, 4, 94, 0.5);
   cursor: pointer;
   position: relative;
   transition: all 0.3s ease-in-out;
-  border: 2px solid transparent;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  backdrop-filter: blur(10px); 
+  box-sizing: border-box;
+  backdrop-filter: blur(10px);
 }
 
-/* Label styling for non-expanded cards */
+.school-card-iframe {
+  width: 100%;
+  max-width: 777px;
+  height: 65vh;
+  border: none !important;
+  flex: 1;
+  display: block;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .school-card-iframe {
+    height: 50vh;
+    width: 100%;
+  }
+}
+
+
 .school-card label {
   margin-top: auto;
   font-size: 14px;
   font-weight: bold;
-  color: rgb(69, 143, 255); 
+  color: rgb(27, 93, 192); 
   text-align: center;
 }
 
-/* Main expanded modal */
-.modal-cards.expanded-modal {
-  width: 40%;
-  height: 60%;
-  background: #fff;
-  padding: 20px;
-  border-radius: 16px;
-  position: absolute;
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.expanded-modal {
+  width: 90vw;
+  height: 80vh;
+  max-width: 1000px;
+  max-height: 700px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.modal-content {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-title {
+  padding: 10px 20px;
+  background-color: #1b5dc0;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+}
+.modal-title h2 {
+  margin: 0;
+  font-size: 20px;
 }
 
 
+
 .import-export-sc {
-  position: absolute;
-  top: 110px;
-  right: 40px;
   display: flex;
   gap: 10px;
   justify-content: flex-end;
-  margin: 0; 
-  z-index: 100; 
+  padding: 10px 0;
+  position: relative;
+  z-index: 10;
+  width: 100%;
 }
 
 .import-export-sc button {
@@ -103,6 +157,8 @@
   color: white;
   border: none;
   border-radius: 6px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
 }
@@ -110,55 +166,39 @@
   background-color: #dc1f2f;
 }
 
-/* Responsive Layout Adjustments */
 @media (max-width: 1024px) {
-  .cards-wrapper {
+  .school-cards-wrapper {
     grid-template-columns: 1fr; 
   }
 
-  .student-header {
+  .school-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
 
-  .student-header h1 {
+  .school-header h1 {
     font-size: 24px;
   }
 
-  .modal-card.expanded-modal {
+  .expanded-modal {
     width: 90%;
     height: 90%;
-  }
-
-  .side-settings-modal {
-    top: auto;
-    bottom: 20px;
-    right: 20px;
-    width: 90px;
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 5px;
-  }
-
-  .side-settings-modal button {
-    font-size: 12px;
-    padding: 6px;
   }
 }
 
 @media (max-width: 600px) {
-  .student-header h1 {
+  .school-header h1 {
     font-size: 20px;
     text-align: center;
     width: 100%;
   }
 
-  .student-card label {
+  .school-card label {
     font-size: 12px;
   }
 
-  .modal-card.expanded-modal {
+  .expanded-modal {
     padding: 10px;
   }
 
@@ -167,54 +207,42 @@
   }
 }
 
-/* Overlay */
 .upload-modal-overlay-school {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1000;
+  justify-content: center;
+  z-index: 9998;
 }
-/* Modal */
+
 .upload-modal-school {
   background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  width: 100%;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-.upload-modal-school h2 {
-  margin-top: 0;
-  font-size: 1.5rem;
-  color: #333;
+.modal-title {
+  padding: 10px 20px;
+  background-color: #CAF0F8;
+  color: rgb(27, 93, 192); 
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+}
+.modal-title h2 {
+  margin: 0;
+  font-size: 20px;
 }
 
-.upload-modal-school p {
-  font-size: 1rem;
-  color: #666;
-  margin: 10px 0;
-}
-
-.upload-modal-school input[type="file"] {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 20px;
-}
-
-/* Modal Buttons */
-.modal-buttons-school {
-  display: flex;
-  justify-content: space-between;
-}
 
 .cancel-btn-school,
 .submit-btn-school {

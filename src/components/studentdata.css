@@ -5,23 +5,11 @@
   flex: 1;
   flex-direction: column;
   align-items: center;
-  padding: 30px;
-  height: 150vh;
+  padding: 2rem;
+  height: 100vh;
+  overflow-y: auto;
   position: relative;
   z-index: 1;
-}
-
-/* Keyframes for moving gradient */
-@keyframes gradientAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
 }
 
 /* Apply Poppins font globally */
@@ -36,6 +24,7 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
+  margin-bottom: 20px;
   background-color: rgba(255, 255, 255, 0.411);
   padding: 15px 10px;
   border-radius: 10px;
@@ -54,47 +43,79 @@
 .cards-wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 2fr)); 
-  gap: 20px;
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
 }
 
-.cards-wrapper {
-  display: grid;
- /* Adjusts for responsive design */
-  gap: 10px;
-}
-
 /* Default Card Style */
 .student-card {
-  top: 35px;
   background-color: rgba(255, 255, 255, 0.7); 
-  border-radius: 10px;
+  border-radius: 30px;
+  border: none !important;
   padding: 20px;
-  height: 800px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  min-height: 700px;
+  height: 60vh;
+  box-shadow: 4px 12px 20px rgba(3, 4, 94, 0.5);
   cursor: pointer;
+  position: relative;
   transition: all 0.3s ease-in-out;
-  border: 2px solid transparent;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
   backdrop-filter: blur(10px); 
 }
+
+.card-style-2 iframe,
+.card-style-3 iframe {
+  width: 100%;
+  max-width: 777px;
+  height: 65vh;
+  margin: 10px auto;
+  flex: 1;
+  display: block;
+  border: none;
+}
+
+/* Optional: Responsive container if needed */
+.card-style-2,
+.card-style-3 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .card-style-2 iframe,
+  .card-style-3 iframe {
+    height: 50vh;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-style-2 iframe,
+  .card-style-3 iframe {
+    height: 45vh;
+    width: 100%;
+  }
+}
+
 
 /* Label styling for non-expanded cards */
 .student-card label {
   margin-top: auto;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   color: rgb(27, 93, 192); 
   text-align: center;
 }
 
 /* Modal Overlay */
-.modal-overlay {
+.modal-overlay-student {
   position: fixed;
   top: 0;
   left: 0;
@@ -105,15 +126,17 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  overflow: auto;
 }
 
-.modal-card {
+.modal-card-student {
   background-color: white;
   border-radius: 20px;
   padding: 20px;
   max-width: 70vw;
   width: 90%;
   max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
   position: relative;
   display: inline-block;
@@ -133,18 +156,18 @@
 
 
 .import-export-top {
-  position: absolute;
-  top: 110px;
-  right: 40px;
   display: flex;
   gap: 10px;
   justify-content: flex-end;
-  margin: 0; 
-  z-index: 100; 
+  margin-bottom: 20px;
+  padding: 10px 0;
+  position: relative; /* Changed from absolute */
+  z-index: 10; /* Reduced z-index to avoid overlap */
+  width: 100%;
 }
 
 .import-export-top button {
-  padding: 6px 30px;
+  padding: 6px 20px;
   font-size: 14px;
   background-color: #277db6;
   color: white;
@@ -208,6 +231,20 @@
   justify-content: space-between;
 }
 
+.modal-title {
+  padding: 10px 20px;
+  background-color: #1b5dc0;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+}
+.modal-title h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+
 .cancel-btn-student,
 .submit-btn-student {
   padding: 10px 15px;
@@ -236,6 +273,7 @@
   background-color: #0056b3;
 }
 
+
 /* Logout Button */
 .logout-btn {
   background: none;
@@ -257,12 +295,6 @@
 }
 
 
-.student-data-container {
-  width: 100%;
-  padding: 0 30px;
-  box-sizing: border-box;
-}
-
 .full-width-card {
   width: 100%;
   margin-bottom: 10px;
@@ -276,10 +308,11 @@
   width: 100%;
 }
 
+
 /* Custom heights */
 .card-style-1 {
   height: 700px;
-  margin-top: 50px;
+  margin-top: 20px;
 }
 
 .card-style-2,
@@ -291,5 +324,22 @@
   width: 100%;
   height: 100%;
   border: none;
+  display: block;
+  box-sizing: border-box;
   border-radius: 10px;
+}
+
+/* Iframe Wrapper */
+.iframe-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center; /* Centers iframe horizontally */
+  align-items: center; /* Centers iframe vertically */
+  padding: 20px; /* Adds space around the iframe */
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  box-sizing: border-box;
 }

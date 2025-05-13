@@ -90,9 +90,9 @@ const StudentData = () => {
           >
             <label>{card.label}</label>
             <iframe
-              key={`${iframeKey}-${cardsData[0].label}`}
-              src={`${cardsData[0].src}?t=${iframeKey}`}
-              title={cardsData[0].label}
+              key={iframeKey + index + 1}
+              src={`${card.src}?t=${new Date().getTime()}`}
+              title={card.label}
               className="student-iframe"
             />
           </div>

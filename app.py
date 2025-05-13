@@ -228,7 +228,7 @@ def serve_highest_population():
 
 # Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)
 graph1_page = html.Div([
-    html.Img(src=image_src_1, style={'width': '70%', 'maxWidth': '800px', 'marginLeft': '65px', 'paddingBottom': '20px'})
+    html.Img(src=image_src_1, style={'width': '70%', 'maxWidth': '800px', 'marginLeft': '65px', 'paddingBottom': '40px','height': '70w0px'})
     ], id="Graph_1")
 
 # Graph 2: Main Dashboard - Student Data No. 2 (Total Students Enrolled Per Region)
@@ -239,7 +239,7 @@ graph2_page = html.Div([
 # Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
 graph3_page = html.Div([html.Img(
         src='data:image/png;base64,{}'.format(encoded_3),
-        style={"maxWidth": "100%", "height": "650px"})],
+        style={"maxWidth": "100%", "height": "650px", 'paddingTop': "30px"})],
         id="Graph_3", style={"display": "flex", "justifyContent": "center", "alignItems": "center", "height": "100%", 'marginLeft': '50px'})
 
 # Graph 4: Main Dashboard - School Data No. 1 (Distribution of Schools Per Region)
@@ -250,7 +250,7 @@ graph4_page = html.Div([
 
 # Graph 5: Main Dashboard - School Data No. 2 (School Distribution per Sector)
 graph5_page = html.Div([
-    html.Img(src="data:image/png;base64," + data_5, style={"maxWidth": "100%", "height": "auto"})
+    html.Img(src="data:image/png;base64," + data_5, style={"maxWidth": "100%", "height": "auto", 'paddingTop': '10px'})
     ], id='Graph_5', style={"display": "flex", "justifyContent": "center", "alignItems": "center", "height": "100%"})
 
 # Graph 6: Main Dashboard - Philippine Heatmap (Philippine Regions<br>Student Population Heatmap)

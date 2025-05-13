@@ -968,7 +968,7 @@ def generate_graph8(df_school_1):
         plot_bgcolor='white',
         margin=dict(l=0,r=0),
         height=570,
-        width=870,
+        width=720,
         hoverlabel=dict(
             bgcolor="white",
             font_size=13,

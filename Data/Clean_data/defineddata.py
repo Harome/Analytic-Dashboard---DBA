@@ -475,7 +475,6 @@ encoded_3 = base64.b64encode(buf_3.read()).decode('utf-8')
 buf_3.close()
 plt.close(fig_3)
 
-
 # Graph 4: Main Dashboard - School Data No. 1 (Distribution of Schools Per Region)
 regions = [
     ("Region I", 3393), ("Region II", 2916), ("Region III", 5194), ("Region IV-A", 6007),
@@ -953,23 +952,23 @@ def generate_graph8(df_school_1):
                 line=dict(color="black", width=2)
             )
         ],
-        legend_title="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;School Sector",
         legend=dict(
-            x=0.99,
-            y=0.99,
-            xanchor="right",
-            yanchor="top",
+            orientation="h",  # horizontal layout
+            yanchor="bottom",
+            y=1.03,  # position above the plot
+            xanchor="center",
+            x=0.5,
             bgcolor="rgba(255,255,255,0.8)",
             bordercolor="black",
             borderwidth=1,
             title_font=dict(size=12, family='Arial Black'),
-            font=dict(size=11, family="Arial")
+            font=dict(size=12, family="Arial")
         ),
         font=dict(family="Arial Black", size=12),
         plot_bgcolor='white',
-        height=500,
-        width=750,
-        margin=dict(l=30, r=30, t=60, b=80),
+        margin=dict(l=0,r=0),
+        height=570,
+        width=870,
         hoverlabel=dict(
             bgcolor="white",
             font_size=13,
@@ -1062,21 +1061,17 @@ def generate_graph9(df_school_1):
     )
 
     fig9.update_layout(
-        title="",
-        title_font_size=20,
-        title_font_weight="bold",
-        title_x=0.5,
-        title_y=0.95,
-        height=721,
-        width=725,
-        xaxis=dict(tickfont=dict(family="Arial Black")),
-        yaxis=dict(tickfont=dict(family="Arial Black")),
-        hoverlabel=dict(
-            bgcolor="white",
-            font_size=13,
-            font_family="Arial"
-        )
+    height=600,
+    margin=dict(l=0,t=0,b=0,r=0),
+    width=725,
+    xaxis=dict(tickfont=dict(family="Arial Black")),
+    yaxis=dict(tickfont=dict(family="Arial Black")),
+    hoverlabel=dict(
+        bgcolor="white",
+        font_size=13,
+        font_family="Arial"
     )
+)
 
     return fig9
 
@@ -1182,9 +1177,9 @@ def generate_graph11(df_school_2):
 
     # Apply label replacements
     label_replacements = {
-        'Annex or Extension school(s)': 'Annex or\nExtension School(s)',
-        'Mobile School(s)/Center(s)': 'Mobile School(s)/Center(s)',
-        'School with no Annexes': 'School with\nno Annexes'
+        'Annex or Extension school(s)': 'Annex or<br>Extension School(s)',
+        'Mobile School(s)/Center(s)': 'Mobile School(s)<br>Center(s)',
+        'School with no Annexes': 'School with<br>no Annexes'
     }
     pivot_df.index = pivot_df.index.to_series().replace(label_replacements)
 

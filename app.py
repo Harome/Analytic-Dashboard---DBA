@@ -228,7 +228,7 @@ def serve_highest_population():
 
 # Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)
 graph1_page = html.Div([
-    html.Img(src=image_src_1, style={'width': '100%', 'maxWidth': '800px'})
+    html.Img(src=image_src_1, style={'width': '70%', 'maxWidth': '800px', 'marginLeft': '65px', 'paddingBottom': '20px'})
     ], id="Graph_1")
 
 # Graph 2: Main Dashboard - Student Data No. 2 (Total Students Enrolled Per Region)
@@ -237,21 +237,21 @@ graph2_page = html.Div([
     ], id="Graph_2")
 
 # Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
-graph3_page = html.Img(
+graph3_page = html.Div([html.Img(
         src='data:image/png;base64,{}'.format(encoded_3),
-        style={'width': '600px', 'height': 'auto'},
-        id="Graph_3"
-    )
+        style={"maxWidth": "100%", "height": "650px"})],
+        id="Graph_3", style={"display": "flex", "justifyContent": "center", "alignItems": "center", "height": "100%", 'marginLeft': '50px'})
 
 # Graph 4: Main Dashboard - School Data No. 1 (Distribution of Schools Per Region)
 graph4_page = html.Div([
-    html.Img(src="data:image/png;base64," + data_4)
-    ], id="Graph_4")
+    html.Img(src="data:image/png;base64," + data_4, style={"maxWidth": "100%", "height": "auto"})
+], id="Graph_4", style={"display": "flex", "justifyContent": "center", "alignItems": "center", "height": "100%"})
+
 
 # Graph 5: Main Dashboard - School Data No. 2 (School Distribution per Sector)
 graph5_page = html.Div([
-    html.Img(src="data:image/png;base64," + data_5)
-    ], id='Graph_5')
+    html.Img(src="data:image/png;base64," + data_5, style={"maxWidth": "100%", "height": "auto"})
+    ], id='Graph_5', style={"display": "flex", "justifyContent": "center", "alignItems": "center", "height": "100%"})
 
 # Graph 6: Main Dashboard - Philippine Heatmap (Philippine Regions<br>Student Population Heatmap)
 graph6_page = html.Div([
@@ -277,7 +277,7 @@ graph8_page = html.Div([
 # Graph 9: Student Data Analytics - Donut Chart (Student Distribution by Grade Division and School Sector)
 graph9_page = html.Div([
     dcc.Graph(figure=fig9, id="Student-division-donut-chart")
-    ])
+    ], style={"display": "flex", "justifyContent": "center", "alignItems": "center", 'paddingTop': '20px'})
 
 
 # Graph 10: School Data Analytics - Sankey Chart (School Population per Sector, Sub-Classification, and Modified COC)

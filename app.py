@@ -1,15 +1,14 @@
 import dash
-from dash import dcc, html, dash_table, Input, Output, State
+from dash import dcc, html, Input, Output, State, ctx
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import json
 from flask import request, jsonify
 from flask_cors import CORS
-from io import BytesIO
 import base64
-import requests
 import os
+import time
 from Data.Clean_data.defineddata import (
     get_region_list,
     create_gender_comparison_figure,
@@ -39,6 +38,12 @@ fig11 = generate_graph11(df_school)
 
 image_src_1 = create_gender_plot()
 image_src_2 = create_enrollment_bubble_chart()
+
+last_update = {"student": 0, "school": 0}
+
+@app.server.route("/last_update")
+def get_last_update():
+    return jsonify(last_update)
 
 # Initialize Flask-Executor for asynchronous tasks
 executor = Executor(server)
@@ -598,10 +603,12 @@ upload_student_page = html.Div([
         multiple=False
     ),
     html.Div(id='file-selected', style={'marginTop': '20px', 'textAlign': 'center'}),
+    html.Div(id='upload-response', style={'marginTop': '20px', 'textAlign': 'center'}),
+    html.Div(id='submit-button-container', style={'marginTop': '20px', 'textAlign': 'center'}),
+    html.Div(id='upload-notification', style={'marginTop': '10px'}),
     dcc.Store(id='store-uploaded-file'), 
     dcc.Store(id='store-upload-context', data='student'), 
-    html.Div(id='submit-button-container', style={'marginTop': '20px', 'textAlign': 'center'}),\
-    html.Div(id='upload-response', style={'marginTop': '20px', 'textAlign': 'center'}),
+    dcc.Interval(id='notification-clear-timer', interval=4000, n_intervals=0, max_intervals=1)
 ])
 
 upload_school_page = html.Div([
@@ -625,10 +632,11 @@ upload_school_page = html.Div([
         multiple=False
     ),
     html.Div(id='file-selected', style={'marginTop': '20px', 'textAlign': 'center'}),
+    html.Div(id='upload-response', style={'marginTop': '20px', 'textAlign': 'center'}),
+    html.Div(id='submit-button-container', style={'marginTop': '20px', 'textAlign': 'center'}),
+    html.Div(id='upload-notification', style={'marginTop': '10px'}),
     dcc.Store(id='store-uploaded-file'),  
     dcc.Store(id='store-upload-context', data='school'), 
-    html.Div(id='submit-button-container', style={'marginTop': '20px', 'textAlign': 'center'}),\
-    html.Div(id='upload-response', style={'marginTop': '20px', 'textAlign': 'center'}),
 ])
 
 
@@ -704,16 +712,16 @@ def display_page(pathname):
     elif pathname == '/data-comparison-school-type': 
         return comparison_school_type_page
     elif pathname == '/upload_student':
-        return upload_student_page, 'student'
+        return upload_student_page
     elif pathname == '/upload_school':
-        return upload_student_page, 'school'
+        return upload_student_page
     else:
         return index_page
     
 @app.callback(
     Output('student-population-bar-chart', 'figure'), 
     Output('Student-strand-area-chart', 'figure'), 
-    Output('Student-division-donut-chart', 'figure'), 
+    Output('Student-division-donut-chart', 'figure'),
     Input('store-student', 'data'),
     prevent_initial_call=True 
 )
@@ -768,9 +776,6 @@ def update_store_after_upload_student(contents, filename, upload_type):
 
             df = pd.read_excel(uploaded_path) if uploaded_path.endswith('.xlsx') else pd.read_csv(uploaded_path)
 
-            # Debugging statement
-            print(f"Student dataset uploaded: {df.head()}")
-
             # Update config.json
             with open('config.json', 'r') as f:
                 config = json.load(f)
@@ -803,9 +808,6 @@ def update_store_after_upload_school(contents, filename, upload_type):
 
             df = pd.read_excel(uploaded_path) if uploaded_path.endswith('.xlsx') else pd.read_csv(uploaded_path)
 
-            # Debugging statement
-            print(f"School dataset uploaded: {df.head()}")
-
             # Update config.json
             with open('config.json', 'r') as f:
                 config = json.load(f)
@@ -820,48 +822,22 @@ def update_store_after_upload_school(contents, filename, upload_type):
     return dash.no_update
 
 @app.callback(
-    Output('upload-response', 'children'),
-    Input('submit-upload', 'n_clicks'),
-    State('upload-data', 'contents'),
-    State('upload-data', 'filename'),
-    State('store-upload-context', 'data'),
+    Output('upload-notification', 'children'),
+    Input('store-student', 'data'),
+    Input('store-school', 'data'),
     prevent_initial_call=True
 )
-def submit_upload(n_clicks, contents, filename, upload_context):
-    if n_clicks == 0 or contents is None:
-        return ''
+def notify_upload(student_data, school_data):
+    triggered_id = ctx.triggered_id
 
-    content_type, content_string = contents.split(',')
-    decoded = base64.b64decode(content_string)
+    if triggered_id == 'store-student' and student_data:
+        last_update["student"] = time.time()
+        return html.Div("✅ Student data loaded successfully!", style={'color': 'green'})
+    elif triggered_id == 'store-school' and school_data:
+        last_update["school"] = time.time()
+        return html.Div("✅ School data loaded successfully!", style={'color': 'green'})
 
-    files = {
-        'file': (filename, BytesIO(decoded))
-    }
-    data = {
-        'type': upload_context
-    }
-
-    try:
-        response = requests.post('http://localhost:8050/upload_dataset', files=files, data=data)
-
-        if response.status_code == 200:
-            # Debugging statement
-            print(f"Upload successful: {filename}")
-            return html.Div([
-                html.H4('Upload Successful!', style={'color': 'green'})
-            ])
-        else:
-            print(f"Upload failed: {response.text}")
-            return html.Div([
-                html.H4('Upload Failed!', style={'color': 'red'}),
-                html.Pre(response.text)
-            ])
-    except Exception as e:
-        print(f"Error during upload: {e}")
-        return html.Div([
-            html.H4('Error during upload!', style={'color': 'red'}),
-            html.Pre(str(e))
-        ])
+    raise dash.exceptions.PreventUpdate
 
 if __name__ == '__main__':
     app.run(debug=False)

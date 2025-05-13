@@ -11,46 +11,21 @@ const StudentData = () => {
 
   const handleImport = () => setShowUploadModal(true);
 
-  const handleFileChange = (e) => setFile(e.target.files[0]);
-
-  const handleSubmit = async () => {
-    if (file) {
-      const fileExtension = file.name.split('.').pop().toLowerCase();
-
-      if (['csv', 'xls', 'xlsx'].includes(fileExtension)) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('type', 'student');
-
-        try {
-          const response = await fetch('http://localhost:8050/upload_dataset', {
-            method: 'POST',
-            body: formData
-          });
-
-          const result = await response.json();
-
-          if (result.status === 'success') {
-            alert(result.message);
-            setIframeKey(Date.now());
-            setSelectedCard(null);
-          } else {
-            alert("Upload failed: " + result.message);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch("http://localhost:8050/last_update")
+        .then((res) => res.json())
+        .then((data) => {
+          const lastStudentUpdate = localStorage.getItem("lastStudentUpdate");
+          if (data.student.toString() !== lastStudentUpdate) {
+            localStorage.setItem("lastStudentUpdate", data.student.toString());
+            setIframeKey(Date.now()); // refresh the graphs
           }
-        } catch (error) {
-          console.error('Error uploading file:', error);
-          alert("An error occurred during upload.");
-        }
+        });
+    }, 3000);
 
-        setShowUploadModal(false);
-        setFile(null);
-      } else {
-        alert("Please select a valid CSV or Excel file.");
-      }
-    } else {
-      alert("Please select a file before submitting.");
-    }
-  };
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--zoom', zoomLevel);
@@ -95,11 +70,11 @@ const StudentData = () => {
         >
           <label>{cardsData[0].label}</label>
           <iframe
-            key={iframeKey}
-            src={`${cardsData[0].src}?t=${new Date().getTime()}`}
-            title={cardsData[0].label}
-            className="student-iframe"
-          />
+              key={`${iframeKey}-${cardsData[0].label}`}
+              src={`${cardsData[0].src}?t=${iframeKey}`}
+              title={cardsData[0].label}
+              className="student-iframe"
+            />
         </div>
       </div>
 
@@ -115,9 +90,9 @@ const StudentData = () => {
           >
             <label>{card.label}</label>
             <iframe
-              key={iframeKey + index + 1}
-              src={`${card.src}?t=${new Date().getTime()}`}
-              title={card.label}
+              key={`${iframeKey}-${cardsData[0].label}`}
+              src={`${cardsData[0].src}?t=${iframeKey}`}
+              title={cardsData[0].label}
               className="student-iframe"
             />
           </div>
@@ -143,13 +118,22 @@ const StudentData = () => {
       )}
 
       {showUploadModal && (
-        <div className="upload-modal-overlay-student">
-          <div className="upload-modal-student">
-            <h2>Upload Student Dataset</h2>
-            <input type="file" accept=".csv, .xls, .xlsx" onChange={handleFileChange} />
-            <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-              <button className="cancel-btn-student" onClick={() => setShowUploadModal(false)}>Cancel</button>
-              <button className="submit-btn-student" onClick={handleSubmit}>Submit</button>
+        <div className="upload-modal-overlay-school" onClick={() => setShowUploadModal(false)}>
+          <div className="upload-modal-school" onClick={(e) => e.stopPropagation()}>
+            <h2>Add New Dataset</h2>
+            <p>Upload a CSV or Excel file:</p>
+            <iframe
+              src="http://localhost:8050/upload_school"
+              title="Upload New Dataset"
+              style={{
+                width: '100%',
+                height: '300px',
+                border: 'none',
+                borderRadius: '8px',
+              }}
+            />
+            <div className="modal-buttons-school">
+              <button onClick={() => setShowUploadModal(false)} className="cancel-btn-school">Close</button>
             </div>
           </div>
         </div>

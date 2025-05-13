@@ -214,24 +214,23 @@ def create_gender_plot():
     # Title removed
 
     buf = io.BytesIO()
-    plt.savefig(buf, format="png", bbox_inches='tight', pad_inches=0)
+    plt.savefig(buf, format="png", bbox_inches='tight', pad_inches=0, dpi=300)
     plt.close(fig)
     buf.seek(0)
     encoded = base64.b64encode(buf.read()).decode('utf-8')
     return f"data:image/png;base64,{encoded}"
 
-
-
 # Graph 2: Main Dashboard - Student Data No. 2 (Total Students Enrolled Per Region)
 def create_enrollment_bubble_chart():
+
     regions = [
-    ("Region I", "1,244,604"), ("Region II", "899,159"), ("Region III", "2,966,748"),
-    ("Region IV-A", "3,951,663"), ("MIMAROPA", "887,334"), ("Region V", "1,733,251"),
-    ("Region VI", "2,012,930"), ("Region VII", "2,106,461"), ("Region VIII", "1,219,378"),
-    ("Region IX", "1,048,341"), ("Region X", "1,330,705"), ("Region XI", "1,384,153"),
-    ("Region XII", "1,178,506"), ("CARAGA", "767,014"), ("BARMM", "1,061,213"),
-    ("CAR", "432,266"), ("NCR", "2,834,118"), ("PSO", "23,448")
-]
+        ("Region I", "1,244,604"), ("Region II", "899,159"), ("Region III", "2,966,748"),
+        ("Region IV-A", "3,951,663"), ("MIMAROPA", "887,334"), ("Region V", "1,733,251"),
+        ("Region VI", "2,012,930"), ("Region VII", "2,106,461"), ("Region VIII", "1,219,378"),
+        ("Region IX", "1,048,341"), ("Region X", "1,330,705"), ("Region XI", "1,384,153"),
+        ("Region XII", "1,178,506"), ("CARAGA", "767,014"), ("BARMM", "1,061,213"),
+        ("CAR", "432,266"), ("NCR", "2,834,118"), ("PSO", "23,448")
+    ]
 
     watercolor_colors = [
         '#264653', '#287271', '#2A9D8F', '#BAB170', '#E9C46A', '#EFB306',
@@ -241,12 +240,12 @@ def create_enrollment_bubble_chart():
 
     names = [r[0] for r in regions]
     pops = [int(r[1].replace(',', '')) for r in regions]
-    min_size, max_size = 20, 100
+
+    min_size, max_size = 100, 700
     sizes = np.interp(pops, (min(pops), max(pops)), (min_size, max_size))
 
     np.random.seed(42)
     positions = np.random.rand(len(regions), 2) * 0.6 + 0.2
-
     pso_position = [(positions[4][0] + positions[9][0]) / 2, (positions[4][1] + positions[9][1]) / 2]
     positions[16] = pso_position
 
@@ -262,12 +261,25 @@ def create_enrollment_bubble_chart():
                         if dist < min_dist:
                             overlap = True
                             direction = np.array([x2 - x1, y2 - y1])
-                            direction /= np.linalg.norm(direction)
+                            norm = np.linalg.norm(direction)
+                            if norm == 0:  # Prevent division by zero
+                                direction = np.random.rand(2) - 0.5
+                                direction /= np.linalg.norm(direction)
+                            else:
+                                direction /= norm
                             displacement = (min_dist - dist) / 2
                             adjusted_positions[i] -= direction * displacement
                             adjusted_positions[j] += direction * displacement
             if not overlap:
                 break
+
+        # Center all positions around (0.5, 0.5)
+        centroid = np.mean(adjusted_positions, axis=0)
+        shift = np.array([0.5, 0.5]) - centroid
+        adjusted_positions += shift
+
+        # Clip to ensure positions stay in bounds
+        adjusted_positions = np.clip(adjusted_positions, 0.05, 0.95)
         return adjusted_positions
 
     adjusted_positions = adjust_positions(positions, sizes)
@@ -278,7 +290,7 @@ def create_enrollment_bubble_chart():
         'black', 'black', 'black', 'white', 'white', 'white'
     ]
 
-    fig, ax = plt.subplots(figsize=(6, 5))  # Adjusted size to match previous codes
+    fig_2, ax = plt.subplots(figsize=(8, 6))  # Large canvas
     for i, ((x, y), size, color, name, pop) in enumerate(zip(adjusted_positions, sizes, watercolor_colors, names, pops)):
         radius = np.sqrt(size) / 100
 
@@ -302,13 +314,13 @@ def create_enrollment_bubble_chart():
     plt.tight_layout()
 
     # Convert to image
-    buf2 = io.BytesIO()
-    plt.savefig(buf2, format="png", bbox_inches='tight')
-    buf2.seek(0)
-    encoded = base64.b64encode(buf2.read()).decode('utf-8')
-    buf2.close()
-
-    plt.close(fig)
+    buf_2 = io.BytesIO()
+    plt.savefig(buf_2, format="png", bbox_inches='tight', pad_inches=0.1, dpi=300)
+    buf_2.seek(0)
+    encoded_2 = base64.b64encode(buf_2.read()).decode('utf-8')
+    buf_2.close()
+    plt.close(fig_2)
+    return f"data:image/png;base64,{encoded_2}"
 
 # Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
 fig_3, ax = plt.subplots()
@@ -457,46 +469,51 @@ plt.gca().set_aspect('equal', adjustable='box')
 
 # Convert to image
 buf_3 = io.BytesIO()
-plt.savefig(buf_3, format="png", bbox_inches='tight')
+plt.savefig(buf_3, format="png", bbox_inches='tight', dpi=300)
 buf_3.seek(0)
 encoded_3 = base64.b64encode(buf_3.read()).decode('utf-8')
 buf_3.close()
 plt.close(fig_3)
 
-
 # Graph 4: Main Dashboard - School Data No. 1 (Distribution of Schools Per Region)
-# Data and plotting logic (unchanged)
-regions = [("Region I", 3393), ("Region II", 2916), ("Region III", 5194), ("Region IV-A", 6007),
+regions = [
+    ("Region I", 3393), ("Region II", 2916), ("Region III", 5194), ("Region IV-A", 6007),
     ("MIMAROPA", 2684), ("Region V", 4467), ("Region VI", 5037), ("Region VII", 4697),
     ("Region VIII", 4466), ("Region IX", 2868), ("Region X", 3106), ("Region XI", 2704),
     ("Region XII", 2541), ("Caraga", 2355), ("BARMM", 2932), ("CAR", 2080),
-    ("NCR", 2687), ("PSO", 33)]
+    ("NCR", 2687), ("PSO", 33)
+]
 
+# Compute total and percentages
 total = sum(val for _, val in regions)
 regions_percent = [(name, val, round((val / total) * 100, 2)) for name, val in regions]
 region_dict = {name: (name, val, perc) for name, val, perc in regions_percent}
 
-rows = [[region_dict["Region I"], region_dict["Region II"], region_dict["Region III"]],
+# Layout rows
+rows = [
+    [region_dict["Region I"], region_dict["Region II"], region_dict["Region III"]],
     [region_dict["Region IV-A"], region_dict["MIMAROPA"], region_dict["Region V"]],
     [region_dict["Region VI"], region_dict["Region VII"], region_dict["Region VIII"]],
     [region_dict["Region VIII"], region_dict["Region IX"], region_dict["Region X"], region_dict["Region XI"]],
     [region_dict["Region XII"], region_dict["Caraga"], region_dict["BARMM"],
-     region_dict["CAR"], region_dict["NCR"], region_dict["PSO"]]]
+     region_dict["CAR"], region_dict["NCR"], region_dict["PSO"]]
+]
 
-scale = 1.2
-box_height = 2
-spacing = 0.3
+# Visual size settings (slightly smaller than previous)
+scale = 1.6
+box_height = 2.5
+spacing = 0.4
 x_center = 25
-y_start = 100
-fixed_fontsize = 12
+y_start = 110
+fixed_fontsize = 14
 
-fig4, ax = plt.subplots(figsize=(8, 4.8), dpi=80)  # Adjusted size
+# Create plot
+fig4, ax = plt.subplots(figsize=(12, 6.5), dpi=100)
 ax.set_aspect('equal')
 ax.axis('off')
 
 roof_base_x = []
 roof_base_y = []
-
 
 colors = ['#ba4141', '#2262bd', '#1b8e3e', '#FDD85D']
 
@@ -507,7 +524,7 @@ for row_index, row in enumerate(rows):
     widths = [p * scale for _, _, p in row]
     total_row_width = sum(widths) + (len(row) - 1) * spacing
     x_start = x_center - total_row_width / 2
-    y = y_start - (row_index + 1) * (box_height + 0.3)
+    y = y_start - (row_index + 1) * (box_height + 0.4)
 
     if row_index == 0:
         roof_base_x = [x_start, x_start + total_row_width]
@@ -531,6 +548,7 @@ for row_index, row in enumerate(rows):
         max_x_draw = max(max_x_draw, x + width)
         x += width + spacing
 
+# Draw roof
 if roof_base_x:
     roof_gap = 0.3
     triangle_top = ((roof_base_x[0] + roof_base_x[1]) / 2, roof_base_y[0] + 3 + roof_gap)
@@ -541,20 +559,20 @@ if roof_base_x:
         closed=True, facecolor='#7a4b47', edgecolor='black')
     ax.add_patch(triangle)
 
+# Set limits
 ax.set_xlim(min_x_draw - 1, max_x_draw + 1)
-ax.set_ylim(last_row_y - 1, y_start + 6)
+ax.set_ylim(last_row_y - 1, y_start + 8)
 
 plt.subplots_adjust(left=0.05, right=0.95, top=0.92, bottom=0.08)
 
-# Convert to image
+# Save to buffer as image
 buf4 = io.BytesIO()
 fig4.savefig(buf4, format="png", bbox_inches='tight')
 data_4 = base64.b64encode(buf4.getbuffer()).decode("ascii")
 plt.close(fig4)
 
 # Graph 5: Main Dashboard - School Data No. 2 (School Distribution per Sector)
-# Create the figure
-fig5, ax = plt.subplots(figsize=(8, 4.5))  # Slightly smaller for uniformity
+fig5, ax = plt.subplots(figsize=(11, 6.5))  # Larger size
 
 def draw_pencil(x_offset, color, height, label, percentage, percentage_offset, left_value, shadow_color):
     pencil_bottom = -100
@@ -629,7 +647,8 @@ ax.axis('off')
 
 # Convert to image
 buf5 = io.BytesIO()
-fig5.savefig(buf5, format="png", bbox_inches='tight')
+fig5.tight_layout()
+fig5.savefig(buf5, format="png")
 data_5 = base64.b64encode(buf5.getbuffer()).decode("ascii")
 
 plt.close(fig5)
@@ -797,7 +816,7 @@ def generate_graph7(df_school_1):
                 size=20,
                 color='black'
             )
-        ),
+        ), height=620,
         shapes=[
             dict(
                 type="rect",
@@ -808,14 +827,14 @@ def generate_graph7(df_school_1):
         ],
         showlegend=True,
         legend=dict(
-            title=dict(text='&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Gender', font=dict(size=12, family='Arial Black')),
-            x=1.01,
-            y=1.05,
-            orientation='v',
-            bgcolor='rgba(255,255,255,0.8)',
-            bordercolor='black',
-            borderwidth=1,
-            font=dict(size=11, family='Arial')
+        orientation='h',  # Horizontal layout
+        x=0.5,            # Centered horizontally
+        y=1.1,           # Positioned above the graph area
+        xanchor='center',
+        bgcolor='rgba(255,255,255,0.8)',
+        bordercolor='black',
+        borderwidth=1,
+        font=dict(size=11, color='black', family='Arial')
         ),
         xaxis_title='Grade Level<br>',
         yaxis_title='<br>Student Population',
@@ -832,16 +851,17 @@ def generate_graph7(df_school_1):
         ),
         yaxis=dict(
             tickformat=',',
+            dtick=100000,
             gridcolor='gray',
             ticklen=10,
             title_standoff=5,
             automargin=True,
             tickfont=dict(size=12, family='Arial Black'),
-            tick0=20,
+            tick0=0,
             ticksuffix="   "
         ),
         template='plotly_white',
-        margin=dict(l=100, r=100, t=100, b=100),
+        margin=dict(l=100, r=100, t=40, b=40),
         font=dict(family='Arial Black'),
         hoverlabel=dict(
             bgcolor="white",
@@ -911,10 +931,11 @@ def generate_graph8(df_school_1):
             tickangle=45,
             showgrid=True,
             gridcolor='lightgray',
-            range=[-0.1, 7.1]
+            range=[-0.1, 7.1],
+            dtick=100000
         ),
         yaxis=dict(
-            title='<br>Number of Students<br>',
+            title='<br>Number of Students',
             title_font=dict(size=16, family='Arial Black', color='black'),
             showgrid=True,
             gridcolor='gray',
@@ -931,27 +952,28 @@ def generate_graph8(df_school_1):
                 line=dict(color="black", width=2)
             )
         ],
-        legend_title="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;School Sector",
         legend=dict(
-            x=0.99,
-            y=0.99,
-            xanchor="right",
-            yanchor="top",
+            orientation="h",  # horizontal layout
+            yanchor="bottom",
+            y=1.03,  # position above the plot
+            xanchor="center",
+            x=0.5,
             bgcolor="rgba(255,255,255,0.8)",
             bordercolor="black",
             borderwidth=1,
             title_font=dict(size=12, family='Arial Black'),
-            font=dict(size=11, family="Arial")
+            font=dict(size=12, family="Arial")
         ),
         font=dict(family="Arial Black", size=12),
         plot_bgcolor='white',
-        height=500,
-        width=900,
-        margin=dict(l=30, r=30, t=60, b=80),
+        margin=dict(l=0,r=0),
+        height=570,
+        width=870,
         hoverlabel=dict(
             bgcolor="white",
             font_size=13,
             font_family="Arial"
+
         )
     )
 
@@ -1022,7 +1044,7 @@ def generate_graph9(df_school_1):
         hole=0.9,
         textinfo="percent+label",
         textposition="outside",
-        textfont=dict(family="Arial Black", size=10, color="black", weight="bold"),
+        textfont=dict(family="Arial Black", size=11, color="black", weight="bold"),
         marker=dict(colors=['#33C3FF', "#FF746C", '#2ECC71'], line=dict(color='black', width=0.8)),
         hovertemplate="<b style='color: black; font-family: Arial Black;'>%{label}</b><br><b style='color: black;'>Total:</b> %{value:,}<extra></extra>",
         showlegend=False,
@@ -1033,27 +1055,23 @@ def generate_graph9(df_school_1):
     fig9.add_annotation(
         text=f"Student Population<br>{total_students:,.0f}",
         y=0.55,
-        font=dict(family="Arial Black", size=10, color="black", weight="bold"),
+        font=dict(family="Arial Black", size=11, color="black", weight="bold"),
         showarrow=False,
         align="center"
     )
 
     fig9.update_layout(
-        title="",
-        title_font_size=20,
-        title_font_weight="bold",
-        title_x=0.5,
-        title_y=0.95,
-        height=750,
-        width=750,
-        xaxis=dict(tickfont=dict(family="Arial Black")),
-        yaxis=dict(tickfont=dict(family="Arial Black")),
-        hoverlabel=dict(
-            bgcolor="white",
-            font_size=13,
-            font_family="Arial"
-        )
+    height=600,
+    margin=dict(l=0,t=0,b=0,r=0),
+    width=725,
+    xaxis=dict(tickfont=dict(family="Arial Black")),
+    yaxis=dict(tickfont=dict(family="Arial Black")),
+    hoverlabel=dict(
+        bgcolor="white",
+        font_size=13,
+        font_family="Arial"
     )
+)
 
     return fig9
 
@@ -1147,8 +1165,8 @@ def generate_graph10(df_school_2):
         title_font_size=15,
         font_color='black',
         font_size=10,
-        height=450,
-        width=900,
+        height=550,
+        width=760,
         hoverlabel=dict(bgcolor="white", font_size=13, font_family="Arial")
     )
     return fig10
@@ -1156,6 +1174,14 @@ def generate_graph10(df_school_2):
 def generate_graph11(df_school_2):
     df_grouped = df_school_2.groupby(['School_Type', 'Sector']).size().reset_index(name='count')
     pivot_df = df_grouped.pivot(index='School_Type', columns='Sector', values='count').fillna(0)
+
+    # Apply label replacements
+    label_replacements = {
+        'Annex or Extension school(s)': 'Annex or<br>Extension School(s)',
+        'Mobile School(s)/Center(s)': 'Mobile School(s)<br>Center(s)',
+        'School with no Annexes': 'School with<br>no Annexes'
+    }
+    pivot_df.index = pivot_df.index.to_series().replace(label_replacements)
 
     sector_colors_11 = {
         'Public': '#FF746C',
@@ -1181,6 +1207,8 @@ def generate_graph11(df_school_2):
     ]
 
     school_counts = df_school_2.groupby('School_Type').size().reset_index(name='count')
+    school_counts['School_Type'] = school_counts['School_Type'].replace(label_replacements)
+
     bar_trace = go.Bar(
         x=school_counts['School_Type'],
         y=school_counts['count'],
@@ -1197,28 +1225,31 @@ def generate_graph11(df_school_2):
     fig11.update_layout(
         title="",
         title_x=0.5,
-        xaxis=dict(title='<b>School Type</b>', tickangle=45, tickfont=dict(size=12)),
-        yaxis=dict(title='<b>Number of Schools</b>', tickformat=',', showgrid=True, gridcolor='gray', ticksuffix=' ', tickfont=dict(size=12, color='black')),
-        height=600,
-        width=900,
+        xaxis=dict(title=dict(text='<b>School Type</b>', font=dict(size=12, color='black', family='Arial Black')), tickangle=45, tickfont=dict(size=12, color='black', family='Arial Black')),
+        yaxis=dict(title=dict(text='<b>Number of Schools</b>', font=dict(size=12, color='black', family='Arial Black')), tickformat=',', showgrid=True, gridcolor='gray', ticksuffix=' ', tickfont=dict(size=12, color='black', family='Arial Black')),
+        height=580,
+        width=700,
         showlegend=True,
         legend=dict(
-            x=1.05,
-            y=1,
-            orientation='v',
-            title=dict(text='School Categories', font=dict(size=14, family='Arial Black')),
-            font=dict(size=12, color='black'),
-            borderwidth=1,
-            bordercolor='black',
-            bgcolor='rgba(255,255,255,0.8)'
+        orientation='h',
+        x=0.5,
+        y=1.15,
+        xanchor='center',
+        yanchor='bottom',
+        title=dict(font=dict(size=14, family='Arial Black')),
+        font=dict(size=12, color='black', family='Arial Black'),
+        borderwidth=1,
+        bordercolor='black',
+        bgcolor='rgba(255,255,255,0.8)'
         ),
         barmode='group',
-        margin=dict(l=100, r=150, t=100, b=100),
+        margin=dict(l=0, r=0, t=100, b=100),
         template='plotly_white',
         shapes=[dict(type="rect", xref="paper", yref="paper", x0=0.01, y0=0, x1=1, y1=1.06, line=dict(color="black", width=2))],
         hoverlabel=dict(bgcolor="white", font_size=13, font_family="Arial")
     )
     return fig11
+
 
 # Additional Functions
 
@@ -1351,15 +1382,19 @@ def create_gender_comparison_figure(selected_region):
         yaxis_title='Number of Students',
         template='plotly_white',
         font=dict(family="Arial Black", size=12, color="black"),
-        height=400,
-        margin=dict(t=20, b=20, l=30, r=30),
+        height=600,
+        margin=dict(b=60, t=80, l=60, r=60),
         legend=dict(
             orientation="h",
             yanchor="bottom",
             y=1.04,
             xanchor="center",
             x=0.5
-        )
+        ), yaxis=dict(showgrid=True,      
+            gridcolor='black',  
+            zeroline=False,
+            ticksuffix='  '),
+            xaxis=dict(tickprefix='  ', tickangle=45)
     )
 
     return fig
@@ -1425,9 +1460,9 @@ def create_grade_level_comparison_figure(selected_region):
         yaxis_title="Total Students",
         plot_bgcolor="white",
         paper_bgcolor="white",
-        font=dict(family="Arial Black", size=10),
-        width=600,  # Reduced width
-        height=350,  # Reduced height
+        font=dict(family="Arial Black", color='black', size=13),
+        width=650,  # Reduced width
+        height=600,  # Reduced height
         showlegend=True,
         legend=dict(orientation="h",
                     yanchor="bottom",
@@ -1437,14 +1472,19 @@ def create_grade_level_comparison_figure(selected_region):
                     traceorder='normal',
                     itemclick='toggleothers',
                     itemsizing='constant',
-                    bgcolor='rgba(255, 255, 255, 0.8)'),
+                    bgcolor='rgba(255, 255, 255, 0.8)',
+                    font=dict(size=12)),
         xaxis=dict(
             tickangle=45,
-            tickfont=dict(size=10),
-            title_font=dict(size=12)),
+            tickfont=dict(size=12),
+            title_font=dict(size=13),
+            tickprefix='  '),
         yaxis=dict(
-            title_font=dict(size=10),
-            tickfont=dict(size=8)),
+            title_font=dict(size=13),
+            tickfont=dict(size=12), showgrid=True,      
+            gridcolor='black',  
+            zeroline=False,
+            ticksuffix='  '),
         margin=dict(b=60, t=80, l=60, r=60),
         bargap=0.3  # Increased gap between bars
     )
@@ -1516,15 +1556,16 @@ def create_shs_strand_comparison_figure(selected_region):
             y=1.05,
             xanchor="center",
             x=0.5,
-            font=dict(family="Arial", size=9)
+            font_color = "black",
+            font=dict(family="Arial Black", size=11)
         ),
         plot_bgcolor="white",
         paper_bgcolor="white",
-        font=dict(family="Arial Black", size=10),
+        font=dict(family="Arial Black", size=12),
         margin=dict(l=20, r=20, t=30, b=30),
         showlegend=True,
-        width=350,
-        height=300
+        width=450,
+        height=600
     )
 
 
@@ -1591,9 +1632,12 @@ def create_grade_division_comparison_figure(selected_region):
             xaxis_title='Region',
             yaxis_title='Enrollment',
             barmode='stack',
+            font_color='black',
+            template='plotly_white',
             font=dict(family="Arial Black", size=11),
             plot_bgcolor='white',
             paper_bgcolor='white',
+            height=600,
             margin=dict(l=40, r=40, t=50, b=50),
             legend=dict(
                 orientation="h",
@@ -1602,8 +1646,11 @@ def create_grade_division_comparison_figure(selected_region):
                 xanchor="center",
                 x=0.5
             ),
-            xaxis=dict(tickangle=20)
-        )
+            yaxis=dict(ticksuffix='  ', showgrid=True,      
+            gridcolor='black',  
+            zeroline=False),
+            xaxis=dict(tickangle=45))
+        
         return fig
 
     else:
@@ -1636,19 +1683,22 @@ def create_grade_division_comparison_figure(selected_region):
         fig.update_layout(
             title=selected_region,
             title_x=0.5,
+            height=600,
             showlegend=True,
-            font=dict(family="Arial Black", size=11),
+            font_color ='black',
+            font=dict(family="Arial Black", size=13),
             plot_bgcolor='white',
             paper_bgcolor='white',
-            margin=dict(l=60, r=60, t=60, b=60),
+            margin=dict(l=40, r=40, t=60, b=60),
             legend=dict(
+                font=dict(size=13),
                 orientation="h",
                 yanchor="bottom",
                 y=1,
                 xanchor="center",
-                x=0.5
-            )
-        )
+                x=0.5,
+                font_color='black'
+            ))
 
         return fig
 
@@ -1687,10 +1737,10 @@ def create_sector_comparison_figure(selected_region):
             )
         )])
         fig.update_layout(
-            font=dict(family="Arial", size=10, color="black"),
-            title_font=dict(size=18, color="black"),
-            width=650, height=400,
-            margin=dict(l=40, r=40, t=60, b=40),
+            font=dict(family="Arial", size=12, color="black"),
+            title_font=dict(size=24, color="black"),
+            width=550, height=600,
+            margin=dict(l=20, r=20, t=60, b=40),
             showlegend=True,
             title=None
         )
@@ -1705,18 +1755,22 @@ def create_sector_comparison_figure(selected_region):
                 fill='tonexty', marker=dict(size=5), line=dict(width=1.5)
             ))
         fig.update_layout(
-            font=dict(family="Arial Black", size=10, color="black"),
-            title_font=dict(size=18, color="black"),
-            width=650, height=400,
-            margin=dict(l=40, r=40, t=60, b=40),
+            font=dict(family="Arial Black", size=12, color="black"),
+            title_font=dict(size=24, color="black"),
+            width=600, height=600,
+            template='plotly_white',
+            margin=dict(l=20, r=20, t=60, b=40),
             xaxis=dict(
                 categoryorder='array',
                 categoryarray=region_order,
                 tickfont=dict(color="black"),
-                title_font=dict(color="black")),
+                title_font=dict(color="black"), title="Region"),
             yaxis=dict(
                 tickfont=dict(color="black"),
-                title_font=dict(color="black")),
+                title_font=dict(color="black"), title="Student Population", ticksuffix='  ',
+                showgrid=True,      
+                gridcolor='black',  
+                zeroline=False),
             hovermode="x unified",
             hoverlabel=dict(
                 font=dict(family="Arial Black", color="black"),
@@ -1726,7 +1780,7 @@ def create_sector_comparison_figure(selected_region):
             legend=dict(
                 orientation="h", yanchor="top",
                 y=1.1, xanchor="center",
-                x=0.5, font=dict(color="black")),
+                x=0.5, font=dict(color="black", size=10)),
             plot_bgcolor='rgba(0, 0, 0, 0)',
             paper_bgcolor='rgba(0, 0, 0, 0)'
         )
@@ -1784,27 +1838,28 @@ def create_school_type_comparison_figure(selected_region):
 
         fig.update_layout(
             barmode="stack",
+            template='plotly_white',
             legend=dict(
                 orientation="v",
                 yanchor="top",
                 y=1.4,
                 xanchor="left",
                 x=0.7,
-                font=dict(size=10),
+                font=dict(size=12),
                 bordercolor="white",
                 borderwidth=0,
                 bgcolor="white"
             ),
             title=None,
-            height=400,
-            width=700,
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Arial Black", size=12),
-            margin=dict(l=60, r=60, t=80, b=60),
+            height=650,
+            width=650,
+            font=dict(family="Arial Black", color='black', size=12),
+            margin=dict(l=70, r=60, t=80, b=60),
             bargap=0.25,
-            xaxis=dict(title="Region", categoryorder='array', categoryarray=region_order),
-            yaxis=dict(title="Number of Students")
+            xaxis=dict(title="Region", categoryorder='array', categoryarray=region_order, tickangle=45),
+            yaxis=dict(title="Number of Students", showgrid=True,      
+            gridcolor='black',  
+            zeroline=False, ticksuffix='  ')
         )
 
     else:
@@ -1852,12 +1907,12 @@ def create_school_type_comparison_figure(selected_region):
                 bgcolor="white"
             ),
             title=None,
-            height=400,
-            width=700,
+            height=650,
+            width=650,
             plot_bgcolor="white",
             paper_bgcolor="white",
-            font=dict(family="Arial Black", size=12),
-            margin=dict(l=60, r=60, t=80, b=60),
+            font=dict(family="Arial Black", color='black', size=12),
+            margin=dict(l=70, r=60, t=80, b=60),
             xaxis=dict(title="School Type"),
             yaxis=dict(title="Total Students")
         )

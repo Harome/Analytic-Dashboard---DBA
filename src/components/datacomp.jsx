@@ -40,8 +40,8 @@ const DataComp = () => {
                   src="http://localhost:8050/data-comparison-gender"
                   title="Dash Data Comparison Left"
                   width="100%"
-              
-                  style={{ border: 'none', height: '100%' }}
+                  height="900px"
+                  style={{ border: 'none'}}
                 />
               )}
                {category === "grade-level" && (
@@ -99,7 +99,7 @@ const DataComp = () => {
                 <iframe
                   src="http://localhost:8050/data-comparison-gender"
                   title="Dash Data Comparison Right"
-                  width="100%"
+                  width='100%'
                   height="900px"
                   style={{ border: 'none' }}
                 />

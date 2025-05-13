@@ -13,7 +13,7 @@ const Home = () => {
   const graphs = [
     { title: 'School Distribution per Sector', src: 'http://localhost:8050/graph5' },
     { title: 'Gender Distribution of Enrollees', src: 'http://localhost:8050/graph1' },
-    { title: 'Total Stidents Enrolled Per Region', src: 'http://localhost:8050/graph2' },
+    { title: 'Total Students Enrolled Per Region', src: 'http://localhost:8050/graph2' },
     { title: 'Distribution of Schools per Region ', src: 'http://localhost:8050/graph4' },
     { title: 'Student Population Distribution by Grade Division', src: 'http://localhost:8050/graph3' },
 
@@ -118,7 +118,7 @@ const Home = () => {
                 filteredGraphs.map((graph, index) => (
                   <div
                     key={index}
-                    className={`collage-card ${['g5', 'g1', 'g2', 'g4', 'g3'][index % 5]}`}
+                    className={`collage-card ${['g5', 'g1', 'g2', 'g4', 'g3'][index % 5]} searched-graph`}
                   >
                     <h3>{graph.title}</h3>
                     <iframe

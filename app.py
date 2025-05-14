@@ -233,12 +233,12 @@ def serve_highest_population():
 
 # Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)
 graph1_page = html.Div([
-    html.Img(src=image_src_1, style={'width': '70%', 'maxWidth': '800px', 'marginLeft': '65px', 'paddingBottom': '40px','height': '700px'})
+    html.Img(src=image_src_1, style={'width': '70%', 'maxWidth': '800px', 'marginLeft': '60px', 'paddingBottom': '41px','height': '630px'})
     ], id="Graph_1")
 
 # Graph 2: Main Dashboard - Student Data No. 2 (Total Students Enrolled Per Region)
 graph2_page = html.Div([
-    html.Img(src=image_src_2, style={'width': '465px', 'height': '500px'})  # Fixed size
+    html.Img(src=image_src_2, style={'width': '535px', 'height': '600px', 'paddingTop': '34px'})  # Fixed size
     ], id="Graph_2")
 
 # Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
@@ -261,7 +261,7 @@ graph5_page = html.Div([
 # Graph 6: Main Dashboard - Philippine Heatmap (Philippine Regions<br>Student Population Heatmap)
 graph6_page = html.Div([
     dcc.Graph(figure=fig6, id="student-heat-map")
-    ])
+    ], style={"display": "flex", "justifyContent": "center", "alignItems": "center"})
 
 # Graph 7: Student Data Analytics - Column-Bar Chart (Student Population per Grade Level by Gender)
 graph7_page = html.Div(

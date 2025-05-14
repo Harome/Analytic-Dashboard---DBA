@@ -222,7 +222,6 @@ def create_gender_plot():
 
 # Graph 2: Main Dashboard - Student Data No. 2 (Total Students Enrolled Per Region)
 def create_enrollment_bubble_chart():
-
     regions = [
         ("Region I", "1,244,604"), ("Region II", "899,159"), ("Region III", "2,966,748"),
         ("Region IV-A", "3,951,663"), ("MIMAROPA", "887,334"), ("Region V", "1,733,251"),
@@ -241,16 +240,19 @@ def create_enrollment_bubble_chart():
     names = [r[0] for r in regions]
     pops = [int(r[1].replace(',', '')) for r in regions]
 
-    min_size, max_size = 100, 700
+    min_size, max_size = 20, 100
     sizes = np.interp(pops, (min(pops), max(pops)), (min_size, max_size))
 
     np.random.seed(42)
-    positions = np.random.rand(len(regions), 2) * 0.6 + 0.2
+    positions = np.random.rand(len(regions), 2) * 0.6 + 0.2  # Initial random spread
+
     pso_position = [(positions[4][0] + positions[9][0]) / 2, (positions[4][1] + positions[9][1]) / 2]
     positions[16] = pso_position
 
-    def adjust_positions(positions, sizes, max_iterations=300, min_dist_factor=1.46):
+    # ✅ Updated adjust_positions function
+    def adjust_positions(positions, sizes, max_iterations=300, min_dist_factor=1.7):
         adjusted_positions = positions.copy()
+
         for _ in range(max_iterations):
             overlap = False
             for i, (x1, y1) in enumerate(adjusted_positions):
@@ -261,25 +263,12 @@ def create_enrollment_bubble_chart():
                         if dist < min_dist:
                             overlap = True
                             direction = np.array([x2 - x1, y2 - y1])
-                            norm = np.linalg.norm(direction)
-                            if norm == 0:  # Prevent division by zero
-                                direction = np.random.rand(2) - 0.5
-                                direction /= np.linalg.norm(direction)
-                            else:
-                                direction /= norm
+                            direction /= np.linalg.norm(direction)
                             displacement = (min_dist - dist) / 2
-                            adjusted_positions[i] -= direction * displacement
-                            adjusted_positions[j] += direction * displacement
+                            adjusted_positions[i] -= direction * displacement + np.random.normal(0, 0.001, 2)
+                            adjusted_positions[j] += direction * displacement + np.random.normal(0, 0.001, 2)
             if not overlap:
                 break
-
-        # Center all positions around (0.5, 0.5)
-        centroid = np.mean(adjusted_positions, axis=0)
-        shift = np.array([0.5, 0.5]) - centroid
-        adjusted_positions += shift
-
-        # Clip to ensure positions stay in bounds
-        adjusted_positions = np.clip(adjusted_positions, 0.05, 0.95)
         return adjusted_positions
 
     adjusted_positions = adjust_positions(positions, sizes)
@@ -290,22 +279,27 @@ def create_enrollment_bubble_chart():
         'black', 'black', 'black', 'white', 'white', 'white'
     ]
 
-    fig_2, ax = plt.subplots(figsize=(8, 6))  # Large canvas
+    fig_2, ax = plt.subplots(figsize=(8, 6), constrained_layout=True)
+
     for i, ((x, y), size, color, name, pop) in enumerate(zip(adjusted_positions, sizes, watercolor_colors, names, pops)):
         radius = np.sqrt(size) / 100
 
+        # Shadow
         shadow = Circle((x + 0.005, y - 0.005), radius=radius * 1.03, facecolor='black', alpha=0.2, linewidth=0)
         ax.add_patch(shadow)
 
+        # Main circle
         circle = Circle((x, y), radius=radius, facecolor=color, edgecolor='black', linewidth=1.5, alpha=0.9)
         ax.add_patch(circle)
 
+        # Highlight
         highlight = Circle((x - radius * 0.35, y + radius * 0.35), radius=radius * 0.35, facecolor='white', alpha=0.1, linewidth=0)
         ax.add_patch(highlight)
 
+        # Text
         pop_text = f"{pop:,}"
         label = f"{name}\n{pop_text}"
-        ax.text(x, y, label, ha='center', va='center', fontsize=7.5, color=text_colors[i], weight='bold')
+        ax.text(x, y, label, ha='center', va='center', fontsize=10, color=text_colors[i], weight='bold')
 
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
@@ -313,13 +307,13 @@ def create_enrollment_bubble_chart():
     ax.axis('off')
     plt.tight_layout()
 
-    # Convert to image
     buf_2 = io.BytesIO()
-    plt.savefig(buf_2, format="png", bbox_inches='tight', pad_inches=0.1, dpi=300)
+    plt.savefig(buf_2, format="png", bbox_inches='tight', dpi=100)
     buf_2.seek(0)
     encoded_2 = base64.b64encode(buf_2.read()).decode('utf-8')
     buf_2.close()
     plt.close(fig_2)
+
     return f"data:image/png;base64,{encoded_2}"
 
 # Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
@@ -732,7 +726,7 @@ fig6.update_traces(
 )
 
 fig6.update_layout(
-    width=350, height=700,
+    width=345, height=700,
     margin=dict(l=18, r=18, t=80, b=10),
     shapes=[dict(
         type='rect', xref='paper', yref='paper',

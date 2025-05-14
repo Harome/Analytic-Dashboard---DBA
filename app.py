@@ -232,13 +232,13 @@ def serve_highest_population():
 
 # Graph 1: Main Dashboard - Student Data No. 1 (Gender Distribution of Enrollees)
 graph1_page = html.Div([
-    html.Img(src=image_src_1, style={'width': '70%', 'maxWidth': '800px', 'marginLeft': '60px', 'paddingBottom': '41px','height': '630px'})
-    ], id="Graph_1")
+    html.Img(src=image_src_1, style={'width': '70%', 'maxWidth': '800px', 'marginLeft': '60px', 'paddingBottom': '41px','height': '500px'})
+    ], id="Graph_1", style={"display": "flex", "justifyContent": "center", "alignItems": "center", "height": "100%", "marginRight": '50px'})
 
 # Graph 2: Main Dashboard - Student Data No. 2 (Total Students Enrolled Per Region)
 graph2_page = html.Div([
     html.Img(src=image_src_2, style={'width': '535px', 'height': '600px', 'paddingTop': '34px'})  # Fixed size
-    ], id="Graph_2")
+    ], id="Graph_2", style={"display": "flex", "justifyContent": "center", "alignItems": "center", "height": "100%"})
 
 # Graph 3 Main Dashboard - Student Data No. 3 (Student Population by Grade Division)
 graph3_page = html.Div([html.Img(

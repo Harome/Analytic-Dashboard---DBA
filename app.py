@@ -21,7 +21,6 @@ from Data.Clean_data.defineddata import (
     encoded_3, data_4, data_5, fig6,
     generate_graph7, generate_graph8, generate_graph9, generate_graph10, generate_graph11, total_schools_home, total_students_home, highest_population_home, load_student_data, load_school_data, load_data
 )
-from flask import request
 import traceback  # Import the traceback module
 from flask_executor import Executor
 
@@ -714,7 +713,7 @@ def display_page(pathname):
     elif pathname == '/upload_student':
         return upload_student_page
     elif pathname == '/upload_school':
-        return upload_student_page
+        return upload_school_page
     else:
         return index_page
     

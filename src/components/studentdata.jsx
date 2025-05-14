@@ -5,9 +5,8 @@ const StudentData = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [file, setFile] = useState(null);
-  const [role, setRole] = useState('');
   const [iframeKey, setIframeKey] = useState(Date.now());
+  const [role, setRole] = useState('');
 
   const handleImport = () => setShowUploadModal(true);
 
@@ -19,13 +18,14 @@ const StudentData = () => {
           const lastStudentUpdate = localStorage.getItem("lastStudentUpdate");
           if (data.student.toString() !== lastStudentUpdate) {
             localStorage.setItem("lastStudentUpdate", data.student.toString());
-            setIframeKey(Date.now()); // refresh the graphs
+            setIframeKey(Date.now()); // trigger refresh
           }
         });
-    }, 3000);
-
+    }, 10000); // check every 10 seconds
+  
     return () => clearInterval(interval);
   }, []);
+  
 
   useEffect(() => {
     document.documentElement.style.setProperty('--zoom', zoomLevel);
@@ -70,10 +70,9 @@ const StudentData = () => {
         >
           <label>{cardsData[0].label}</label>
           <iframe
-              key={`${iframeKey}-${cardsData[0].label}`}
-              src={`${cardsData[0].src}?t=${iframeKey}`}
-              title={cardsData[0].label}
-              className="student-iframe"
+            src={`${cardsData[0].src}?t=${new Date().getTime()}`}
+            title={cardsData[0].label}
+            className="student-iframe"
             />
         </div>
       </div>
@@ -90,8 +89,7 @@ const StudentData = () => {
           >
             <label>{card.label}</label>
             <iframe
-              key={iframeKey + index + 1}
-              src={`${card.src}?t=${new Date().getTime()}`}
+              src={`${card.src}?t=${iframeKey}`}
               title={card.label}
               className="student-iframe"
             />
@@ -107,7 +105,7 @@ const StudentData = () => {
             </div>
             <div className="modal-content">
               <iframe
-                key={iframeKey}
+                key={`${iframeKey}-${selectedCard.label}`}
                 src={`${selectedCard.src}?t=${new Date().getTime()}`}
                 title={selectedCard.label}
                 style={{ width: '100%', height: '100%', border: 'none' }}
@@ -123,7 +121,7 @@ const StudentData = () => {
             <h2>Add New Dataset</h2>
             <p>Upload a CSV or Excel file:</p>
             <iframe
-              src="http://localhost:8050/upload_school"
+              src="http://localhost:8050/upload_student"
               title="Upload New Dataset"
               style={{
                 width: '100%',

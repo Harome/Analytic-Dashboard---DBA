@@ -1142,7 +1142,7 @@ def generate_graph10(df_school_2):
 
     fig10 = go.Figure(data=[go.Sankey(
         node=dict(
-            pad=20,
+            pad=25,
             thickness=20,
             line=dict(color="black", width=1),
             label=labels,
@@ -1161,12 +1161,11 @@ def generate_graph10(df_school_2):
     )])
 
     fig10.update_layout(
-        title=dict(text="", x=0.5, xanchor='center', font_color='black'),
-        title_font_size=15,
         font_color='black',
         font_size=10,
         height=550,
-        width=760,
+        width=765,
+        margin=dict(l=0, r=0),
         hoverlabel=dict(bgcolor="white", font_size=13, font_family="Arial")
     )
     return fig10
@@ -1739,8 +1738,8 @@ def create_sector_comparison_figure(selected_region):
         fig.update_layout(
             font=dict(family="Arial", size=12, color="black"),
             title_font=dict(size=24, color="black"),
-            width=550, height=600,
-            margin=dict(l=20, r=20, t=60, b=40),
+            width=575, height=600,
+            margin=dict(l=0, r=0, t=60, b=40),
             showlegend=True,
             title=None
         )
@@ -1757,9 +1756,9 @@ def create_sector_comparison_figure(selected_region):
         fig.update_layout(
             font=dict(family="Arial Black", size=12, color="black"),
             title_font=dict(size=24, color="black"),
-            width=600, height=600,
+            width=630, height=600,
             template='plotly_white',
-            margin=dict(l=20, r=20, t=60, b=40),
+            margin=dict(l=0, r=0, t=60, b=40),
             xaxis=dict(
                 categoryorder='array',
                 categoryarray=region_order,
@@ -1842,19 +1841,18 @@ def create_school_type_comparison_figure(selected_region):
             legend=dict(
                 orientation="v",
                 yanchor="top",
-                y=1.4,
+                y=1.25,
                 xanchor="left",
-                x=0.7,
+                x=0.6,
                 font=dict(size=12),
                 bordercolor="white",
                 borderwidth=0,
                 bgcolor="white"
             ),
             title=None,
-            height=650,
-            width=650,
             font=dict(family="Arial Black", color='black', size=12),
-            margin=dict(l=70, r=60, t=80, b=60),
+            width=630, height=660,
+            margin=dict(l=0, r=0, t=10, b=40),
             bargap=0.25,
             xaxis=dict(title="Region", categoryorder='array', categoryarray=region_order, tickangle=45),
             yaxis=dict(title="Number of Students", showgrid=True,      
@@ -1898,7 +1896,7 @@ def create_school_type_comparison_figure(selected_region):
             legend=dict(
                 orientation="v",
                 yanchor="middle",
-                y=0.5,
+                y=1,
                 xanchor="left",
                 x=0.9,
                 font=dict(size=10),

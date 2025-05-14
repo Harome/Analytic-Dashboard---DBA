@@ -276,7 +276,7 @@ graph7_page = html.Div(
 # Graph 8: Student Data Analytics - Area Chart (Student Distribution per SHS Strand by Sector)
 graph8_page = html.Div([
     dcc.Graph(figure=fig8, id="Student-strand-area-chart")
-    ]),
+    ], style={"display": "flex", "justifyContent": "center", "alignItems": "center", 'paddingTop': '20px'}),
 
 
 # Graph 9: Student Data Analytics - Donut Chart (Student Distribution by Grade Division and School Sector)
@@ -288,12 +288,12 @@ graph9_page = html.Div([
 # Graph 10: School Data Analytics - Sankey Chart (School Population per Sector, Sub-Classification, and Modified COC)
 graph10_page = html.Div([
     dcc.Graph(figure=fig10, id="school-sankey-chart")
-    ]),
+    ], style={"display": "flex", "justifyContent": "center", "alignItems": "center", 'margin': '0px'}),
 
 # Graph 11: School Data Analytics - Line-Bar Chart (School Count by School Type and Sector)
 graph11_page = html.Div([
     dcc.Graph(figure=fig11, id="school-bar-line-chartt")
-    ])
+    ], style={"display": "flex", "justifyContent": "center", "alignItems": "center", 'margin': '0px'})
 
 
 # Data Comparison Graph - Gender
@@ -529,7 +529,7 @@ comparison_sector_page = html.Div(style={'backgroundColor': 'transparent'}, chil
 ])
 
 # Data Comparison School Type Page
-comparison_school_type_page = html.Div(style={'backgroundColor': 'transparent', 'marginRight': '30px', 'paddingBottom': '5px', 'marginLeft': '0px'}, children=[
+comparison_school_type_page = html.Div(style={'backgroundColor': 'transparent', 'marginRight': '10px', 'paddingBottom': '5px', 'marginLeft': '0px'}, children=[
     html.Div(style={
         'boxShadow': '0 4px 8px rgba(0, 0, 0, 0.1)',
         'borderRadius': '8px',
@@ -538,7 +538,7 @@ comparison_school_type_page = html.Div(style={'backgroundColor': 'transparent', 
         'backgroundColor': 'white',
         'margin': 'auto',
         'maxWidth': '750px',
-        'width': '675px',
+        'width': '655px',
         'height': '745px',
         'overflow': 'hidden'
     }, children=[
@@ -551,7 +551,7 @@ comparison_school_type_page = html.Div(style={'backgroundColor': 'transparent', 
         
     html.Div([
             html.Div([
-                dcc.Graph(id='comparison-school-type-graph', style={'marginTop': '20px'})
+                dcc.Graph(id='comparison-school-type-graph')
             ], style={'display': 'flex', 'justifyContent': 'center'}),
 
             html.Div([
@@ -571,7 +571,7 @@ comparison_school_type_page = html.Div(style={'backgroundColor': 'transparent', 
             )
         ], style={
                 'position': 'absolute',
-                'top': '20px',
+                'top': '10px',
                 'zIndex': '10',
                 'display': 'flex',
                 'flexDirection': 'column',

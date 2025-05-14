@@ -1,5 +1,5 @@
 import dash
-from dash import dcc, html, dash_table, Input, Output, State, ctx
+from dash import dcc, html, dash_table, Input, Output, State, ctx, MATCH, ALL
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -601,9 +601,6 @@ upload_student_page = html.Div([
         },
         multiple=False
     ),
-    html.Div(id='file-selected', style={'marginTop': '20px', 'textAlign': 'center'}),
-    html.Div(id='upload-response', style={'marginTop': '20px', 'textAlign': 'center'}),
-    html.Div(id='submit-button-container', style={'marginTop': '20px', 'textAlign': 'center'}),
     html.Div(id='upload-notification', style={'marginTop': '10px'}),
     dcc.Store(id='store-uploaded-file'), 
     dcc.Store(id='store-upload-context', data='student'), 
@@ -630,9 +627,6 @@ upload_school_page = html.Div([
         },
         multiple=False
     ),
-    html.Div(id='file-selected', style={'marginTop': '20px', 'textAlign': 'center'}),
-    html.Div(id='upload-response', style={'marginTop': '20px', 'textAlign': 'center'}),
-    html.Div(id='submit-button-container', style={'marginTop': '20px', 'textAlign': 'center'}),
     html.Div(id='upload-notification', style={'marginTop': '10px'}),
     dcc.Store(id='store-uploaded-file'),  
     dcc.Store(id='store-upload-context', data='school'), 
@@ -721,8 +715,8 @@ def display_page(pathname):
     Output('student-population-bar-chart', 'figure'), 
     Output('Student-strand-area-chart', 'figure'), 
     Output('Student-division-donut-chart', 'figure'),
+    Input('url', 'pathname'),
     Input('store-student', 'data'),
-    prevent_initial_call=True 
 )
 def update_graph_student(data):
     if not data:
@@ -739,9 +733,9 @@ def update_graph_student(data):
 
 @app.callback(
     Output('school-sankey-chart', 'figure'), 
-    Output('school-bar-line-chart', 'figure'),  
+    Output('school-bar-line-chart', 'figure'),
+    Input('url', 'pathname'),  
     Input('store-school', 'data'),
-    prevent_initial_call=True
 )
 def update_graph_school(data):
     if not data:

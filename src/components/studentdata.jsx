@@ -8,7 +8,13 @@ const StudentData = () => {
   const [iframeKey, setIframeKey] = useState(Date.now());
   const [role, setRole] = useState('');
 
-  const handleImport = () => setShowUploadModal(true);
+  const handleImport = () => {
+    if (role === 'admin') {
+      setShowUploadModal(true);
+    } else {
+      alert("You don't have permission to add new datasets.");
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {

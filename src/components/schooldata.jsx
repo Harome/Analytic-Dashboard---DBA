@@ -17,8 +17,6 @@ const SchoolData = () => {
   const [selectedCard, setSelectedCard] = useState(null);  
   const [zoomLevel, setZoomLevel] = useState(1);  
   const [showUploadModal, setShowUploadModal] = useState(false);  
-  const [file, setFile] = useState(null);  
-  const [iframeKey, setIframeKey] = useState(Date.now());
 
   const role = localStorage.getItem("role"); 
 
@@ -27,48 +25,6 @@ const SchoolData = () => {
       setShowUploadModal(true);
     } else {
       alert("You don't have permission to add new datasets.");
-    }
-  };
-
-  const handleFileChange = (e) => setFile(e.target.files[0]);
-
-  const handleSubmit = async () => {
-    if (file) {
-      const fileExtension = file.name.split('.').pop().toLowerCase();
-
-      if (['csv', 'xls', 'xlsx'].includes(fileExtension)) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('type', 'school');
-
-        try {
-          const response = await fetch('http://localhost:8050/upload_dataset', {
-            method: 'POST',
-            body: formData
-          });
-
-          const result = await response.json();
-
-          if (result.status === 'success') {
-            alert(result.message);
-            setIframeKey(Date.now());
-            setSelectedCard(null);
-          } else {
-            alert("Upload failed: " + result.message);
-          }
-        } catch (error) {
-          console.error('Error uploading file:', error);
-          alert("An error occurred during upload.");
-        }
-
-        setShowUploadModal(false);
-        setFile(null);
-
-      } else {
-        alert("Please select a valid CSV or Excel file.");
-      }
-    } else {
-      alert("Please select a file before submitting.");
     }
   };
 
@@ -130,10 +86,18 @@ const SchoolData = () => {
         <div className="upload-modal-overlay-school">
           <div className="upload-modal-school">
             <h2>Upload School Dataset</h2>
-            <input type="file" accept=".csv, .xls, .xlsx" onChange={handleFileChange} />
+            <iframe
+              src="http://localhost:8050/upload_student"
+              title="Upload New Dataset"
+              style={{
+                width: '100%',
+                height: '300px',
+                border: 'none',
+                borderRadius: '8px',
+              }}
+            />
             <div style={{ marginTop: "20px", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
               <button className="cancel-btn-school" onClick={() => setShowUploadModal(false)}>Cancel</button>
-              <button className="submit-btn-school" onClick={handleSubmit}>Submit</button>
             </div>
           </div>
         </div>

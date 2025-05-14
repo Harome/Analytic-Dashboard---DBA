@@ -1,4 +1,3 @@
-# Imports
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -97,6 +96,12 @@ def load_and_cache_data():
     _dataset_cache['student_data'] = student_data
 
     return school_data, student_data
+
+def clear_cache(dataset_key=None):
+    if dataset_key:
+        _dataset_cache.pop(dataset_key, None)
+    else:
+        _dataset_cache.clear()
 
 df_school = load_data()
 
@@ -868,7 +873,6 @@ def generate_graph7(df_school_1):
 
 def generate_graph8(df_school_1):
  # Graph 8: Student Data Analytics - Area Chart (Student Distribution per SHS Strand by Sector)
-
     shs_strands = {
         "ABM": ["G11_ABM_Male", "G11_ABM_Female", "G12_ABM_Male", "G12_ABM_Female"],
         "HUMSS": ["G11_HUMSS_Male", "G11_HUMSS_Female", "G12_HUMSS_Male", "G12_HUMSS_Female"],

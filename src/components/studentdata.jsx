@@ -4,34 +4,7 @@ import './studentdata.css';
 const StudentData = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const [iframeKey, setIframeKey] = useState(Date.now());
   const [role, setRole] = useState('');
-
-  const handleImport = () => {
-    if (role === 'admin') {
-      setShowUploadModal(true);
-    } else {
-      alert("You don't have permission to add new datasets.");
-    }
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetch("http://localhost:8050/last_update")
-        .then((res) => res.json())
-        .then((data) => {
-          const lastStudentUpdate = localStorage.getItem("lastStudentUpdate");
-          if (data.student.toString() !== lastStudentUpdate) {
-            localStorage.setItem("lastStudentUpdate", data.student.toString());
-            setIframeKey(Date.now()); // trigger refresh
-          }
-        });
-    }, 10000); // check every 10 seconds
-  
-    return () => clearInterval(interval);
-  }, []);
-  
 
   useEffect(() => {
     document.documentElement.style.setProperty('--zoom', zoomLevel);
@@ -60,9 +33,16 @@ const StudentData = () => {
         <h1>Student Data</h1>
       </header>
 
-      {role !== "user" && (
+      {role === 'admin' && (
         <div className="import-export-top">
-          <button onClick={handleImport}>Add New DataSet</button>
+          <a
+            href="http://localhost:8050/student_page"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="upload-link-button"
+          >
+            Import Dataset
+          </a>
         </div>
       )}
 
@@ -76,10 +56,10 @@ const StudentData = () => {
         >
           <label>{cardsData[0].label}</label>
           <iframe
-            src={`${cardsData[0].src}?t=${new Date().getTime()}`}
+            src={cardsData[0].src}
             title={cardsData[0].label}
             className="student-iframe"
-            />
+          />
         </div>
       </div>
 
@@ -95,7 +75,7 @@ const StudentData = () => {
           >
             <label>{card.label}</label>
             <iframe
-              src={`${card.src}?t=${iframeKey}`}
+              src={card.src}
               title={card.label}
               className="student-iframe"
             />
@@ -111,33 +91,10 @@ const StudentData = () => {
             </div>
             <div className="modal-content">
               <iframe
-                key={`${iframeKey}-${selectedCard.label}`}
-                src={`${selectedCard.src}?t=${new Date().getTime()}`}
+                src={selectedCard.src}
                 title={selectedCard.label}
                 style={{ width: '100%', height: '100%', border: 'none' }}
               />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showUploadModal && (
-        <div className="upload-modal-overlay-school" onClick={() => setShowUploadModal(false)}>
-          <div className="upload-modal-school" onClick={(e) => e.stopPropagation()}>
-            <h2>Add New Dataset</h2>
-            <p>Upload a CSV or Excel file:</p>
-            <iframe
-              src="http://localhost:8050/upload_student"
-              title="Upload New Dataset"
-              style={{
-                width: '100%',
-                height: '300px',
-                border: 'none',
-                borderRadius: '8px',
-              }}
-            />
-            <div className="modal-buttons-school">
-              <button onClick={() => setShowUploadModal(false)} className="cancel-btn-school">Close</button>
             </div>
           </div>
         </div>

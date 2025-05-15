@@ -32,6 +32,26 @@ last_update = {"student": 0, "school": 0}
 def get_last_update():
     return jsonify(last_update)
 
+# Initialize Flask-Executor for asynchronous tasks
+executor = Executor(server)
+
+# Function to process uploaded files asynchronously
+def process_uploaded_file(filepath, target_config):
+    try:
+        # Update config.json
+        config_path = 'config.json'
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+
+        config[target_config] = filepath
+
+        with open(config_path, 'w') as f:
+            json.dump(config, f, indent=4)
+
+        print(f"File {filepath} processed and config updated.")
+    except Exception as e:
+        print(f"Error processing file {filepath}: {e}")
+
 CORS(server)
 UPLOAD_FOLDER = 'Data/Raw_data/'
 server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -81,12 +101,12 @@ graph7_page = html.Div(
             figure=fig7
             )
         ]
-    ),
+    )
 
 # Graph 8: Student Data Analytics - Area Chart (Student Distribution per SHS Strand by Sector)
 graph8_page = html.Div([
     dcc.Graph(figure=fig8, id="Student-strand-area-chart")
-    ], style={"display": "flex", "justifyContent": "center", "alignItems": "center", 'paddingTop': '20px'}),
+    ], style={"display": "flex", "justifyContent": "center", "alignItems": "center", 'paddingTop': '20px'})
 
 
 # Graph 9: Student Data Analytics - Donut Chart (Student Distribution by Grade Division and School Sector)
@@ -98,7 +118,7 @@ graph9_page = html.Div([
 # Graph 10: School Data Analytics - Sankey Chart (School Population per Sector, Sub-Classification, and Modified COC)
 graph10_page = html.Div([
     dcc.Graph(figure=fig10, id="school-sankey-chart")
-    ], style={"display": "flex", "justifyContent": "center", "alignItems": "center", 'margin': '0px'}),
+    ], style={"display": "flex", "justifyContent": "center", "alignItems": "center", 'margin': '0px'})
 
 # Graph 11: School Data Analytics - Line-Bar Chart (School Count by School Type and Sector)
 graph11_page = html.Div([
@@ -108,7 +128,7 @@ graph11_page = html.Div([
 upload_student_page = html.Div([
     html.H2("Upload Student Dataset"),
     dcc.Upload(
-        id='upload-data',
+        id='upload-data-student',
         children=html.Div([
             'Drag and Drop or ',
             html.A('Select Files')
@@ -125,15 +145,16 @@ upload_student_page = html.Div([
         },
         multiple=False
     ),
-    html.Div(id='upload-notification', style={'marginTop': '10px'}),
-    dcc.Store(id='store-uploaded-file'), 
-    dcc.Store(id='store-upload-context', data='student'), 
+    html.Div(id='file-selected-student', style={'marginTop': '20px', 'textAlign': 'center'}),
+    html.Div(id='upload-response-student', style={'marginTop': '20px', 'textAlign': 'center'}),
+    html.Div(id='upload-notification-student', style={'marginTop': '10px'}),
+    dcc.Store(id='store-upload-context-student', data='student'), 
 ])
 
 upload_school_page = html.Div([
     html.H2("Upload School Dataset"),
     dcc.Upload(
-        id='upload-data',
+        id='upload-data-school',
         children=html.Div([
             'Drag and Drop or ',
             html.A('Select Files')
@@ -150,9 +171,27 @@ upload_school_page = html.Div([
         },
         multiple=False
     ),
-    html.Div(id='upload-notification', style={'marginTop': '10px'}),
-    dcc.Store(id='store-uploaded-file'),  
-    dcc.Store(id='store-upload-context', data='school'), 
+    html.Div(id='file-selected-school', style={'marginTop': '20px', 'textAlign': 'center'}),
+    html.Div(id='upload-response-school', style={'marginTop': '20px', 'textAlign': 'center'}),
+    html.Div(id='upload-notification-school', style={'marginTop': '10px'}),
+    dcc.Store(id='store-upload-context-school', data='school'), 
+])
+
+student_graphs_page = html.Div([
+    html.H2("Student Dataset Visualizations"),
+    graph7_page,
+    graph8_page,
+    graph9_page,
+    html.Hr(),
+    upload_student_page
+])
+
+school_graphs_page = html.Div([
+    html.H2("School Dataset Visualizations"),
+    graph10_page,
+    graph11_page,
+    html.Hr(),
+    upload_school_page
 ])
 
 
@@ -162,22 +201,28 @@ index_page = html.Div([
 
     html.Div([
         html.H3("Graph 7: Student Population by Grade Level"),
-        dcc.Graph(id='student-population-bar-chart-preview', figure=fig7),
+        dcc.Graph(id='student-population-bar-chart', figure=fig7),
 
         html.H3("Graph 8: Student Strand Area Chart"),
-        dcc.Graph(id='student-strand-area-chart-preview', figure=fig8),
+        dcc.Graph(id='Student-strand-area-chart', figure=fig8),
 
         html.H3("Graph 9: Student Division Donut Chart"),
-        dcc.Graph(id='student-division-donut-chart-preview', figure=fig9),
+        dcc.Graph(id='Student-division-donut-chart', figure=fig9),
 
         html.H3("Graph 10: School Sankey Chart"),
-        dcc.Graph(id='school-sankey-chart-preview', figure=fig10),
+        dcc.Graph(id='school-sankey-chart', figure=fig10),
 
         html.H3("Graph 11: School Bar-Line Chart"),
-        dcc.Graph(id='school-bar-line-chart-preview', figure=fig11),
+        dcc.Graph(id='school-bar-line-chartt', figure=fig11),
 
-        html.H2("Upload Student Dataset"),
         upload_student_page,
+
+        upload_school_page,
+
+        html.Div([
+        html.A("📊 Student Graphs Page", href="/student_page", style={'marginRight': '20px'}),
+        html.A("🏫 School Graphs Page", href="/school_page"),
+        ], style={'paddingBottom': '20px'}),
     ], style={'padding': '20px'})
 ])
 
@@ -193,7 +238,11 @@ app.layout = html.Div([
               Input('url', 'pathname'))
 
 def display_page(pathname):
-    if pathname == '/graph7':
+    if pathname == '/student_page':
+        return student_graphs_page
+    elif pathname == '/school_page':
+        return school_graphs_page
+    elif pathname == '/graph7':
         return graph7_page
     elif pathname == '/graph8':
         return graph8_page
@@ -232,7 +281,7 @@ def update_graph_student(data):
 
 @app.callback(
     Output('school-sankey-chart', 'figure'), 
-    Output('school-bar-line-chart', 'figure'),  
+    Output('school-bar-line-chartt', 'figure'),  
     Input('store-school', 'data'),
     prevent_initial_call=True
 )
@@ -251,9 +300,9 @@ def update_graph_school(data):
     
 @app.callback(
     Output('store-student', 'data'),
-    Input('upload-data', 'contents'),
-    State('upload-data', 'filename'),
-    State('store-upload-context', 'data'),
+    Input('upload-data-student', 'contents'),
+    State('upload-data-student', 'filename'),
+    State('store-upload-context-student', 'data'),
     prevent_initial_call=True
 )
 def update_store_after_upload_student(contents, filename, upload_type):
@@ -267,6 +316,9 @@ def update_store_after_upload_student(contents, filename, upload_type):
                 f.write(decoded)
 
             df = pd.read_excel(uploaded_path) if uploaded_path.endswith('.xlsx') else pd.read_csv(uploaded_path)
+
+            # Debugging statement
+            print(f"Student dataset uploaded: {df.head()}")
 
             # Update config.json
             with open('config.json', 'r') as f:
@@ -283,9 +335,9 @@ def update_store_after_upload_student(contents, filename, upload_type):
 
 @app.callback(
     Output('store-school', 'data'),
-    Input('upload-data', 'contents'),
-    State('upload-data', 'filename'),
-    State('store-upload-context', 'data'),
+    Input('upload-data-school', 'contents'),
+    State('upload-data-school', 'filename'),
+    State('store-upload-context-school', 'data'),
     prevent_initial_call=True
 )
 def update_store_after_upload_school(contents, filename, upload_type):
@@ -299,6 +351,9 @@ def update_store_after_upload_school(contents, filename, upload_type):
                 f.write(decoded)
 
             df = pd.read_excel(uploaded_path) if uploaded_path.endswith('.xlsx') else pd.read_csv(uploaded_path)
+
+            # Debugging statement
+            print(f"School dataset uploaded: {df.head()}")
 
             # Update config.json
             with open('config.json', 'r') as f:
@@ -314,22 +369,26 @@ def update_store_after_upload_school(contents, filename, upload_type):
     return dash.no_update
 
 @app.callback(
-    Output('upload-notification', 'children'),
+    Output('upload-notification-student', 'children'),
     Input('store-student', 'data'),
+    prevent_initial_call=True
+)
+def notify_upload_student(student_data):
+    if ctx.triggered_id == 'store-student' and student_data:
+        last_update["student"] = time.time()
+        return html.Div("✅ Student data loaded successfully!", style={'color': 'green'})
+    return dash.no_update
+
+@app.callback(
+    Output('upload-notification-school', 'children'),
     Input('store-school', 'data'),
     prevent_initial_call=True
 )
-def notify_upload(student_data, school_data):
-    triggered_id = ctx.triggered_id
-
-    if triggered_id == 'store-student' and student_data:
-        last_update["student"] = time.time()
-        return html.Div("✅ Student data loaded successfully!", style={'color': 'green'})
-    elif triggered_id == 'store-school' and school_data:
+def notify_upload_school(school_data):
+    if ctx.triggered_id == 'store-school' and school_data:
         last_update["school"] = time.time()
         return html.Div("✅ School data loaded successfully!", style={'color': 'green'})
-
-    raise dash.exceptions.PreventUpdate
+    return dash.no_update
 
 if __name__ == '__main__':
     app.run(debug=False)
